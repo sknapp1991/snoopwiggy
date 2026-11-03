@@ -29,7 +29,8 @@ function put(key: string, file: string, type: string, cache: string): Promise<bo
   return new Promise((resolve) => {
     const p = spawn(
       "npx",
-      ["wrangler", "r2", "object", "put", `${BUCKET}/${key}`, "--file", file, "--content-type", type, "--cache-control", cache, "--remote"],
+      // Quoted: the command runs through a shell and the project path contains spaces.
+      ["wrangler", "r2", "object", "put", `"${BUCKET}/${key}"`, "--file", `"${file}"`, "--content-type", `"${type}"`, "--cache-control", `"${cache}"`, "--remote"],
       { cwd: ROOT, shell: true, stdio: ["ignore", "ignore", "pipe"] },
     );
     let err = "";
