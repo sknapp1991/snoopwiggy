@@ -161,17 +161,26 @@ Additional ideas (Claude):
 - Offline reading (PWA cache of recently read books) and reading plans / verse of the day.
 - Keyboard shortcuts on desktop (←/→ chapter, / search, t theme).
 
-## Audio v2: keep playing with the screen off (proposed Nov 2026)
+## Audio v2: keep playing with the screen off — *built Nov 2026, waiting on storage*
 
-Built-in browser voices (Web Speech API) stop when a phone locks its screen; no website can keep them running.
-v1 offers "Keep screen on while listening" (Screen Wake Lock) and word-by-word highlighting where the voice reports
-word timing (most Microsoft/Apple/Android voices; Google's online Chrome voices don't).
-Real background playback needs audio files played by an <audio> element + Media Session API (lock-screen controls):
-- Generate chapter MP3s offline on the PC with an open-source TTS engine (e.g. Piper), using a voice whose training
-  data licence allows commercial use, plus per-verse/word timings for highlighting. Start with WEB (English).
-- Or use public-domain human recordings where they exist (verify licence), aligned to verses.
-- Storage: ~1,189 chapters × ~1–3 MB each per version → Cloudflare R2 (free tier 10 GB), not Workers static assets.
-- Needs from Skylar: create an R2 bucket in the Cloudflare dashboard, and pick a voice.
+Built-in browser voices (Web Speech API) stop when a phone locks its screen, so audio v2 plays pre-made
+recordings through an <audio> element, with Media Session lock-screen controls (play/pause, ‹ › verse).
+- **Engine:** Kokoro-82M (Apache-2.0) on the PC's GPU (~30× real time, so a whole Bible in one voice takes about
+  2.5 h and ~1.35 GB of MP3 at 40 kbps). `scripts/tts/generate.py` writes `.cache-audio/<version>/<voice>/<book>/<ch>.mp3`
+  plus a timing file (each verse's start/end), which drives verse highlighting and approximate word highlighting.
+- **Voices:** Kokoro has 28 English voices (20 US, 8 UK; best graded Heart, Bella, Michael, Fenrir, Puck, Emma,
+  George), Spanish 3, French 1, Italian 2, Brazilian Portuguese 3. Non-English needs espeak-ng installed on the PC.
+  German, Russian, Greek, Latin, Arabic and Hebrew have no Kokoro voice; they keep device voices (a Piper
+  voice could fill gaps after checking each voice's dataset licence).
+- **Catalogue:** `scripts/tts/catalog.ts` writes `index.json` next to the files; the app lists whatever is there.
+  The player offers "Recorded" voices first and device voices second, and falls back to a device voice when a
+  chapter has no recording. When a chapter ends it goes straight into the next one's recording (works with the
+  screen off) and the page follows.
+- **Serving:** production reads `/api/audio/...` (src/app/api/audio, Range requests for iPhone) from an R2 bucket
+  bound as `AUDIO`; `.env.production` sets NEXT_PUBLIC_AUDIO_BASE=/api/audio. Local testing uses public/audio.
+- **Storage:** R2 free tier is 10 GB (≈7 complete voices at 40 kbps).
+- **Needs from Skylar:** `npx wrangler login`, then approve creating the bucket `snoopwiggy-audio`, choose which
+  voices to generate in full, and install espeak-ng for Spanish/French/Italian/Portuguese voices.
 
 ## Swipe between chapters (requested Nov 2026) — *done Nov 2026 (components/use-chapter-swipe.ts)*
 

@@ -27,6 +27,8 @@ export type SpeechState = {
   until: string | null;
   /** Does the current voice report word positions? null = not known yet. */
   wordTiming: boolean | null;
+  /** "device" = browser text-to-speech; "recorded" = a pre-made recording (keeps playing with the screen off). */
+  engine: "device" | "recorded";
   error: string | null;
 };
 
@@ -39,6 +41,7 @@ const IDLE: SpeechState = {
   continuePending: false,
   until: null,
   wordTiming: null,
+  engine: "device",
   error: null,
 };
 let state: SpeechState = IDLE;
@@ -150,7 +153,8 @@ function chunks(text: string): string[] {
 
 /* ---------- word-by-word position (boundary events; not every voice sends them) ---------- */
 
-export type WordPos = { verse: string; word: number } | null;
+/** `word`: exact word index (device voices); `frac`: how far through the verse (recordings, approximate). */
+export type WordPos = { verse: string; word?: number; frac?: number } | null;
 const wordSubs = new Set<(w: WordPos) => void>();
 /** Called with the index of the word being spoken in the current verse (null when it ends). */
 export function onWord(cb: (w: WordPos) => void) {
@@ -282,7 +286,8 @@ export function play(opts: {
     keepAwake: opts.keepAwake,
   };
   if (opts.keepAwake) acquireWake();
-  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing" });
+  stopRecording();
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device" });
   if (opts.voice?.voiceURI !== lastVoice) {
     lastVoice = opts.voice?.voiceURI;
     set({ wordTiming: null });
@@ -299,6 +304,7 @@ export function currentIndex() {
 
 export function pause() {
   token++;
+  if (audio && !audio.paused) audio.pause();
   emitWord(null);
   releaseWake();
   window.speechSynthesis?.cancel();
@@ -308,6 +314,7 @@ export function pause() {
 
 export function stop() {
   token++;
+  stopRecording();
   emitWord(null);
   releaseWake();
   run = null;
@@ -319,6 +326,197 @@ export function stop() {
 export function close() {
   stop();
   set({ open: false, error: null });
+}
+
+/* ---------- recorded audio (audio v2): an <audio> element keeps playing with the screen locked ---------- */
+
+export type Timing = { duration: number; verses: { v: string; s: number; e: number }[] };
+let audio: HTMLAudioElement | null = null;
+let rec: {
+  timing: Timing;
+  until: string | null;
+  onDone: () => void;
+  raf: number;
+  lastVerse: string | null;
+  /** Advance straight to this chapter when one ends (works with the screen off). */
+  getNext?: () => Promise<{ url: string; timing: Timing; chapterKey: string; title: string } | null>;
+  onAdvance?: (chapterKey: string) => void;
+  title: string;
+  artist: string;
+} | null = null;
+
+const timings = new Map<string, Promise<Timing>>();
+export function loadTiming(url: string): Promise<Timing> {
+  let p = timings.get(url);
+  if (!p) {
+    p = fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json() as Promise<Timing>;
+    });
+    p.catch(() => timings.delete(url));
+    timings.set(url, p);
+  }
+  return p;
+}
+
+function tick() {
+  if (!audio || !rec) return;
+  const t = audio.currentTime;
+  const vs = rec.timing.verses;
+  let i = vs.findIndex((x) => t < x.e + 0.2);
+  if (i < 0) i = vs.length - 1;
+  const cur = vs[i];
+  if (cur && cur.v !== rec.lastVerse) {
+    rec.lastVerse = cur.v;
+    set({ verse: cur.v });
+  }
+  if (cur) emitWord(t >= cur.s && t <= cur.e ? { verse: cur.v, frac: (t - cur.s) / Math.max(0.1, cur.e - cur.s) } : null);
+  // End of a chosen verse range.
+  if (rec.until) {
+    const end = vs.find((x) => x.v === rec!.until);
+    if (end && t >= end.e) {
+      const r = rec;
+      stopRecording();
+      set({ status: "idle", verse: null, until: null });
+      r.onDone();
+      return;
+    }
+  }
+  rec.raf = requestAnimationFrame(tick);
+}
+
+function mediaSession(title: string, artist: string) {
+  const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+  if (!ms) return;
+  ms.metadata = new MediaMetadata({ title, artist, album: "GlobalStudy" });
+  const step = (d: number) => () => {
+    if (!audio || !rec) return;
+    const vs = rec.timing.verses;
+    const i = Math.max(0, vs.findIndex((x) => x.v === state.verse));
+    const j = Math.min(vs.length - 1, Math.max(0, i + d));
+    audio.currentTime = vs[j].s;
+  };
+  ms.setActionHandler("play", () => audio?.play());
+  ms.setActionHandler("pause", () => pause());
+  ms.setActionHandler("previoustrack", step(-1));
+  ms.setActionHandler("nexttrack", step(1));
+  try {
+    ms.setActionHandler("seekbackward", step(-1));
+    ms.setActionHandler("seekforward", step(1));
+  } catch {
+    /* not supported */
+  }
+}
+
+function stopRecording() {
+  if (rec) cancelAnimationFrame(rec.raf);
+  rec = null;
+  if (audio) {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  }
+}
+
+/** Play a recorded chapter from verse `startVerse` (or the top). */
+export async function playRecording(opts: {
+  url: string;
+  timingUrl: string;
+  startVerse: string | null;
+  rate: number;
+  version: string;
+  chapterKey: string;
+  until: string | null;
+  title: string;
+  artist: string;
+  onDone: () => void;
+  getNext?: () => Promise<{ url: string; timing: Timing; chapterKey: string; title: string } | null>;
+  onAdvance?: (chapterKey: string) => void;
+}): Promise<boolean> {
+  token++;
+  if (speechSupported()) window.speechSynthesis.cancel();
+  stopRecording();
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true });
+  let timing: Timing;
+  try {
+    timing = await loadTiming(opts.timingUrl);
+  } catch {
+    set({ status: "idle", engine: "device" });
+    return false; // caller falls back to a device voice
+  }
+  audio ??= new Audio();
+  audio.preload = "auto";
+  audio.src = opts.url;
+  audio.playbackRate = opts.rate;
+  const start = opts.startVerse ? timing.verses.find((x) => x.v === opts.startVerse) ?? timing.verses.find((x) => parseInt(x.v, 10) >= parseInt(opts.startVerse!, 10)) : null;
+  rec = { timing, until: opts.until, onDone: opts.onDone, raf: 0, lastVerse: null, getNext: opts.getNext, onAdvance: opts.onAdvance, title: opts.title, artist: opts.artist };
+  const a = audio;
+  a.onended = async () => {
+    const r = rec;
+    if (!r) return;
+    cancelAnimationFrame(r.raf);
+    const next = !r.until && r.getNext ? await r.getNext().catch(() => null) : null;
+    if (next && rec === r) {
+      // Keep the audio session alive: go straight into the next chapter, then tell the page.
+      r.timing = next.timing;
+      r.lastVerse = null;
+      a.src = next.url;
+      a.playbackRate = opts.rate;
+      set({ chapterKey: next.chapterKey, verse: next.timing.verses[0]?.v ?? null });
+      mediaSession(next.title, r.artist);
+      r.onAdvance?.(next.chapterKey);
+      await a.play().catch(() => {});
+      r.raf = requestAnimationFrame(tick);
+      return;
+    }
+    stopRecording();
+    set({ status: "idle", verse: null, until: null });
+    emitWord(null);
+    r.onDone();
+  };
+  a.onpause = () => {
+    if (rec && !a.ended) set({ status: "paused" });
+  };
+  a.onplay = () => {
+    if (rec) {
+      set({ status: "playing" });
+      cancelAnimationFrame(rec.raf);
+      rec.raf = requestAnimationFrame(tick);
+    }
+  };
+  if (start) a.currentTime = start.s;
+  mediaSession(opts.title, opts.artist);
+  try {
+    await a.play();
+  } catch (e) {
+    if ((e as DOMException)?.name === "NotAllowedError") set({ status: "paused", error: "Tap play to start." });
+    else {
+      stopRecording();
+      set({ status: "idle", engine: "device" });
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Resume a paused recording where it stopped. Returns false when there is nothing to resume. */
+export function resumeRecording(): boolean {
+  if (!audio || !rec || !audio.src) return false;
+  audio.play().catch(() => set({ error: "Tap play to start." }));
+  return true;
+}
+
+/** Jump within the playing recording to a verse (stays in the same chapter). */
+export function seekRecording(v: string): boolean {
+  if (!audio || !rec) return false;
+  const x = rec.timing.verses.find((t) => t.v === v);
+  if (!x) return false;
+  audio.currentTime = x.s;
+  return true;
+}
+
+export function setRecordingRate(rate: number) {
+  if (audio) audio.playbackRate = rate;
 }
 
 // Stop speaking when the page goes away.

@@ -45,3 +45,14 @@ Licences were checked on the eBible.org details page and catalog on 2026-11-03.
   until a reordering table is added (Phase 4).
 - **Not included:** no public-domain Almeida (Portuguese) or Delitzsch Hebrew NT is available on
   eBible.org, so Bíblia Livre (CC BY 4.0) and Salkinson–Ginsburg are used instead.
+
+## Recorded audio (audio v2)
+
+- **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the
+  public-domain texts above into chapter MP3s (`scripts/tts/generate.py`). The model card states it was
+  trained on permissive / non-copyrighted audio. The recordings are derived from public-domain texts and
+  an Apache-licensed model, and the reader shows "Generated with Kokoro-82M (Apache-2.0)".
+- **French voice ff_siwis** was trained partly on the SIWIS corpus (CC BY 4.0). If French recordings are
+  published, credit: "SIWIS French Speech Synthesis Database (CC BY 4.0)".
+- The model's helper libraries (misaki, spaCy en_core_web_sm, and espeak-ng for non-English languages)
+  run only on the generating PC and are not shipped.

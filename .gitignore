@@ -40,6 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+!.env.production
 
 # GlobalStudy
 # downloaded source archives (re-created by scripts/import-*.ts)
@@ -58,3 +59,8 @@ next-env.d.ts
 
 # generated search index (scripts/build-search.ts)
 /public/search/
+
+# local text-to-speech toolchain (audio v2 generation)
+/.venv-tts/
+/.cache-audio/
+/public/audio/
