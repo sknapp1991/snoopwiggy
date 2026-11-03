@@ -159,3 +159,115 @@ export function useEdgeSwipes(onLeftEdge: () => void, onBottomEdge: () => void) 
     };
   }, []);
 }
+
+export type TapPoint = { x: number; y: number };
+
+/**
+ * Tap / double-tap / long-press on one element, for mouse and touch alike (pointer events).
+ * A single tap waits briefly (DOUBLE_MS) to rule out a double tap — only when onDouble is given.
+ * Long-press (LONG_MS) and right-click call onLong. Moving the finger (scrolling) cancels.
+ */
+const DOUBLE_MS = 260;
+const LONG_MS = 480;
+export function useTapGestures(handlers: {
+  onTap: (p: TapPoint) => void;
+  onDouble?: (p: TapPoint) => void;
+  onLong?: (p: TapPoint) => void;
+}) {
+  const h = useRef(handlers);
+  useEffect(() => {
+    h.current = handlers;
+  });
+  const st = useRef({ x: 0, y: 0, down: false, longFired: false, longTimer: 0, tapTimer: 0, lastTap: 0 });
+
+  const clearLong = () => window.clearTimeout(st.current.longTimer);
+  return {
+    onPointerDown(e: React.PointerEvent) {
+      if (e.button !== 0) return;
+      const s = st.current;
+      Object.assign(s, { x: e.clientX, y: e.clientY, down: true, longFired: false });
+      clearLong();
+      if (h.current.onLong)
+        s.longTimer = window.setTimeout(() => {
+          if (!s.down) return;
+          s.longFired = true;
+          window.clearTimeout(s.tapTimer);
+          navigator.vibrate?.(15);
+          h.current.onLong?.({ x: s.x, y: s.y });
+        }, LONG_MS);
+    },
+    onPointerMove(e: React.PointerEvent) {
+      const s = st.current;
+      if (s.down && Math.hypot(e.clientX - s.x, e.clientY - s.y) > 10) {
+        s.down = false;
+        clearLong();
+      }
+    },
+    onPointerCancel() {
+      st.current.down = false;
+      clearLong();
+    },
+    onPointerUp(e: React.PointerEvent) {
+      const s = st.current;
+      clearLong();
+      if (!s.down || s.longFired) {
+        s.down = false;
+        return;
+      }
+      s.down = false;
+      const p = { x: e.clientX, y: e.clientY };
+      const now = Date.now();
+      // Check for a double tap first: the browser selects the word on a double-click.
+      if (h.current.onDouble && now - s.lastTap < DOUBLE_MS) {
+        window.clearTimeout(s.tapTimer);
+        s.lastTap = 0;
+        window.getSelection()?.removeAllRanges();
+        h.current.onDouble(p);
+        return;
+      }
+      // Don't treat the end of a text selection (drag) as a tap.
+      if (window.getSelection()?.toString().trim()) return;
+      s.lastTap = now;
+      if (h.current.onDouble) s.tapTimer = window.setTimeout(() => h.current.onTap(p), DOUBLE_MS);
+      else h.current.onTap(p);
+    },
+    onContextMenu(e: React.MouseEvent) {
+      if (!h.current.onLong) return;
+      e.preventDefault();
+      if (st.current.longFired) return; // touch long-press already handled it
+      h.current.onLong({ x: e.clientX, y: e.clientY });
+    },
+    onKeyDown(e: React.KeyboardEvent) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        h.current.onTap({ x: 0, y: 0 });
+      }
+    },
+  };
+}
+
+/** The word under a screen point (for double-tap → search), using the caret position APIs. */
+export function wordAt(x: number, y: number): string | null {
+  const doc = document as Document & {
+    caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  };
+  let node: Node | null = null;
+  let offset = 0;
+  const pos = doc.caretPositionFromPoint?.(x, y);
+  if (pos) {
+    node = pos.offsetNode;
+    offset = pos.offset;
+  } else {
+    const r = doc.caretRangeFromPoint?.(x, y);
+    if (r) {
+      node = r.startContainer;
+      offset = r.startOffset;
+    }
+  }
+  if (!node || node.nodeType !== Node.TEXT_NODE) return null;
+  const text = node.textContent ?? "";
+  for (const m of text.matchAll(/[\p{L}\p{M}\p{N}]+/gu))
+    if (m.index! <= offset && offset <= m.index! + m[0].length) return m[0];
+  return null;
+}

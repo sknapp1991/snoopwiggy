@@ -20,6 +20,13 @@ import {
 } from "@/lib/settings";
 import { ChevronLeft, ChevronRight } from "./icons";
 import { openSearch } from "./search-panel";
+import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
+import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
+import { StudiedBox } from "./studied-box";
+import { HighlightModeBar } from "./highlight-mode";
+import { wordAt } from "./use-gestures";
+import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
+import { openVerseMenu, toast } from "@/lib/ui-store";
 import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
 
@@ -48,6 +55,45 @@ export function ReaderView() {
   const { prev, next } = valid ? adjacentChapters(ref) : {};
   const allLoaded = entries.length > 0 && entries.every((e) => e.status === "ok");
   const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller });
+  const study = useStudy();
+  const marks = useMemo(() => chapterMarks(study.items, ref.work, ref.book, ref.chapter), [study.items, ref.work, ref.book, ref.chapter]);
+
+  const actions: VerseActions = {
+    marks,
+    boxTap(v) {
+      const r = { ...ref, verse: v };
+      const on = toggle("favorite", r);
+      toast(on ? `★ ${verseReference(r)} added to favorites` : `Removed ${verseReference(r)} from favorites`);
+    },
+    boxDouble(v) {
+      const r = { ...ref, verse: v };
+      const on = toggle("later", r);
+      toast(on ? `${verseReference(r)} saved to Study later` : `Removed ${verseReference(r)} from Study later`);
+    },
+    openMenu: (v, focus) => openVerseMenu({ ...ref, verse: v, focus }),
+    textTap(v) {
+      const r = { ...ref, verse: v };
+      if (settings.highlightMode) {
+        const cur = getItem("highlight", r)?.color;
+        setHighlight(r, cur === settings.highlightColor ? null : settings.highlightColor);
+      } else if (ra.speech.open && ra.supported) ra.readFrom(v);
+      else openVerseMenu(r);
+    },
+    textDouble(p, version) {
+      const w = wordAt(p.x, p.y);
+      if (w) openSearch(w, [version]);
+    },
+  };
+  /** Text of one verse in every loaded column (for copy and Ask in…). */
+  const textsFor = (v: string): VerseTextInfo[] => {
+    const row = rows.find((r) => r.v === v);
+    if (!row) return [];
+    return row.cells.flatMap((cell, i) => {
+      const ver = cols[i]?.version;
+      if (!cell || cell.cont || !cell.t || !ver) return [];
+      return [{ abbr: ver.abbr, name: ver.name, language: getLanguage(ver.language).name, text: cell.t, dir: ver.dir, lang: ver.language }];
+    });
+  };
 
   // Prefetch the next chapter once this one is on screen.
   useEffect(() => {
@@ -120,15 +166,20 @@ export function ReaderView() {
         <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
 
-      {column ? <ColumnView cols={cols} rows={rows} /> : <StackedView cols={cols} rows={rows} />}
+      <VerseCtx.Provider value={actions}>
+        {column ? <ColumnView cols={cols} rows={rows} marks={marks} /> : <StackedView cols={cols} rows={rows} marks={marks} />}
+      </VerseCtx.Provider>
 
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
+        {allLoaded && <StudiedBox bookRef={ref} title={title} />}
         <ChapterNav prev={prev} next={next} versions={versions} />
         <Attribution versions={cols.map((c) => c.version)} />
         <ReadAlongSpacer ra={ra} />
       </div>
     </div>
     <ReadAlongBar ra={ra} />
+    <HighlightModeBar raised={ra.speech.open} />
+    <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
     </>
   );
 }
@@ -198,16 +249,12 @@ function VersionLabel({ version, compact = false }: { version: Version; compact?
   );
 }
 
-function verseLabel(v: Verse) {
-  return v.n ?? (v.to ? `${v.v}–${v.to}` : v.v);
-}
-
 function contLabel(cont: string, chapter: number) {
   const [c, v] = cont.split(":");
   return Number(c) === chapter ? `see v. ${v}` : `see ${cont}`;
 }
 
-function Cell({ verse, version, chapter, showNumber }: { verse: Verse | null; version: Version; chapter: number; showNumber: boolean }) {
+function Cell({ verse, version, chapter }: { verse: Verse | null; version: Version; chapter: number }) {
   const color = languageColor(useSettings(), version.language);
   if (!verse)
     return (
@@ -222,31 +269,18 @@ function Cell({ verse, version, chapter, showNumber }: { verse: Verse | null; ve
       </span>
     );
   return (
-    <span
-      lang={version.language}
-      dir={version.dir}
-      className="reader-text block"
-      style={{ color: color }}
-      onDoubleClick={() => {
-        // Double-click a word → search for it in this version.
-        const word = window.getSelection()?.toString().trim().match(/[\p{L}\p{M}\p{N}]+/u)?.[0];
-        if (word) openSearch(word, [version.id]);
-      }}
-    >
-      {showNumber && (
-        <sup
-          className="mr-1 select-none font-sans text-[0.65em] font-semibold text-accent"
-          title={verse.n ? `Numbered ${verse.n} in ${version.abbr}` : undefined}
-        >
-          {verseLabel(verse)}
-        </sup>
+    <VerseText v={verse.v} version={version.id} lang={version.language} dir={version.dir} color={color}>
+      {verse.n && (
+        <span className="mr-1 select-none font-sans text-[0.65em] font-semibold text-faint" title={`Numbered ${verse.n} in ${version.abbr}`}>
+          ({verse.n})
+        </span>
       )}
-      {verse.t}
-    </span>
+      <span data-text>{verse.t}</span>
+    </VerseText>
   );
 }
 
-function ColumnView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
+function ColumnView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; marks: Map<string, Marks> }) {
   const n = cols.length;
   const loading = rows.length === 0 && cols.some((c) => c.entry.status === "loading");
   const chapter = cols.find((c) => c.entry.status === "ok")?.entry;
@@ -279,38 +313,48 @@ function ColumnView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
               <Skeleton />
             </div>
           ))
-        : rows.map((row) => (
-            <div role="row" key={row.v} className="contents">
-              {row.cells.map((verse, i) => (
-                <div
-                  role="cell"
-                  key={cols[i].version.id}
-                  // display:contents rows have no box, so the anchor lives on the first cell
-                  id={i === 0 ? `v${row.v}` : undefined}
-                  data-v={row.v}
-                  className="verse-flash snap-start scroll-mt-12 border-b border-line/60 px-4 py-2.5 md:px-5"
-                >
-                  {cols[i].entry.status === "loading" ? (
-                    <SkeletonLine />
-                  ) : cols[i].entry.status === "error" ? null : (
-                    <Cell verse={verse} version={cols[i].version} chapter={chNum} showNumber />
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+        : rows.map((row) => {
+            const bg = highlightBg(marks.get(row.v)?.highlight?.color);
+            return (
+              <div role="row" key={row.v} className="contents">
+                {row.cells.map((verse, i) => (
+                  <div
+                    role="cell"
+                    key={cols[i].version.id}
+                    // display:contents rows have no box, so the anchor lives on the first cell
+                    id={i === 0 ? `v${row.v}` : undefined}
+                    data-v={row.v}
+                    style={bg ? { background: bg } : undefined}
+                    className="verse-flash flex snap-start scroll-mt-12 items-start gap-1 border-b border-line/60 px-3 py-2.5 md:px-4"
+                  >
+                    <span className="pt-[0.2em]">
+                      <VerseBox v={row.v} label={row.v} size="sm" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      {cols[i].entry.status === "loading" ? (
+                        <SkeletonLine />
+                      ) : cols[i].entry.status === "error" ? null : (
+                        <Cell verse={verse} version={cols[i].version} chapter={chNum} />
+                      )}
+                      {i === 0 && <NoteLine v={row.v} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
     </div>
   );
 }
 
-function StackedView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
+function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; marks: Map<string, Marks> }) {
   const multi = cols.length > 1;
   const errors = cols.filter((c) => c.entry.status === "error");
   const loading = rows.length === 0 && cols.some((c) => c.entry.status === "loading");
   const first = cols.find((c) => c.entry.status === "ok")?.entry;
   const chNum = first?.status === "ok" ? first.data.chapter : 0;
   return (
-    <div className="mx-auto max-w-[var(--stackw)] px-4 md:px-8">
+    <div className="mx-auto max-w-[var(--stackw)] px-2 md:px-6">
       {errors.map((c) => (
         <div key={c.version.id} className="mb-3 rounded-lg border border-line bg-raised px-3 py-2 text-sm">
           <VersionLabel version={c.version} compact /> <ColumnError col={c} inline />
@@ -327,32 +371,41 @@ function StackedView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
         <Skeleton />
       ) : (
         <ol className="divide-y divide-line/70">
-          {rows.map((row) => (
-            <li key={row.v} id={`v${row.v}`} data-v={row.v} className="verse-flash flex scroll-mt-4 gap-3 py-3">
-              <span className="w-7 shrink-0 pt-1 text-right text-xs font-semibold tabular-nums text-accent">{row.v}</span>
-              <div className="min-w-0 flex-1 space-y-2">
-                {row.cells.map((verse, i) => {
-                  const c = cols[i];
-                  if (c.entry.status === "error") return null;
-                  return (
-                    <div key={c.version.id} className={i > 0 ? "text-ink/85" : ""}>
-                      {multi && (
-                        <div className="mb-0.5 text-[11px] uppercase tracking-wide">
-                          <VersionLabel version={c.version} compact />
-                          {verse?.n && <span className="ml-1 normal-case text-faint">({verse.n})</span>}
-                        </div>
-                      )}
-                      {c.entry.status === "loading" ? (
-                        <SkeletonLine />
-                      ) : (
-                        <Cell verse={verse} version={c.version} chapter={chNum} showNumber={false} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </li>
-          ))}
+          {rows.map((row) => {
+            const bg = highlightBg(marks.get(row.v)?.highlight?.color);
+            return (
+              <li
+                key={row.v}
+                id={`v${row.v}`}
+                data-v={row.v}
+                style={bg ? { background: bg } : undefined}
+                className="verse-flash flex scroll-mt-4 gap-2 rounded-sm px-1 py-3"
+              >
+                <VerseBox v={row.v} label={row.v} />
+                <div className="min-w-0 flex-1 space-y-2 pt-0.5">
+                  {row.cells.map((verse, i) => {
+                    const c = cols[i];
+                    if (c.entry.status === "error") return null;
+                    return (
+                      <div key={c.version.id} className={i > 0 ? "text-ink/85" : ""}>
+                        {multi && (
+                          <div className="mb-0.5 text-[11px] uppercase tracking-wide">
+                            <VersionLabel version={c.version} compact />
+                          </div>
+                        )}
+                        {c.entry.status === "loading" ? (
+                          <SkeletonLine />
+                        ) : (
+                          <Cell verse={verse} version={c.version} chapter={chNum} />
+                        )}
+                      </div>
+                    );
+                  })}
+                  <NoteLine v={row.v} />
+                </div>
+              </li>
+            );
+          })}
         </ol>
       )}
     </div>

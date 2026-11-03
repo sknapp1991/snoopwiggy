@@ -110,6 +110,11 @@ For non-Bible texts, use the original language where it fits (Arabic Quran, Hebr
 1. **Foundation:** Next.js project, layout (sidebar, top bar, main body) on desktop + mobile, catalog/data format, import KJV + WEB and RVR 1909, Column and Stacked views working with real text.
 2. **Languages:** remaining 3 English versions and all 10 native-language Bibles; RTL; AI translation route with caching; Native/AI/Both per language.
 3. **Study tools:** highlights, bookmarks, notes, My Study panel, "Ask in…" hand-off (Gemini/ChatGPT/Claude), built-in Ask AI panel behind its feature flag (off), saved settings.
+   *Done Nov 2026:* verse box (tap = favorite, double-tap = study later, long-press/right-click = menu), verse menu
+   (5 highlight colours, note, copy, share, read aloud, Ask in…), highlight mode toggle, "studied" checkbox with
+   timestamp + ✓ in the library, My Study panel with backup/restore, built-in Ask AI panel + /api/ask (flag off).
+   Data: IndexedDB on the device (src/lib/study.ts) behind src/lib/storage.ts. Still to schedule: continuous scroll,
+   word highlight across versions (needs Strong's tagging, Phase 4).
 4. **Library expansion:** Apocrypha, Quran, Torah, Gita, Yoga Sutras, Dhammapada; "Coming soon" entries; `LICENSES.md` and in-app attribution; thesaurus + CEFR extras.
 5. **Polish:** PWA, performance, accessibility, error states, README with setup/run/deploy steps.
 
@@ -155,6 +160,18 @@ Additional ideas (Claude):
 - Share a verse (link with ?v= and #verse; optional image card).
 - Offline reading (PWA cache of recently read books) and reading plans / verse of the day.
 - Keyboard shortcuts on desktop (←/→ chapter, / search, t theme).
+
+## Audio v2: keep playing with the screen off (proposed Nov 2026)
+
+Built-in browser voices (Web Speech API) stop when a phone locks its screen; no website can keep them running.
+v1 offers "Keep screen on while listening" (Screen Wake Lock) and word-by-word highlighting where the voice reports
+word timing (most Microsoft/Apple/Android voices; Google's online Chrome voices don't).
+Real background playback needs audio files played by an <audio> element + Media Session API (lock-screen controls):
+- Generate chapter MP3s offline on the PC with an open-source TTS engine (e.g. Piper), using a voice whose training
+  data licence allows commercial use, plus per-verse/word timings for highlighting. Start with WEB (English).
+- Or use public-domain human recordings where they exist (verify licence), aligned to verses.
+- Storage: ~1,189 chapters × ~1–3 MB each per version → Cloudflare R2 (free tier 10 GB), not Workers static assets.
+- Needs from Skylar: create an R2 bucket in the Cloudflare dashboard, and pick a voice.
 
 ## Swipe between chapters (requested Nov 2026; build after Phase 3)
 

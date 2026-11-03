@@ -12,17 +12,18 @@ import { getLanguage } from "@/lib/languages";
 import { markMatches, search, suggest, type SearchResult, type Term, type VerseHit } from "@/lib/search";
 import { ChevronDown, ChevronRight, CloseIcon, SearchIcon } from "./icons";
 import { useReaderState } from "./use-reader-state";
+import { closePanel, openPanel } from "@/lib/ui-store";
 
 /* ---------- open/close + state that survives closing the panel ---------- */
 
-type UiState = { open: boolean; query: string; versions: string[] | null; nonce: number };
-let ui: UiState = { open: false, query: "", versions: null, nonce: 0 };
+type UiState = { query: string; versions: string[] | null; nonce: number };
+let ui: UiState = { query: "", versions: null, nonce: 0 };
 const subs = new Set<() => void>();
 const setUi = (patch: Partial<UiState>) => {
   ui = { ...ui, ...patch };
   subs.forEach((l) => l());
 };
-const SERVER_UI: UiState = { open: false, query: "", versions: null, nonce: 0 };
+const SERVER_UI: UiState = { query: "", versions: null, nonce: 0 };
 
 export function useSearchUi() {
   return useSyncExternalStore(
@@ -38,13 +39,13 @@ export function useSearchUi() {
 /** Open the panel, optionally with a query and the versions to search in (e.g. from a double-clicked word). */
 export function openSearch(query?: string, versions?: string[]) {
   setUi({
-    open: true,
     ...(query !== undefined ? { query } : {}),
     ...(versions ? { versions } : {}),
     nonce: ui.nonce + 1,
   });
+  openPanel("search");
 }
-export const closeSearch = () => setUi({ open: false });
+export const closeSearch = closePanel;
 
 /* ---------- panel ---------- */
 

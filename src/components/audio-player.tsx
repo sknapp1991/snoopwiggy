@@ -13,6 +13,7 @@ import { getLanguage } from "@/lib/languages";
 import { getSettings, TTS_RATE_MAX, TTS_RATE_MIN, updateSettings, useSettings } from "@/lib/settings";
 import {
   close,
+  onWord,
   pause,
   pickVoice,
   play,
@@ -26,6 +27,7 @@ import {
   type SpeechItem,
 } from "@/lib/speech";
 import type { Version } from "@/lib/schema";
+import { RAW_WORD } from "@/lib/search-text";
 import { CloseIcon, GearIcon, HeadphonesIcon, NextIcon, PauseIcon, PlayIcon, PrevIcon } from "./icons";
 
 type Col = { version: Version; entry: ChapterEntry };
@@ -91,6 +93,7 @@ export function useReadAlong({
       version: version.id,
       chapterKey,
       onDone,
+      keepAwake: getSettings().ttsKeepAwake,
     });
   };
 
@@ -121,7 +124,7 @@ export function useReadAlong({
 
   useEffect(() => {
     if (!speech.continuePending || speech.chapterKey === chapterKey || !items.length || !version) return;
-    play({ items, start: 0, lang, voice, rate: getSettings().ttsRate, version: version.id, chapterKey, onDone });
+    play({ items, start: 0, lang, voice, rate: getSettings().ttsRate, version: version.id, chapterKey, onDone, keepAwake: getSettings().ttsKeepAwake });
     // onDone is recreated each render; the latest one is captured here on purpose
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speech.continuePending, speech.chapterKey, chapterKey, items, version, lang, voice]);
@@ -137,11 +140,45 @@ export function useReadAlong({
     if (first) {
       const r = first.getBoundingClientRect();
       const box = sc.getBoundingClientRect();
-      // keep clear of the sticky column headers (top) and the player bar (bottom)
-      if (r.top < box.top + 48 || r.bottom > box.bottom - 140) first.scrollIntoView({ block: "center", behavior: "smooth" });
+      // Visible area: below the sticky column headers, above the player bar (its height varies).
+      const top = box.top + 48;
+      const bottom = Math.min(box.bottom, document.querySelector('[aria-label="Read aloud"]')?.getBoundingClientRect().top ?? box.bottom) - 12;
+      if (r.top < top || r.bottom > bottom) {
+        const target = top + Math.max(0, (bottom - top - r.height) / 3);
+        sc.scrollBy({ top: r.top - target, behavior: "smooth" });
+      }
     }
     return () => els.forEach((el) => el.classList.remove("is-reading"));
   }, [reading, scroller, rows]);
+
+  // Word-by-word: highlight the word being spoken in the column being read (CSS Custom Highlight API,
+  // so no re-rendering). Only voices that report word boundaries drive this; others keep verse highlighting.
+  const readingVersion = version?.id;
+  useEffect(() => {
+    const css = CSS as unknown as { highlights?: Map<string, unknown> };
+    const HighlightCtor = (window as unknown as { Highlight?: new (...r: Range[]) => unknown }).Highlight;
+    if (!css.highlights || !HighlightCtor) return;
+    const clear = () => css.highlights!.delete("reading-word");
+    const off = onWord((w) => {
+      const sc = scroller.current;
+      if (!w || !sc || !readingVersion) return clear();
+      const span = sc.querySelector(
+        `[data-v="${CSS.escape(w.verse)}"] [data-ver="${CSS.escape(readingVersion)}"] [data-text]`,
+      ) as HTMLElement | null;
+      const node = span?.firstChild;
+      if (!node || node.nodeType !== Node.TEXT_NODE) return clear();
+      const m = [...(node.textContent ?? "").matchAll(RAW_WORD)][w.word];
+      if (!m) return clear();
+      const range = document.createRange();
+      range.setStart(node, m.index!);
+      range.setEnd(node, m.index! + m[0].length);
+      css.highlights!.set("reading-word", new HighlightCtor(range));
+    });
+    return () => {
+      off();
+      clear();
+    };
+  }, [scroller, readingVersion]);
 
   return {
     speech,
@@ -173,6 +210,14 @@ export function useReadAlong({
       const verse = speech.verse;
       stop();
       setSpeech({ version: id, verse, chapterKey, status: verse ? "paused" : "idle" });
+    },
+    /** Start reading at this verse (or the next one this column has). */
+    readFrom(v: string) {
+      let i = items.findIndex((it) => it.v === v);
+      if (i < 0) i = items.findIndex((it) => parseInt(it.v, 10) >= parseInt(v, 10));
+      if (i < 0) return;
+      if (!speech.open) setSpeech({ open: true, version: speech.version ?? cols[0]?.version.id ?? null });
+      startAt(i);
     },
     open() {
       setSpeech({ open: true, version: speech.version ?? cols[0]?.version.id ?? null });
@@ -330,6 +375,20 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             </select>
           </label>
           <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+              Keep screen on while listening
+              <span className="block font-normal normal-case tracking-normal">
+                Phones stop built-in voices when the screen locks; this keeps it awake (you can turn the brightness down).
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={settings.ttsKeepAwake}
+              onChange={(e) => updateSettings({ ttsKeepAwake: e.target.checked })}
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
+            />
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">Continue into the next chapter</span>
             <input
               type="checkbox"
@@ -346,5 +405,5 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
 
 /** Space under the text so the player bar never covers the last verses. */
 export function ReadAlongSpacer({ ra }: { ra: ReadAlong }) {
-  return ra.speech.open ? <div className="h-40" aria-hidden /> : null;
+  return ra.speech.open ? <div className="h-[60vh]" aria-hidden /> : null;
 }

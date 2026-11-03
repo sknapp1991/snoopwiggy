@@ -32,6 +32,11 @@ export type Settings = {
   ttsRate: number;
   ttsVoices: Record<string, string>;
   ttsContinue: boolean;
+  /** Keep the screen on while reading aloud (speech stops on most phones when the screen locks). */
+  ttsKeepAwake: boolean;
+  /** Highlight mode: tapping a verse paints it with this colour. */
+  highlightMode: boolean;
+  highlightColor: string;
 };
 
 export const FONT_MIN = 10;
@@ -70,6 +75,9 @@ const DEFAULTS: Settings = {
   ttsRate: 1,
   ttsVoices: {},
   ttsContinue: true,
+  ttsKeepAwake: true,
+  highlightMode: false,
+  highlightColor: "yellow",
 };
 
 const num = (v: unknown, lo: number, hi: number) =>
@@ -98,6 +106,9 @@ function read(): Settings {
       ttsRate: num(p.ttsRate, TTS_RATE_MIN, TTS_RATE_MAX) ?? 1,
       ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
       ttsContinue: p.ttsContinue !== false,
+      ttsKeepAwake: p.ttsKeepAwake !== false,
+      highlightMode: p.highlightMode === true,
+      highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
     };
   } catch {
     return DEFAULTS;

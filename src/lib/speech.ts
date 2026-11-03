@@ -8,6 +8,7 @@
  * verse; "resume" restarts that verse. Native pause/resume is unreliable on Android and in Chrome.
  */
 import { useSyncExternalStore } from "react";
+import { RAW_WORD } from "./search-text";
 
 export type SpeechItem = { v: string; text: string };
 
@@ -138,6 +139,45 @@ function chunks(text: string): string[] {
   return out;
 }
 
+/* ---------- word-by-word position (boundary events; not every voice sends them) ---------- */
+
+export type WordPos = { verse: string; word: number } | null;
+const wordSubs = new Set<(w: WordPos) => void>();
+/** Called with the index of the word being spoken in the current verse (null when it ends). */
+export function onWord(cb: (w: WordPos) => void) {
+  wordSubs.add(cb);
+  return () => {
+    wordSubs.delete(cb);
+  };
+}
+const emitWord = (w: WordPos) => wordSubs.forEach((cb) => cb(w));
+const countWords = (s: string) => (s.match(RAW_WORD) ?? []).length;
+
+/* ---------- keep the screen on while listening (Screen Wake Lock API) ---------- */
+
+let wakeLock: { release(): Promise<void> } | null = null;
+let wantWake = false;
+async function acquireWake() {
+  wantWake = true;
+  try {
+    const nav = navigator as Navigator & { wakeLock?: { request(t: "screen"): Promise<{ release(): Promise<void> }> } };
+    if (nav.wakeLock && !wakeLock && document.visibilityState === "visible") wakeLock = await nav.wakeLock.request("screen");
+  } catch {
+    /* not allowed (battery saver, iframe…) — reading still works */
+  }
+}
+function releaseWake() {
+  wantWake = false;
+  wakeLock?.release().catch(() => {});
+  wakeLock = null;
+}
+if (typeof document !== "undefined")
+  document.addEventListener("visibilitychange", () => {
+    // The browser drops the lock when the tab is hidden; take it again on return.
+    wakeLock = null;
+    if (wantWake && document.visibilityState === "visible") acquireWake();
+  });
+
 type Run = {
   items: SpeechItem[];
   index: number;
@@ -145,6 +185,7 @@ type Run = {
   voice: SpeechSynthesisVoice | null;
   rate: number;
   onDone: () => void;
+  keepAwake: boolean;
 };
 let run: Run | null = null;
 let token = 0;
@@ -156,15 +197,20 @@ function speakItem(r: Run, my: number) {
   const item = r.items[r.index];
   if (!item) {
     run = null;
+    emitWord(null);
     set({ status: "idle", verse: null });
+    releaseWake();
     r.onDone();
     return;
   }
   set({ verse: item.v, status: "playing", error: null });
+  emitWord(null);
   const parts = chunks(item.text);
   let p = 0;
+  let base = 0; // words spoken in earlier chunks of this verse
   const next = () => {
     if (my !== token) return;
+    if (p > 0) base += countWords(parts[p - 1]);
     if (p >= parts.length) {
       r.index++;
       speakItem(r, my);
@@ -174,6 +220,12 @@ function speakItem(r: Run, my: number) {
     u.lang = r.voice?.lang ?? r.lang;
     if (r.voice) u.voice = r.voice;
     u.rate = r.rate;
+    const chunkText = parts[p - 1];
+    const chunkBase = base;
+    u.onboundary = (e) => {
+      if (my !== token || e.name !== "word") return;
+      emitWord({ verse: item.v, word: chunkBase + countWords(chunkText.slice(0, e.charIndex)) });
+    };
     u.onend = next;
     u.onerror = (e) => {
       if (my !== token || e.error === "interrupted" || e.error === "canceled") return;
@@ -195,6 +247,7 @@ export function play(opts: {
   version: string;
   chapterKey: string;
   onDone: () => void;
+  keepAwake: boolean;
 }) {
   if (!speechSupported()) {
     set({ error: "This browser can’t read aloud." });
@@ -202,7 +255,16 @@ export function play(opts: {
   }
   const my = ++token;
   window.speechSynthesis.cancel();
-  run = { items: opts.items, index: Math.max(0, opts.start), lang: opts.lang, voice: opts.voice, rate: opts.rate, onDone: opts.onDone };
+  run = {
+    items: opts.items,
+    index: Math.max(0, opts.start),
+    lang: opts.lang,
+    voice: opts.voice,
+    rate: opts.rate,
+    onDone: opts.onDone,
+    keepAwake: opts.keepAwake,
+  };
+  if (opts.keepAwake) acquireWake();
   set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing" });
   const r = run;
   // Some browsers ignore speak() right after cancel(); a short delay avoids it.
@@ -216,6 +278,8 @@ export function currentIndex() {
 
 export function pause() {
   token++;
+  emitWord(null);
+  releaseWake();
   window.speechSynthesis?.cancel();
   current = null;
   set({ status: "paused" });
@@ -223,6 +287,8 @@ export function pause() {
 
 export function stop() {
   token++;
+  emitWord(null);
+  releaseWake();
   run = null;
   current = null;
   if (speechSupported()) window.speechSynthesis.cancel();

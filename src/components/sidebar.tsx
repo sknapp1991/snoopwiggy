@@ -6,6 +6,7 @@ import type { CatalogItem, Collection, Religion } from "@/lib/schema";
 import { ChevronDown, ChevronRight, CollapseIcon, ExpandIcon, SearchIcon } from "./icons";
 import { usePinch } from "./use-gestures";
 import { useReaderState } from "./use-reader-state";
+import { formatStamp, useStudy } from "@/lib/study";
 
 const norm = (s: string) =>
   s
@@ -286,6 +287,36 @@ function ItemRow({
     );
   }
   const isCurrentBook = current.work === item.work && current.book === item.id;
+  return <BookRow item={item} sub={sub} open={open} onToggle={onToggle} current={current} href={href} onNavigate={onNavigate} activeRef={activeRef} isCurrentBook={isCurrentBook} />;
+}
+
+function BookRow({
+  item,
+  sub,
+  open,
+  onToggle,
+  current,
+  href,
+  onNavigate,
+  activeRef,
+  isCurrentBook,
+}: {
+  item: CatalogItem;
+  sub?: string;
+  open: boolean;
+  onToggle: () => void;
+  current: BookRef;
+  href: (r: BookRef) => string;
+  onNavigate?: () => void;
+  activeRef: React.RefObject<HTMLAnchorElement | null>;
+  isCurrentBook: boolean;
+}) {
+  const { items } = useStudy();
+  // Studied chapters of this book: chapter → time studied.
+  const studied = new Map<number, number>();
+  const prefix = `studied:${item.work}/${item.id}/`;
+  for (const [id, it] of items) if (id.startsWith(prefix)) studied.set(it.chapter, it.createdAt);
+  const chapters = item.chapters!;
   return (
     <div>
       <button
@@ -301,15 +332,24 @@ function ItemRow({
         ) : (
           <ChevronRight width={16} height={16} className="shrink-0 text-faint" />
         )}
-        <span className="min-w-0">
+        <span className="min-w-0 flex-1">
           <span className="block truncate">{item.name}</span>
           {sub && <span className="block truncate text-xs font-normal text-faint">{sub}</span>}
         </span>
+        {studied.size > 0 && (
+          <span
+            className="shrink-0 rounded-full bg-accent-soft px-1.5 text-[11px] font-medium tabular-nums text-accent"
+            title={`${studied.size} of ${chapters} chapters studied`}
+          >
+            ✓ {studied.size === chapters ? "all" : studied.size}
+          </span>
+        )}
       </button>
       {open && (
         <div className="grid grid-cols-6 gap-1 py-1 pl-7 pr-1" role="list" aria-label={`${item.name} chapters`}>
-          {Array.from({ length: item.chapters }, (_, i) => i + 1).map((n) => {
+          {Array.from({ length: chapters }, (_, i) => i + 1).map((n) => {
             const active = isCurrentBook && current.chapter === n;
+            const done = studied.get(n);
             return (
               <Link
                 key={n}
@@ -318,11 +358,18 @@ function ItemRow({
                 href={href({ work: item.work!, book: item.id, chapter: n })}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-11 items-center justify-center rounded-md text-sm tabular-nums ${
-                  active ? "bg-accent font-semibold text-accent-ink" : "hover:bg-raised"
+                aria-label={done ? `${n} (studied ${formatStamp(done)})` : undefined}
+                title={done ? `Studied ${formatStamp(done)}` : undefined}
+                className={`relative flex h-11 items-center justify-center rounded-md text-sm tabular-nums ${
+                  active ? "bg-accent font-semibold text-accent-ink" : done ? "text-accent hover:bg-raised" : "hover:bg-raised"
                 }`}
               >
                 {n}
+                {done && (
+                  <span aria-hidden className={`absolute right-1 top-0.5 text-[10px] font-bold ${active ? "text-accent-ink" : "text-accent"}`}>
+                    ✓
+                  </span>
+                )}
               </Link>
             );
           })}

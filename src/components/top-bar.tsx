@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
-import { BookIcon, CloseIcon, LanguagesIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
+import { BookIcon, CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
+import { HighlightModeToggle } from "./highlight-mode";
+import { togglePanel, useUi } from "@/lib/ui-store";
 import { openSearch } from "./search-panel";
 import { FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
@@ -18,6 +20,7 @@ export function TopBar({
   setSheetOpen: (open: boolean) => void;
 }) {
   const { ref, entry, versions } = useReaderState();
+  const { panel } = useUi();
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-panel px-2 pt-[env(safe-area-inset-top)] md:px-4">
@@ -56,8 +59,22 @@ export function TopBar({
         <SearchIcon />
       </button>
 
+      <button
+        type="button"
+        onClick={() => togglePanel("study")}
+        aria-label="My Study"
+        aria-pressed={panel === "study"}
+        title="My Study: favorites, notes, highlights"
+        className={`flex h-11 w-11 items-center justify-center rounded-lg hover:bg-raised hover:text-ink desk:border desk:border-line ${
+          panel === "study" ? "bg-accent-soft text-accent" : "text-muted desk:bg-raised"
+        }`}
+      >
+        <LibraryIcon />
+      </button>
+
       {/* Desktop controls */}
       <div className="hidden items-center gap-2 desk:flex">
+        <HighlightModeToggle />
         <VersionsPopover count={versions.length} />
         <DisplayPopover />
         <ViewToggle />
@@ -99,6 +116,7 @@ export function TopBar({
                 <ThemeToggle />
               </div>
             </div>
+            <HighlightModeToggle full />
             <WidthControl />
             <LanguageColors />
             <div className="space-y-2">

@@ -16,7 +16,17 @@ export interface AIProvider {
   /** Shown to readers in the "AI translation" label, e.g. "Gemini 2.5 Flash". */
   readonly label: string;
   translateChapter(input: TranslateChapterInput): Promise<TranslatedVerse[]>;
+  /** Free-text answer (built-in Ask AI panel, feature-flagged). */
+  ask(system: string, user: string): Promise<string>;
 }
+
+/** System prompt for the built-in Ask AI panel. */
+export const ASK_SYSTEM = [
+  "You are a careful, neutral scholar of the world's scriptures helping someone study a passage in a reading app.",
+  "Explain meaning in context, the original-language words where useful, and how the translations the reader is viewing differ and why.",
+  "Present the main interpretations of different traditions fairly, and say plainly when something is a matter of interpretation or faith.",
+  "Be concise (under 300 words unless asked for more). Do not invent quotations or references.",
+].join("\n");
 
 export function translationPrompt(input: TranslateChapterInput) {
   const system = [
@@ -98,6 +108,23 @@ export class OllamaProvider implements AIProvider {
     if (buf.trim()) text += (JSON.parse(buf) as { message?: { content?: string } }).message?.content ?? "";
     return parseVerses(text, input);
   }
+  async ask(system: string, user: string) {
+    const res = await fetch(`${this.baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: this.model,
+        stream: false,
+        think: false,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+      }),
+    });
+    if (!res.ok) throw new Error(`Ollama ${res.status}`);
+    return ((await res.json()) as { message?: { content?: string } }).message?.content ?? "";
+  }
 }
 
 export class GeminiProvider implements AIProvider {
@@ -123,6 +150,21 @@ export class GeminiProvider implements AIProvider {
     if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
     return parseVerses(data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "", input);
+  }
+  async ask(system: string, user: string) {
+    if (!this.apiKey) throw new Error("GEMINI_API_KEY is not set");
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": this.apiKey },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: "user", parts: [{ text: user }] }],
+        generationConfig: { temperature: 0.4 },
+      }),
+    });
+    if (!res.ok) throw new Error(`Gemini ${res.status}`);
+    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
   }
 }
 

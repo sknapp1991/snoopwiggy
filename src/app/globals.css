@@ -134,3 +134,14 @@ dialog.sheet[open] {
   box-shadow: inset 3px 0 0 var(--accent);
   transition: background 200ms;
 }
+/* Read-along: the word being spoken (CSS Custom Highlight API) */
+::highlight(reading-word) {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+}
+.toast {
+  animation: toast-in 180ms ease-out;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
