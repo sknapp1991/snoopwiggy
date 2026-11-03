@@ -3,13 +3,20 @@ import Link from "next/link";
 import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
 import { BookIcon, CloseIcon, LanguagesIcon, MenuIcon, SlidersIcon } from "./icons";
-import { FontSizeControl, ThemeToggle, VersionChooser, ViewToggle } from "./controls";
+import { FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
 
-export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
+export function TopBar({
+  onOpenLibrary,
+  sheetOpen,
+  setSheetOpen,
+}: {
+  onOpenLibrary: () => void;
+  sheetOpen: boolean;
+  setSheetOpen: (open: boolean) => void;
+}) {
   const { ref, entry, versions } = useReaderState();
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-panel px-2 pt-[env(safe-area-inset-top)] md:px-4">
@@ -17,12 +24,12 @@ export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
         type="button"
         onClick={onOpenLibrary}
         aria-label="Open library"
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink desk:hidden"
       >
         <MenuIcon />
       </button>
 
-      <Link href="/" className="hidden items-center gap-2 pr-2 md:flex" aria-label="GlobalStudy home">
+      <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="GlobalStudy home">
         <BookIcon className="text-accent" />
         <span className="font-serif text-lg font-semibold tracking-tight">GlobalStudy</span>
       </Link>
@@ -31,16 +38,17 @@ export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
       <button
         type="button"
         onClick={onOpenLibrary}
-        className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold md:hidden"
+        className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold desk:hidden"
       >
         {entry ? chapterTitle(entry, ref.chapter) : "GlobalStudy"}
       </button>
 
-      <div className="hidden flex-1 md:block" />
+      <div className="hidden flex-1 desk:block" />
 
       {/* Desktop controls */}
-      <div className="hidden items-center gap-2 md:flex">
+      <div className="hidden items-center gap-2 desk:flex">
         <VersionsPopover count={versions.length} />
+        <DisplayPopover />
         <ViewToggle />
         <FontSizeControl />
         <ThemeToggle />
@@ -51,7 +59,7 @@ export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
         type="button"
         onClick={() => setSheetOpen(true)}
         aria-label="Reading settings"
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink desk:hidden"
       >
         <SlidersIcon />
       </button>
@@ -80,6 +88,8 @@ export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
                 <ThemeToggle />
               </div>
             </div>
+            <WidthControl />
+            <LanguageColors />
             <div className="space-y-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Versions &amp; languages</h3>
               <VersionChooser />
@@ -129,6 +139,45 @@ function VersionsPopover({ count }: { count: number }) {
           className="absolute right-0 top-full z-30 mt-2 max-h-[70vh] w-96 overflow-y-auto rounded-xl border border-line bg-panel p-3 shadow-xl"
         >
           <VersionChooser />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Desktop: reading width / column width and language colours. */
+function DisplayPopover() {
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (wrap.current && !wrap.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  return (
+    <div ref={wrap} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-label="Display options"
+        title="Width & colours"
+        onClick={() => setOpen((o) => !o)}
+        className="flex h-11 w-11 items-center justify-center rounded-lg border border-line bg-raised text-muted hover:text-ink"
+      >
+        <SlidersIcon />
+      </button>
+      {open && (
+        <div role="dialog" aria-label="Display options" className="absolute right-0 top-full z-30 mt-2 w-80 space-y-4 rounded-xl border border-line bg-panel p-4 shadow-xl">
+          <WidthControl />
+          <LanguageColors />
         </div>
       )}
     </div>

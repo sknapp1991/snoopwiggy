@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { catalog, readHref, type BookRef } from "@/lib/catalog";
 import type { CatalogItem, Collection, Religion } from "@/lib/schema";
-import { ChevronDown, ChevronRight, SearchIcon } from "./icons";
+import { ChevronDown, ChevronRight, CollapseIcon, ExpandIcon, SearchIcon } from "./icons";
+import { usePinch } from "./use-gestures";
 import { useReaderState } from "./use-reader-state";
 
 const norm = (s: string) =>
@@ -56,6 +57,21 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   const isOpen = (id: string) => toggled[id] ?? currentPath.has(id);
   const toggle = (id: string) => setToggled((t) => ({ ...t, [id]: !isOpen(id) }));
+  // Expand all opens every religion and collection (not every book's chapter grid);
+  // collapse all closes everything, including the current book.
+  const setAll = (open: boolean) => {
+    const next: Record<string, boolean> = {};
+    for (const r of catalog.religions) {
+      next[`r:${r.id}`] = open;
+      for (const c of r.collections) {
+        next[`c:${r.id}/${c.id}`] = open;
+        if (!open) for (const it of c.items) next[`b:${it.work}/${it.id}`] = false;
+      }
+    }
+    setToggled(next);
+  };
+  const treeRef = useRef<HTMLDivElement>(null);
+  usePinch(treeRef, (dir) => setAll(dir === "out"));
 
   useEffect(() => {
     activeRef.current?.scrollIntoView({ block: "nearest" });
@@ -83,7 +99,25 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </label>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-2">
+      {!q && (
+        <div className="flex gap-1 border-b border-line px-3 py-1.5">
+          <button
+            type="button"
+            onClick={() => setAll(true)}
+            className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg text-xs font-medium text-muted hover:bg-raised hover:text-ink"
+          >
+            <ExpandIcon width={16} height={16} /> Expand all
+          </button>
+          <button
+            type="button"
+            onClick={() => setAll(false)}
+            className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg text-xs font-medium text-muted hover:bg-raised hover:text-ink"
+          >
+            <CollapseIcon width={16} height={16} /> Collapse all
+          </button>
+        </div>
+      )}
+      <div ref={treeRef} className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-2 py-2">
         {q ? (
           <ul className="space-y-0.5">
             {jump && (

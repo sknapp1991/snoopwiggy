@@ -56,3 +56,12 @@ export const BookIcon = (p: P) => (
 export const CheckIcon = (p: P) => (
   <svg {...base(p)}><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
 );
+export const GripIcon = (p: P) => (
+  <svg {...base(p)}><circle cx="9" cy="6" r="1.2" /><circle cx="15" cy="6" r="1.2" /><circle cx="9" cy="12" r="1.2" /><circle cx="15" cy="12" r="1.2" /><circle cx="9" cy="18" r="1.2" /><circle cx="15" cy="18" r="1.2" /></svg>
+);
+export const ExpandIcon = (p: P) => (
+  <svg {...base(p)}><path d="M7 9l5-5 5 5M7 15l5 5 5-5" /></svg>
+);
+export const CollapseIcon = (p: P) => (
+  <svg {...base(p)}><path d="M7 4l5 5 5-5M7 20l5-5 5 5" /></svg>
+);

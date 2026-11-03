@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+/* "Desktop layout" (sidebar + full top bar): wide AND tall. A phone turned sideways is wide but short,
+   so it keeps the phone layout (library drawer, settings sheet) and gives all the width to columns. */
+@custom-variant desk (@media (min-width: 768px) and (min-height: 501px));
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

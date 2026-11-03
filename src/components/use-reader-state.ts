@@ -29,17 +29,18 @@ export function useReaderState() {
   const savedForWork = settings.versions[work];
 
   const versions = useMemo(() => {
+    // The user's own order (URL, else saved) is kept as-is; only the defaults use catalog order.
     const fromUrl = parseVersionParam(work, vParam);
-    if (fromUrl.length) return sortVersions(fromUrl);
+    if (fromUrl.length) return fromUrl;
     const saved = parseVersionParam(work, savedForWork?.join(","));
-    if (saved.length) return sortVersions(saved);
+    if (saved.length) return saved;
     const defaults = DEFAULT_VERSIONS[work] ?? versionsForWork(work).slice(0, 1).map((v) => v.id);
     return sortVersions(defaults);
   }, [work, vParam, savedForWork]);
 
   const setVersions = useCallback(
     (ids: string[]) => {
-      const next = sortVersions(ids);
+      const next = [...new Set(ids)];
       if (!next.length) return;
       updateSettings({ versions: { ...settings.versions, [work]: next } });
       router.replace(`${pathname}?v=${next.join(",")}${window.location.hash}`, { scroll: false });

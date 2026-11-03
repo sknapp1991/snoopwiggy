@@ -5,6 +5,8 @@ import { Modal } from "./modal";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
 import { CloseIcon } from "./icons";
+import { TabBar, useTabsSync } from "./tabs";
+import { useEdgeSwipes } from "./use-gestures";
 
 /** Keeps the <html> dark class in sync with the saved theme (and the OS when "system"). */
 function useThemeSync() {
@@ -21,13 +23,21 @@ function useThemeSync() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   useThemeSync();
+  useTabsSync();
+  // Phone: swipe in from the left edge for the library, up from the bottom edge for reading settings.
+  useEdgeSwipes(
+    () => setDrawerOpen(true),
+    () => setSheetOpen(true),
+  );
 
   return (
     <div className="flex h-dvh flex-col">
-      <TopBar onOpenLibrary={() => setDrawerOpen(true)} />
+      <TopBar onOpenLibrary={() => setDrawerOpen(true)} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} />
+      <TabBar />
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-72 shrink-0 border-r border-line bg-panel md:block lg:w-80">
+        <aside className="hidden w-72 shrink-0 border-r border-line bg-panel desk:block lg:w-80">
           <Sidebar />
         </aside>
         <main className="relative min-w-0 flex-1">{children}</main>
@@ -60,7 +70,7 @@ export function ShellFallback() {
     <div className="flex h-dvh flex-col">
       <div className="h-14 shrink-0 border-b border-line bg-panel" />
       <div className="flex min-h-0 flex-1">
-        <div className="hidden w-72 shrink-0 border-r border-line bg-panel md:block lg:w-80" />
+        <div className="hidden w-72 shrink-0 border-r border-line bg-panel desk:block lg:w-80" />
         <div className="flex-1" />
       </div>
     </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
+import { useSwipeToDismiss } from "./use-gestures";
 
 /**
  * Native <dialog> modal: focus trap, Esc to close and inert background come for free.
@@ -25,6 +26,8 @@ export function Modal({
     if (open && !d.open) d.showModal();
     if (!open && d.open) d.close();
   }, [open]);
+  // Swipe the drawer left / the sheet down to close it (in addition to ✕, Esc and tapping outside).
+  useSwipeToDismiss(ref, variant === "drawer" ? "left" : "down", onClose, open);
 
   const shape =
     variant === "drawer"

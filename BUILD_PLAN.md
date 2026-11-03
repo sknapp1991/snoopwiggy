@@ -129,3 +129,29 @@ For non-Bible texts, use the original language where it fits (Arabic Quran, Hebr
 - **Quick toggles in the top menu:** light/dark (already there), highlight mode on/off.
 - **Dhammapada under Hinduism:** the Dhammapada is a Buddhist scripture (Pali canon), so it stays under Buddhism. Instead, add "Related texts" cross-links between traditions (e.g. Dhammapada ↔ Bhagavad Gita, Upanishads) with a short note on shared ideas and differences.
 - **Jewish books not in the Christian Bible?** The Tanakh and the Protestant Old Testament contain the same books, ordered and divided differently (24 vs 39). Catholic and Orthodox Bibles add deuterocanonical books that are not in the Jewish canon. Other Jewish texts (Mishnah, Talmud, Midrash) are already planned under Judaism. Show the Tanakh order and the difference in the Torah/Prophets/Writings view.
+
+## UI requests round 2 (Nov 2026) — and how they'll be built
+
+Quick wins (Phase 3a, first):
+- Library **Expand all / Collapse all** buttons (whole tree, per religion, per collection).
+- **Pinch-to-zoom** in the reader changes text size; in the library, a pinch-in collapses all (bonus, after the buttons).
+- **Landscape on phones:** narrower columns so 2–3 versions fit side by side; portrait stays one column per swipe.
+- **Reorder versions:** drag handle plus ▲/▼ buttons (accessible). Order saved in the URL and settings.
+- **Column width / reading width** slider for Column and Stacked views, remembered per orientation.
+- **Minimum text size 10px** (was 14).
+- **Per-language text colours** in Stacked view (toggle, customizable palette, colour-blind-safe defaults).
+- **Swipe gestures:** swipe the library drawer or settings sheet to close it, edge-swipe to open the library, swipe up from the bottom to open settings.
+- **Reading tabs:** a row of tabs (Matthew 5 | Exodus 3 | …); new tab per book opened, swipe or tap to switch, ✕ to close, saved on the device.
+
+Bigger features:
+- **Full-text search** ("darkness"): build-time inverted index per version, sharded by word prefix as static files. Results grouped by religion → collection → book in collapsible sections, with counts, filters by version/language, and highlighted matches. Ties into the word-study panel.
+- **Audio read-along:** v1 uses the browser's built-in text-to-speech (Web Speech API): free, works for any language with an installed voice, and highlights the verse being read, with play/pause, speed and voice choice. Pick which column to listen to (e.g. read English + Spanish, listen in Spanish). v2: public-domain human recordings where they exist (e.g. LibriVox), verse-synced when timing data is available.
+
+Additional ideas (Claude):
+- Cross-references from the Treasury of Scripture Knowledge (public domain), shown per verse.
+- Red-letter words of Jesus (KJV red-letter data, public domain), toggleable.
+- Strong's concordance and Greek/Hebrew interlinear (public domain) to power word studies and cross-language word highlighting.
+- Gospel parallels view (the same event side by side in Matthew/Mark/Luke/John).
+- Share a verse (link with ?v= and #verse; optional image card).
+- Offline reading (PWA cache of recently read books) and reading plans / verse of the day.
+- Keyboard shortcuts on desktop (←/→ chapter, / search, t theme).

@@ -1,13 +1,23 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, type CSSProperties, type RefObject } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
 import { adjacentChapters, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
 import type { Verse, Version } from "@/lib/schema";
-import { useSettings, useViewMode } from "@/lib/settings";
+import {
+  FONT_MAX,
+  FONT_MIN,
+  languageColor,
+  PHONE_LANDSCAPE_QUERY,
+  updateSettings,
+  useMediaQuery,
+  useSettings,
+  useViewMode,
+  WIDE_QUERY,
+} from "@/lib/settings";
 import { ChevronLeft, ChevronRight } from "./icons";
 import { useReaderState } from "./use-reader-state";
 
@@ -16,8 +26,13 @@ type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 export function ReaderView() {
   const { ref, entry: book, versions } = useReaderState();
   const view = useViewMode();
-  const { fontSize } = useSettings();
+  const settings = useSettings();
+  const { fontSize } = settings;
+  const wide = useMediaQuery(WIDE_QUERY, true);
+  const landscape = useMediaQuery(PHONE_LANDSCAPE_QUERY, false);
   const router = useRouter();
+  const scroller = useRef<HTMLDivElement>(null);
+  usePinchToZoomText(scroller, fontSize);
 
   const valid = !!book && Number.isInteger(ref.chapter) && ref.chapter >= 1 && ref.chapter <= (book.chapters ?? 0);
   const keys = valid ? versions.map((v) => chapterKey(ref.work, v, ref.book, ref.chapter)) : [];
@@ -69,13 +84,29 @@ export function ReaderView() {
   if (!valid || !book) return <NotFound />;
 
   const title = chapterTitle(book, ref.chapter);
-  const style = { "--reader-size": `${fontSize}px` } as CSSProperties;
+  // Column width: phone portrait shows one column per swipe unless the user picked a width;
+  // phone landscape and desktop use the saved width (or a sensible default) so 2–3 columns fit.
+  const colMin = landscape
+    ? `${settings.colWidthLandscape ?? 14}rem`
+    : wide
+      ? `${settings.colWidth ?? 17}rem`
+      : settings.colWidth
+        ? `${settings.colWidth}rem`
+        : "85cqw";
+  const style = {
+    "--reader-size": `${fontSize}px`,
+    "--colmin": colMin,
+    "--stackw": `${settings.stackWidth ?? 48}rem`,
+  } as CSSProperties;
   const column = view === "column";
 
   return (
     <div
+      ref={scroller}
       style={style}
-      className={`@container absolute inset-0 overflow-auto overscroll-contain ${column ? "snap-x snap-mandatory md:snap-none" : ""}`}
+      className={`@container absolute inset-0 touch-pan-x touch-pan-y overflow-auto overscroll-contain ${
+        column ? "snap-x snap-mandatory desk:snap-none" : ""
+      }`}
     >
       <title>{`${title} · GlobalStudy`}</title>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
@@ -164,6 +195,7 @@ function contLabel(cont: string, chapter: number) {
 }
 
 function Cell({ verse, version, chapter, showNumber }: { verse: Verse | null; version: Version; chapter: number; showNumber: boolean }) {
+  const color = languageColor(useSettings(), version.language);
   if (!verse)
     return (
       <span className="text-faint" title="Not present in this version">
@@ -177,7 +209,7 @@ function Cell({ verse, version, chapter, showNumber }: { verse: Verse | null; ve
       </span>
     );
   return (
-    <span lang={version.language} dir={version.dir} className="reader-text block">
+    <span lang={version.language} dir={version.dir} className="reader-text block" style={{ color: color }}>
       {showNumber && (
         <sup
           className="mr-1 select-none font-sans text-[0.65em] font-semibold text-accent"
@@ -200,7 +232,7 @@ function ColumnView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
     <div
       role="table"
       aria-label="Parallel versions"
-      className="grid min-w-full [--colmin:85cqw] md:[--colmin:17rem]"
+      className="grid min-w-full"
       style={{ gridTemplateColumns: `repeat(${n}, minmax(var(--colmin), 1fr))` }}
     >
       <div role="row" className="contents">
@@ -255,7 +287,7 @@ function StackedView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
   const first = cols.find((c) => c.entry.status === "ok")?.entry;
   const chNum = first?.status === "ok" ? first.data.chapter : 0;
   return (
-    <div className="mx-auto max-w-3xl px-4 md:px-8">
+    <div className="mx-auto max-w-[var(--stackw)] px-4 md:px-8">
       {errors.map((c) => (
         <div key={c.version.id} className="mb-3 rounded-lg border border-line bg-raised px-3 py-2 text-sm">
           <VersionLabel version={c.version} compact /> <ColumnError col={c} inline />
@@ -388,4 +420,43 @@ export function ReaderFallback() {
       <Skeleton />
     </div>
   );
+}
+
+/**
+ * Two-finger pinch on the reading area changes the text size (instead of zooming the whole page).
+ * The new size is saved like the A−/A+ buttons.
+ */
+function usePinchToZoomText(ref: RefObject<HTMLDivElement | null>, fontSize: number) {
+  const size = useRef(fontSize);
+  useEffect(() => {
+    size.current = fontSize;
+  }, [fontSize]);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let start: { dist: number; size: number } | null = null;
+    const dist = (t: TouchList) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) start = { dist: dist(e.touches), size: size.current };
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!start || e.touches.length !== 2) return;
+      e.preventDefault(); // keep the browser from zooming the page
+      const next = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, start.size * (dist(e.touches) / start.dist))));
+      if (next !== size.current) updateSettings({ fontSize: next });
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) start = null;
+    };
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd);
+    el.addEventListener("touchcancel", onEnd);
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", onEnd);
+    };
+  }, [ref]);
 }
