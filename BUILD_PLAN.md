@@ -178,7 +178,17 @@ recordings through an <audio> element, with Media Session lock-screen controls (
   screen off) and the page follows.
 - **Serving:** production reads `/api/audio/...` (src/app/api/audio, Range requests for iPhone) from an R2 bucket
   bound as `AUDIO`; `.env.production` sets NEXT_PUBLIC_AUDIO_BASE=/api/audio. Local testing uses public/audio.
-- **Storage:** R2 free tier is 10 GB (≈7 complete voices at 40 kbps).
+- **Storage:** R2 free tier is 10 GB (≈7 complete voices at 40 kbps); beyond that ~$0.015/GB-month
+  (Skylar OK'd up to $3–5/month).
+- **First batch (agreed Nov 2026, `scripts/tts/batch.py`, Psalms/Gospels first):** WEB Heart + Michael,
+  KJV Emma + George, RVR Dora, LSG Siwis, Riveduta Sara, Bíblia Livre Dora, Greek Rapunzelina (Piper),
+  Vulgate read by Sara (Italian ≈ Church Latin).
+- **Voice licence checks (Nov 2026):** many Piper voices are fine-tuned from research-only or NC voices
+  (lessac = Blizzard research licence; ryan = CC BY-NC-SA), so only voices *trained from scratch* on
+  commercial-OK data are used. OK: el_GR-rapunzelina (CC0, from scratch). Not OK: ru_RU irina (unknown),
+  ruslan (CC BY-NC-SA), denis/dmitri (fine-tuned from lessac); he_IL saspeech (non-commercial);
+  de_DE kerstin (from ryan), thorsten (from lessac). Russian, Hebrew and German stay on device voices
+  until a clean voice is found (e.g. a Thorsten model trained from scratch, to verify).
 - **Needs from Skylar:** `npx wrangler login`, then approve creating the bucket `snoopwiggy-audio`, choose which
   voices to generate in full, and install espeak-ng for Spanish/French/Italian/Portuguese voices.
 
