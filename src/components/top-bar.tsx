@@ -167,8 +167,9 @@ function VersionsPopover({ count }: { count: number }) {
         <div
           role="dialog"
           aria-label="Versions and languages"
-          className="absolute right-0 top-full z-30 mt-2 max-h-[70vh] w-96 overflow-y-auto rounded-xl border border-line bg-panel p-3 shadow-xl"
+          className="absolute right-0 top-full z-30 mt-2 max-h-[70vh] w-96 space-y-4 overflow-y-auto rounded-xl border border-line bg-panel p-3 shadow-xl"
         >
+          <SavedSetups />
           <VersionChooser />
         </div>
       )}

@@ -628,11 +628,11 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             />
           </label>
           <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Show the version I’m listening to first</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Move the version I’m listening to first</span>
             <input
               type="checkbox"
-              checked={settings.ttsListenFirst}
-              onChange={(e) => updateSettings({ ttsListenFirst: e.target.checked })}
+              checked={settings.ttsMoveFirst}
+              onChange={(e) => updateSettings({ ttsMoveFirst: e.target.checked })}
               className="h-5 w-5 shrink-0 accent-[var(--accent)]"
             />
           </label>

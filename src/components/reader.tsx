@@ -28,6 +28,8 @@ import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
 import { openVerseMenu, toast } from "@/lib/ui-store";
 import { useSpeech } from "@/lib/speech";
+import { getPosition, savePosition } from "@/lib/reading-position";
+import { FirstTips } from "./first-tips";
 import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
 import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./use-chapter-swipe";
@@ -38,7 +40,7 @@ export function ReaderView() {
   const { ref, entry: book, versions: userVersions } = useReaderState();
   // While listening, the version being read can be shown first (the saved order is unchanged).
   const speechState = useSpeech();
-  const listenFirstOn = useSettings().ttsListenFirst;
+  const listenFirstOn = useSettings().ttsMoveFirst;
   const listenFirst =
     listenFirstOn && speechState.open && speechState.version && userVersions.includes(speechState.version)
       ? speechState.version
@@ -70,7 +72,16 @@ export function ReaderView() {
   const content = useRef<HTMLDivElement>(null);
   const [hint, setHint] = useState<SwipeHint>(null);
   const [idle, setIdle] = useState(true);
-  useScrollIdle(scroller, setIdle);
+  const chapterId = `${ref.work}/${ref.book}/${ref.chapter}`;
+  useScrollIdle(scroller, (isIdle) => {
+    setIdle(isIdle);
+    // Remember the first verse on screen, to come back to it later.
+    const sc = scroller.current;
+    if (!isIdle || !sc) return;
+    const top = sc.getBoundingClientRect().top + 48;
+    const el = [...sc.querySelectorAll<HTMLElement>("[id^='v'][data-v]")].find((x) => x.getBoundingClientRect().bottom > top);
+    if (el?.dataset.v) savePosition(chapterId, sc.scrollTop < 40 ? "1" : el.dataset.v);
+  });
   useChapterSwipe({
     scroller,
     content,
@@ -137,9 +148,20 @@ export function ReaderView() {
   const jumped = useRef("");
   useEffect(() => {
     if (!allLoaded || !rows.length) return;
-    const id = decodeURIComponent(window.location.hash.slice(1));
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    // No #verse in the link: go back to where you were in this chapter (if not the top).
+    const saved = hash ? null : getPosition(`${ref.work}/${ref.book}/${ref.chapter}`);
+    const id = hash || (saved && saved !== "1" ? `v${saved}` : "");
     const key = `${ref.work}/${ref.book}/${ref.chapter}#${id}`;
     if (!id || jumped.current === key) return;
+    if (!hash) {
+      const el = document.getElementById(id);
+      if (el) {
+        jumped.current = key;
+        el.scrollIntoView({ block: "start" });
+      }
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       jumped.current = key;
@@ -194,6 +216,7 @@ export function ReaderView() {
       <title>{`${title} · GlobalStudy`}</title>
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
+        <FirstTips />
         <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
 

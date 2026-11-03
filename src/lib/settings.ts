@@ -46,6 +46,8 @@ export type Settings = {
   versionColors: Record<string, string>;
   /** Open reading tabs ("bible/mat/5") and the active one. */
   tabs: string[];
+  /** Books by most recent use ("bible/mat"), to return to the last tab of a tradition. */
+  tabsRecent: string[];
   /** Read-along: speech rate (0.5–2), chosen voice per language (voiceURI), keep going into the next chapter. */
   ttsRate: number;
   ttsVoices: Record<string, string>;
@@ -54,8 +56,8 @@ export type Settings = {
   ttsContinue: boolean;
   /** Keep the screen on while reading aloud (speech stops on most phones when the screen locks). */
   ttsKeepAwake: boolean;
-  /** While listening, show the version being read first. */
-  ttsListenFirst: boolean;
+  /** While listening, move the version being read to the front (off: columns stay where they are). */
+  ttsMoveFirst: boolean;
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
   highlightColor: string;
@@ -101,12 +103,13 @@ const DEFAULTS: Settings = {
   palette: {},
   versionColors: {},
   tabs: [],
+  tabsRecent: [],
   ttsRate: 1,
   ttsVoices: {},
   ttsRecorded: {},
   ttsContinue: true,
   ttsKeepAwake: true,
-  ttsListenFirst: true,
+  ttsMoveFirst: false,
   highlightMode: false,
   highlightColor: "yellow",
   chapterSwipe: "one",
@@ -138,12 +141,13 @@ function read(): Settings {
       palette: p.palette && typeof p.palette === "object" ? p.palette : {},
       versionColors: p.versionColors && typeof p.versionColors === "object" ? p.versionColors : {},
       tabs: Array.isArray(p.tabs) ? p.tabs.filter((t): t is string => typeof t === "string").slice(0, MAX_TABS) : [],
+      tabsRecent: Array.isArray(p.tabsRecent) ? p.tabsRecent.filter((t): t is string => typeof t === "string").slice(0, 40) : [],
       ttsRate: num(p.ttsRate, TTS_RATE_MIN, TTS_RATE_MAX) ?? 1,
       ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
       ttsRecorded: p.ttsRecorded && typeof p.ttsRecorded === "object" ? p.ttsRecorded : {},
       ttsContinue: p.ttsContinue !== false,
       ttsKeepAwake: p.ttsKeepAwake !== false,
-      ttsListenFirst: p.ttsListenFirst !== false,
+      ttsMoveFirst: (p as { ttsMoveFirst?: unknown }).ttsMoveFirst === true,
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
