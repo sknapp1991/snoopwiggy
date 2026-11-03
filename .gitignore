@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# GlobalStudy
+# downloaded source archives (re-created by scripts/import-*.ts)
+/data/raw/
+# server-side AI translation cache (Phase 2)
+/.cache/

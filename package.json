@@ -1,26 +1,36 @@
 {
-  "name": "scaffold-tmp",
+  "name": "globalstudy",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:lan": "next dev -H 0.0.0.0",
+    "import:kjv": "tsx scripts/import-ebible.ts kjv",
+    "import:web": "tsx scripts/import-ebible.ts web",
+    "import:rvr1909": "tsx scripts/import-ebible.ts rvr1909",
+    "import:all": "npm run import:kjv && npm run import:web && npm run import:rvr1909",
+    "validate": "tsx scripts/validate-data.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "16.4.4",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@tailwindcss/turbopack": "4.3.4",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.4.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "fflate": "0.8.3",
+    "tailwindcss": "4.3.4",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
   }
 }

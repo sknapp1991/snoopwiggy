@@ -1,0 +1,214 @@
+{
+  "$comment": "Library tree + version metadata. Hand-maintained. Scripture text lives in data/texts/<work>/<version>/<book>/<chapter>.json and is produced only by scripts/import-*.ts.",
+  "works": [
+    { "id": "bible", "name": "Holy Bible", "versification": "eng" }
+  ],
+  "versions": [
+    {
+      "id": "kjv",
+      "work": "bible",
+      "abbr": "KJV",
+      "name": "King James Version",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1769,
+      "yearNote": "1611 translation, 1769 Oxford standard text",
+      "translator": "Translators commissioned by King James I",
+      "license": "Public Domain (outside the United Kingdom)",
+      "licenseNote": "In the UK the KJV is under Crown letters patent (printing rights held by Cambridge University Press, Oxford University Press and Collins). FLAG: get UK legal review before a commercial UK launch.",
+      "attribution": "King James Version text courtesy of the CrossWire Bible Society and eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=eng-kjv",
+      "licensed": false,
+      "versification": "eng",
+      "import": { "provider": "ebible", "id": "eng-kjv", "stripBrackets": true }
+    },
+    {
+      "id": "web",
+      "work": "bible",
+      "abbr": "WEB",
+      "name": "World English Bible",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 2020,
+      "yearNote": "2020 stable text edition",
+      "translator": "eBible.org (Michael Paul Johnson, editor) and volunteers",
+      "license": "Public Domain",
+      "licenseNote": "\"World English Bible\" is a trademark of eBible.org. The text is shown unaltered; if it is ever changed, it must not be called the World English Bible.",
+      "attribution": "World English Bible (public domain), eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=engwebp",
+      "licensed": false,
+      "versification": "eng",
+      "import": { "provider": "ebible", "id": "engwebp", "stripBrackets": false }
+    },
+    {
+      "id": "rvr1909",
+      "work": "bible",
+      "abbr": "RVR 1909",
+      "name": "Reina-Valera 1909",
+      "language": "es",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1909,
+      "yearNote": "Reina 1569, Valera 1602, revised 1909",
+      "translator": "Casiodoro de Reina; revised by Cipriano de Valera (1909 revision)",
+      "license": "Public Domain",
+      "licenseNote": "",
+      "attribution": "Santa Biblia — Reina Valera 1909 (dominio público), eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=spaRV1909",
+      "licensed": false,
+      "versification": "eng",
+      "import": { "provider": "ebible", "id": "spaRV1909", "stripBrackets": true }
+    }
+  ],
+  "religions": [
+    {
+      "id": "christianity",
+      "name": "Christianity",
+      "collections": [
+        {
+          "id": "ot",
+          "name": "Old Testament",
+          "items": [
+            { "id": "gen", "name": "Genesis", "work": "bible", "chapters": 50 },
+            { "id": "exo", "name": "Exodus", "work": "bible", "chapters": 40 },
+            { "id": "lev", "name": "Leviticus", "work": "bible", "chapters": 27 },
+            { "id": "num", "name": "Numbers", "work": "bible", "chapters": 36 },
+            { "id": "deu", "name": "Deuteronomy", "work": "bible", "chapters": 34 },
+            { "id": "jos", "name": "Joshua", "work": "bible", "chapters": 24 },
+            { "id": "jdg", "name": "Judges", "work": "bible", "chapters": 21 },
+            { "id": "rut", "name": "Ruth", "work": "bible", "chapters": 4 },
+            { "id": "1sa", "name": "1 Samuel", "work": "bible", "chapters": 31 },
+            { "id": "2sa", "name": "2 Samuel", "work": "bible", "chapters": 24 },
+            { "id": "1ki", "name": "1 Kings", "work": "bible", "chapters": 22 },
+            { "id": "2ki", "name": "2 Kings", "work": "bible", "chapters": 25 },
+            { "id": "1ch", "name": "1 Chronicles", "work": "bible", "chapters": 29 },
+            { "id": "2ch", "name": "2 Chronicles", "work": "bible", "chapters": 36 },
+            { "id": "ezr", "name": "Ezra", "work": "bible", "chapters": 10 },
+            { "id": "neh", "name": "Nehemiah", "work": "bible", "chapters": 13 },
+            { "id": "est", "name": "Esther", "work": "bible", "chapters": 10 },
+            { "id": "job", "name": "Job", "work": "bible", "chapters": 42 },
+            { "id": "psa", "name": "Psalms", "work": "bible", "chapters": 150 },
+            { "id": "pro", "name": "Proverbs", "work": "bible", "chapters": 31 },
+            { "id": "ecc", "name": "Ecclesiastes", "work": "bible", "chapters": 12 },
+            { "id": "sng", "name": "Song of Solomon", "work": "bible", "chapters": 8 },
+            { "id": "isa", "name": "Isaiah", "work": "bible", "chapters": 66 },
+            { "id": "jer", "name": "Jeremiah", "work": "bible", "chapters": 52 },
+            { "id": "lam", "name": "Lamentations", "work": "bible", "chapters": 5 },
+            { "id": "ezk", "name": "Ezekiel", "work": "bible", "chapters": 48 },
+            { "id": "dan", "name": "Daniel", "work": "bible", "chapters": 12 },
+            { "id": "hos", "name": "Hosea", "work": "bible", "chapters": 14 },
+            { "id": "jol", "name": "Joel", "work": "bible", "chapters": 3 },
+            { "id": "amo", "name": "Amos", "work": "bible", "chapters": 9 },
+            { "id": "oba", "name": "Obadiah", "work": "bible", "chapters": 1 },
+            { "id": "jon", "name": "Jonah", "work": "bible", "chapters": 4 },
+            { "id": "mic", "name": "Micah", "work": "bible", "chapters": 7 },
+            { "id": "nam", "name": "Nahum", "work": "bible", "chapters": 3 },
+            { "id": "hab", "name": "Habakkuk", "work": "bible", "chapters": 3 },
+            { "id": "zep", "name": "Zephaniah", "work": "bible", "chapters": 3 },
+            { "id": "hag", "name": "Haggai", "work": "bible", "chapters": 2 },
+            { "id": "zec", "name": "Zechariah", "work": "bible", "chapters": 14 },
+            { "id": "mal", "name": "Malachi", "work": "bible", "chapters": 4 }
+          ]
+        },
+        {
+          "id": "nt",
+          "name": "New Testament",
+          "items": [
+            { "id": "mat", "name": "Matthew", "work": "bible", "chapters": 28 },
+            { "id": "mrk", "name": "Mark", "work": "bible", "chapters": 16 },
+            { "id": "luk", "name": "Luke", "work": "bible", "chapters": 24 },
+            { "id": "jhn", "name": "John", "work": "bible", "chapters": 21 },
+            { "id": "act", "name": "Acts", "work": "bible", "chapters": 28 },
+            { "id": "rom", "name": "Romans", "work": "bible", "chapters": 16 },
+            { "id": "1co", "name": "1 Corinthians", "work": "bible", "chapters": 16 },
+            { "id": "2co", "name": "2 Corinthians", "work": "bible", "chapters": 13 },
+            { "id": "gal", "name": "Galatians", "work": "bible", "chapters": 6 },
+            { "id": "eph", "name": "Ephesians", "work": "bible", "chapters": 6 },
+            { "id": "php", "name": "Philippians", "work": "bible", "chapters": 4 },
+            { "id": "col", "name": "Colossians", "work": "bible", "chapters": 4 },
+            { "id": "1th", "name": "1 Thessalonians", "work": "bible", "chapters": 5 },
+            { "id": "2th", "name": "2 Thessalonians", "work": "bible", "chapters": 3 },
+            { "id": "1ti", "name": "1 Timothy", "work": "bible", "chapters": 6 },
+            { "id": "2ti", "name": "2 Timothy", "work": "bible", "chapters": 4 },
+            { "id": "tit", "name": "Titus", "work": "bible", "chapters": 3 },
+            { "id": "phm", "name": "Philemon", "work": "bible", "chapters": 1 },
+            { "id": "heb", "name": "Hebrews", "work": "bible", "chapters": 13 },
+            { "id": "jas", "name": "James", "work": "bible", "chapters": 5 },
+            { "id": "1pe", "name": "1 Peter", "work": "bible", "chapters": 5 },
+            { "id": "2pe", "name": "2 Peter", "work": "bible", "chapters": 3 },
+            { "id": "1jn", "name": "1 John", "work": "bible", "chapters": 5 },
+            { "id": "2jn", "name": "2 John", "work": "bible", "chapters": 1 },
+            { "id": "3jn", "name": "3 John", "work": "bible", "chapters": 1 },
+            { "id": "jud", "name": "Jude", "work": "bible", "chapters": 1 },
+            { "id": "rev", "name": "Revelation", "work": "bible", "chapters": 22 }
+          ]
+        },
+        {
+          "id": "apocrypha",
+          "name": "Apocrypha & Deuterocanon",
+          "items": [
+            { "id": "tob", "name": "Tobit", "status": "coming-soon" },
+            { "id": "jdt", "name": "Judith", "status": "coming-soon" },
+            { "id": "wis", "name": "Wisdom of Solomon", "status": "coming-soon" },
+            { "id": "sir", "name": "Sirach", "status": "coming-soon" },
+            { "id": "bar", "name": "Baruch", "status": "coming-soon" },
+            { "id": "1ma", "name": "1 Maccabees", "status": "coming-soon" },
+            { "id": "2ma", "name": "2 Maccabees", "status": "coming-soon" },
+            { "id": "1en", "name": "1 Enoch", "status": "coming-soon" },
+            { "id": "gth", "name": "Gospel of Thomas", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "judaism",
+      "name": "Judaism",
+      "collections": [
+        { "id": "torah", "name": "Torah (Pentateuch)", "items": [ { "id": "torah", "name": "Torah — JPS 1917 & Hebrew", "status": "coming-soon" } ] },
+        { "id": "neviim", "name": "Prophets (Nevi'im)", "items": [ { "id": "neviim", "name": "Nevi'im", "status": "coming-soon" } ] },
+        { "id": "ketuvim", "name": "Writings (Ketuvim)", "items": [ { "id": "ketuvim", "name": "Ketuvim", "status": "coming-soon" } ] },
+        { "id": "mishnah", "name": "Mishnah", "items": [ { "id": "mishnah", "name": "Mishnah", "status": "coming-soon" } ] },
+        { "id": "talmud", "name": "Talmud", "items": [ { "id": "talmud", "name": "Talmud", "status": "coming-soon" } ] }
+      ]
+    },
+    {
+      "id": "islam",
+      "name": "Islam",
+      "collections": [
+        { "id": "quran", "name": "Quran", "items": [ { "id": "quran", "name": "The Quran", "status": "coming-soon" } ] },
+        { "id": "hadith", "name": "Hadith", "items": [ { "id": "hadith", "name": "Hadith", "status": "coming-soon" } ] }
+      ]
+    },
+    {
+      "id": "hinduism",
+      "name": "Hinduism",
+      "collections": [
+        { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "status": "coming-soon" } ] },
+        { "id": "mahabharata", "name": "Mahabharata", "items": [ { "id": "mahabharata", "name": "Mahabharata", "status": "coming-soon" } ] },
+        { "id": "ramayana", "name": "Ramayana", "items": [ { "id": "ramayana", "name": "Ramayana", "status": "coming-soon" } ] },
+        { "id": "upanishads", "name": "Upanishads", "items": [ { "id": "upanishads", "name": "Upanishads", "status": "coming-soon" } ] },
+        { "id": "vedas", "name": "Vedas", "items": [ { "id": "vedas", "name": "Vedas", "status": "coming-soon" } ] }
+      ]
+    },
+    {
+      "id": "yoga",
+      "name": "Yoga",
+      "collections": [
+        { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "items": [ { "id": "yoga-sutras", "name": "Yoga Sutras", "status": "coming-soon" } ] },
+        { "id": "hyp", "name": "Hatha Yoga Pradipika", "items": [ { "id": "hyp", "name": "Hatha Yoga Pradipika", "status": "coming-soon" } ] }
+      ]
+    },
+    {
+      "id": "buddhism",
+      "name": "Buddhism",
+      "collections": [
+        { "id": "dhammapada", "name": "Dhammapada", "items": [ { "id": "dhammapada", "name": "Dhammapada", "status": "coming-soon" } ] },
+        { "id": "sutta", "name": "Sutta Pitaka", "items": [ { "id": "sutta", "name": "Sutta Pitaka", "status": "coming-soon" } ] },
+        { "id": "vinaya", "name": "Vinaya Pitaka", "items": [ { "id": "vinaya", "name": "Vinaya Pitaka", "status": "coming-soon" } ] },
+        { "id": "abhidhamma", "name": "Abhidhamma Pitaka", "items": [ { "id": "abhidhamma", "name": "Abhidhamma Pitaka", "status": "coming-soon" } ] }
+      ]
+    }
+  ]
+}

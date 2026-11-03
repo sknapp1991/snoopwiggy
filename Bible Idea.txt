@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobalStudy Live Foundation v1 - Live Translation & Bible Study</title>
+ 
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              light: '#2563eb',
+              dark: '#3b82f6'
+            },
+            amber: {
+              50: '#fdfbeb',
+              100: '#fef3c7',
+              500: '#d97706',
+              600: '#b45309',
+              700: '#78350f',
+              900: '#451a03',
+            }
+          }
+        }
+      }
+    }
+  </script>
+ 
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+  <!-- Google Fonts (Inter & Playfair Display for academic biblical look) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+ 
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+ 
+  <!-- Babel compiler for inline JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .serif-font {
+      font-family: 'Playfair Display', serif;
+    }
+    .loader {
+      border: 2px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+    }
+    .loader-white {
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: white;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+   
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+    .dark ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+    /* Custom highlight styles for Thesaurus interaction */
+    .thesaurus-word {
+      transition: all 0.2s ease;
+      border-bottom: 1px dashed transparent;
+    }
+    .thesaurus-active .thesaurus-word {
+      border-bottom-color: #f59e0b;
+      cursor: pointer;
+    }
+    .thesaurus-active .thesaurus-word:hover {
+      background-color: #fef3c7; /* yellow-100 */
+      color: #78350f; /* amber-900 */
+      border-bottom-color: #d97706; /* amber-500 */
+      border-radius: 0.125rem;
+    }
+    .dark .thesaurus-active .thesaurus-word:hover {
+      background-color: #78350f; /* amber-900 */
+      color: #fef3c7; /* yellow-100 */
+      border-bottom-color: #fbbf24; /* amber-400 */
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 h-screen w-screen m-0 p-0 overflow-hidden transition-colors duration-200">
+  <div id="root" class="w-full h-full"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Helper function to return beautiful, click-interactive backup passages for offline/error fallbacks
+    const getLocalFallbackVerses = (book, chapter) => {
+      const lowerBook = book.toLowerCase();
+      if (lowerBook === 'genesis' && chapter === 1) {
+        return [
+          { verse: 1, text: "In the beginning God created the heavens and the earth." },
+          { verse: 2, text: "The earth was formless and empty. Darkness was on the face of the deep." },
+          { verse: 3, text: "God said, 'Let there be light,' and there was light." },
+          { verse: 4, text: "God saw the light, and saw that it was good. God divided the light from the darkness." },
+          { verse: 5, text: "God called the light Day, and the darkness he called Night. There was evening and there was morning, one day." }
+        ];
+      }
+      if (lowerBook === 'john' && chapter === 1) {
+        return [
+          { verse: 1, text: "In the beginning was the Word, and the Word was with God, and the Word was God." },
+          { verse: 2, text: "The same was in the beginning with God." },
+          { verse: 3, text: "All things were made through him. Without him was not anything made that has been made." },
+          { verse: 4, text: "In him was life, and the life was the light of men." },
+          { verse: 5, text: "The light shines in the darkness, and the darkness hasn't overcome it." }
+        ];
+      }
+      if (lowerBook === 'psalms' && chapter === 23) {
+        return [
+          { verse: 1, text: "Yahweh is my shepherd: I shall not lack." },
+          { verse: 2, text: "He makes me lie down in green pastures. He leads me beside still waters." },
+          { verse: 3, text: "He restores my soul. He guides me in the paths of righteousness for his name's sake." },
+          { verse: 4, text: "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me." },
+          { verse: 5, text: "You prepare a table before me in the presence of my enemies. You anoint my head with oil. My cup runs over." }
+        ];
+      }
+      return [
+        { verse: 1, text: `Welcome to the historical study framework of the book of ${book}, chapter ${chapter}.` },
+        { verse: 2, text: "This chapter has been beautifully loaded via our local safe-mode manuscript fallback system." },
+        { verse: 3, text: "You can click on any individual word here to instantly test the interactive bilingual thesaurus popup." },
+        { verse: 4, text: "The translation overlays will also translate these passages on-the-fly into your chosen active languages." },
+        { verse: 5, text: "Verify your network connection or try selecting standard public domain versions like WEB or KJV." }
+      ];
+    };
+
+    // Supported target languages for comparison & inline translation
+    const LANGUAGES = [
+      { code: 'es', name: 'Spanish', icon: '🇪🇸' },
+      { code: 'la', name: 'Latin', icon: '🇻🇦' },
+      { code: 'fr', name: 'French', icon: '🇫🇷' },
+      { code: 'zh', name: 'Mandarin', icon: '🇨🇳' },
+      { code: 'ru', name: 'Russian', icon: '🇷🇺' },
+      { code: 'el', name: 'Greek', icon: '🇬🇷' },
+      { code: 'it', name: 'Italian', icon: '🇮🇹' },
+      { code: 'pt', name: 'Portuguese', icon: '🇵🇹' },
+      { code: 'de', name: 'German', icon: '🇩🇪' },
+      { code: 'ja', name: 'Japanese', icon: '🇯🇵' },
+      { code: 'ar', name: 'Arabic', icon: '🇸🇦' },
+      { code: 'hi', name: 'Hindi', icon: '🇮🇳' }
+    ];
+
+    // Common European Framework of Reference (CEFR) thresholds
+    const CEFR_LEVELS = [
+      { code: 'ALL', label: 'Full Text' },
+      { code: 'A1', label: 'A1+' },
+      { code: 'A2', label: 'A2+' },
+      { code: 'B1', label: 'B1+' },
+      { code: 'B2', label: 'B2+' },
+      { code: 'C1', label: 'C1+' },
+      { code: 'C2', label: 'C2' }
+    ];
+
+    // Fully public domain and open-source Bible translation options
+    const BIBLE_TRANSLATIONS = [
+      { code: 'WEB', name: 'World English Bible', desc: 'Modern English, fully public domain' },
+      { code: 'KJV', name: 'King James Version', desc: 'Classic 1611 literary standard, public domain' },
+      { code: 'ASV', name: 'American Standard Version', desc: '1901 highly literal translation, public domain' },
+      { code: 'YLT', name: 'Young\'s Literal Translation', desc: '1862 strictly grammatical literalism, public domain' },
+      { code: 'BBE', name: 'Bible in Basic English', desc: '1949 simple vocabulary design, public domain' },
+      { code: 'DBY', name: 'Darby Bible', desc: '1890 translation by J.N. Darby, public domain' },
+      { code: 'WNT', name: 'Weymouth New Testament', desc: '1903 modern speech New Testament, public domain' }
+    ];
+
+    const BIBLE_CATEGORIES = [
+      {
+        name: "Pentateuch (Law)",
+        testament: "ot",
+        books: [
+          { name: "Genesis", chapters: 50 },
+          { name: "Exodus", chapters: 40 },
+          { name: "Leviticus", chapters: 27 },
+          { name: "Numbers", chapters: 36 },
+          { name: "Deuteronomy", chapters: 34 }
+        ]
+      },
+      {
+        name: "Historical Books",
+        testament: "ot",
+        books: [
+          { name: "Joshua", chapters: 24 },
+          { name: "Judges", chapters: 21 },
+          { name: "Ruth", chapters: 4 },
+          { name: "1 Samuel", chapters: 31 },
+          { name: "2 Samuel", chapters: 24 },
+          { name: "1 Kings", chapters: 22 },
+          { name: "2 Kings", chapters: 25 },
+          { name: "1 Chronicles", chapters: 29 },
+          { name: "2 Chronicles", chapters: 36 },
+          { name: "Ezra", chapters: 10 },
+          { name: "Nehemiah", chapters: 13 },
+          { name: "Esther", chapters: 10 }
+        ]
+      },
+      {
+        name: "Poetry & Wisdom",
+        testament: "ot",
+        books: [
+          { name: "Job", chapters: 42 },
+          { name: "Psalms", chapters: 150 },
+          { name: "Proverbs", chapters: 31 },
+          { name: "Ecclesiastes", chapters: 12 },
+          { name: "Song of Solomon", chapters: 8 }
+        ]
+      },
+      {
+        name: "Major Prophets",
+        testament: "ot",
+        books: [
+          { name: "Isaiah", chapters: 66 },
+          { name: "Jeremiah", chapters: 52 },
+          { name: "Lamentations", chapters: 5 },
+          { name: "Ezekiel", chapters: 48 },
+          { name: "Daniel", chapters: 12 }
+        ]
+      },
+      {
+        name: "Minor Prophets",
+        testament: "ot",
+        books: [
+          { name: "Hosea", chapters: 14 },
+          { name: "Joel", chapters: 3 },
+          { name: "Amos", chapters: 9 },
+          { name: "Obadiah", chapters: 1 },
+          { name: "Jonah", chapters: 4 },
+          { name: "Micah", chapters: 7 },
+          { name: "Nahum", chapters: 3 },
+          { name: "Habakkuk", chapters: 3 },
+          { name: "Zephaniah", chapters: 3 },
+          { name: "Haggai", chapters: 2 },
+          { name: "Zechariah", chapters: 14 },
+          { name: "Malachi", chapters: 4 }
+        ]
+      },
+      {
+        name: "Gospels & Acts",
+        testament: "nt",
+        books: [
+          { name: "Matthew", chapters: 28 },
+          { name: "Mark", chapters: 16 },
+          { name: "Luke", chapters: 24 },
+          { name: "John", chapters: 21 },
+          { name: "Acts", chapters: 28 }
+        ]
+      },
+      {
+        name: "Pauline Epistles",
+        testament: "nt",
+        books: [
+          { name: "Romans", chapters: 16 },
+          { name: "1 Corinthians", chapters: 16 },
+          { name: "2 Corinthians", chapters: 13 },
+          { name: "Galatians", chapters: 6 },
+          { name: "Ephesians", chapters: 6 },
+          { name: "Philippians", chapters: 4 },
+          { name: "Colossians", chapters: 4 },
+          { name: "1 Thessalonians", chapters: 5 },
+          { name: "2 Thessalonians", chapters: 3 },
+          { name: "1 Timothy", chapters: 6 },
+          { name: "2 Timothy", chapters: 4 },
+          { name: "Titus", chapters: 3 },
+          { name: "Philemon", chapters: 1 }
+        ]
+      },
+      {
+        name: "General Epistles",
+        testament: "nt",
+        books: [
+          { name: "Hebrews", chapters: 13 },
+          { name: "James", chapters: 5 },
+          { name: "1 Peter", chapters: 5 },
+          { name: "2 Peter", chapters: 3 },
+          { name: "1 John", chapters: 5 },
+          { name: "2 John", chapters: 1 },
+          { name: "3 John", chapters: 1 },
+          { name: "Jude", chapters: 1 }
+        ]
+      },
+      {
+        name: "Apocalyptic Literature",
+        testament: "nt",
+        books: [
+          { name: "Revelation", chapters: 22 }
+        ]
+      },
+      {
+        name: "Deuterocanon & Apocrypha",
+        testament: "apocrypha",
+        books: [
+          { name: "Tobit", chapters: 14 },
+          { name: "Judith", chapters: 16 },
+          { name: "Wisdom of Solomon", chapters: 19 },
+          { name: "Sirach (Ecclesiasticus)", chapters: 51 },
+          { name: "Baruch", chapters: 6 },
+          { name: "1 Maccabees", chapters: 16 },
+          { name: "2 Maccabees", chapters: 15 },
+          { name: "1 Enoch", chapters: 108 },
+          { name: "Gospel of Thomas", chapters: 1 }
+        ]
+      }
+    ];
+
+    const callGeminiAPI = async (prompt, systemInstruction = "", responseSchema = null) => {
+      let delay = 1000;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const apiKey = ""; // Canvas auto-injects this key at runtime
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+         
+          const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+          };
+          if (systemInstruction) {
+            payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+          }
+          if (responseSchema) {
+            payload.generationConfig = {
+              responseMimeType: "application/json",
+              responseSchema: responseSchema
+            };
+          }
+
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            if (response.status === 429) {
+              console.warn(`Rate limited (429). Retrying in ${delay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              delay *= 2;
+              continue;
+            }
+            throw new Error(`Failed to generate content: Status ${response.status}`);
+          }
+
+          const result = await response.json();
+          if (result.candidates && result.candidates.length > 0) {
+            return result.candidates[0].content.parts[0].text.trim();
+          }
+          throw new Error("Invalid response format");
+        } catch (error) {
+          console.error(`Gemini API Error (Attempt ${attempt + 1}):`, error);
+          if (attempt === 3) return null;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2;
+        }
+      }
+      return null;
+    };
+
+    const translateText = async (text, targetLangName, level, style) => {
+      let systemPrompt = "";
+      if (level === 'ALL') {
+        systemPrompt = `You are an expert translator. Translate the given text into ${targetLangName}. Provide ONLY the translation. Do not include quotes, explanations, or the original text.`;
+      } else {
+        if (style === 'inverted') {
+          systemPrompt = `You are an expert language tutor. The target language is ${targetLangName}. The user is reading the text in English, but wants to learn vocabulary at the CEFR ${level} level or higher. Rewrite the provided text exactly as it is (in English), but whenever you encounter a word or phrase that represents a ${level} or higher difficulty concept, append its ${targetLangName} translation immediately after it in brackets. Example format: "This is a sophisticated [sofisticado] sentence." If there are no words at ${level} or higher, output the exact original text as is. Provide ONLY the final text response without quotes or explanations.`;
+        } else {
+          systemPrompt = `You are an expert language tutor. The target language is ${targetLangName}. The user wants to read the text fully in ${targetLangName}, but needs help with vocabulary at the CEFR ${level} level or higher. Translate the entire provided text fully into ${targetLangName}. Then, within your ${targetLangName} translation, whenever you use a word or phrase that represents a ${level} or higher difficulty concept, append its original English translation immediately after it in brackets. Example format: "Esta es una oración sofisticada [sophisticated]." Provide ONLY the final text response without quotes or explanations.`;
+        }
+      }
+      return await callGeminiAPI(`Text to translate: ${text}`, systemPrompt);
+    };
+
+    const fetchThesaurusData = async (word, targetLangName) => {
+      const schema = {
+        type: "OBJECT",
+        properties: {
+          translation: { type: "STRING" },
+          synonyms: { type: "ARRAY", items: { type: "STRING" } },
+          antonyms: { type: "ARRAY", items: { type: "STRING" } },
+          adjectives: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["translation", "synonyms", "antonyms", "adjectives"]
+      };
+
+      const prompt = `Provide a quick translation of the word or phrase "${word}" into ${targetLangName}. Then provide 3 to 5 synonyms, antonyms, and related descriptive adjectives in the original language. CRITICAL INSTRUCTION: For every single synonym, antonym, and adjective you provide, you MUST append its English translation in parentheses immediately after the word. Example: "palabra (word)". Ensure the output strictly follows the requested JSON schema.`;
+     
+      const responseText = await callGeminiAPI(prompt, "You are a highly capable lexical assistant and thesaurus.", schema);
+      if (responseText) {
+        try {
+          return JSON.parse(responseText);
+        } catch (e) {
+          console.error("Failed to parse JSON", e);
+          return null;
+        }
+      }
+      return null;
+    };
+
+    const InteractiveText = ({ text, isThesaurusActive, onWordHover, onWordLeave }) => {
+      if (!isThesaurusActive || typeof text !== 'string') return <span>{text}</span>;
+     
+      // Split preserving punctuation and whitespace delimiters
+      const parts = text.split(/([\s.,!?()[\]{}'"`:;—\-]+)/);
+      return (
+        <span>
+          {parts.map((part, i) => {
+            if (!part) return null;
+            // If the part is purely whitespace or punctuation, render normally
+            if (/^[\s.,!?()[\]{}'"`:;—\-]+$/.test(part)) {
+              return <span key={i}>{part}</span>;
+            }
+            return (
+              <span
+                key={i}
+                className="thesaurus-word"
+                onMouseEnter={(e) => onWordHover(part, e.currentTarget)}
+                onMouseLeave={onWordLeave}
+                onClick={(e) => onWordHover(part, e.currentTarget, true)}
+              >
+                {part}
+              </span>
+            );
+          })}
+        </span>
+      );
+    };
+
+    const MessageBubble = ({
+      message,
+      isOverlayActive,
+      selectedLangCodes,
+      selectedLevel,
+      translationStyle,
+      isThesaurusActive,
+      onWordHover,
+      onWordLeave,
+      isBibleVerse = false,
+      viewMode = 'bubble',
+      onVerseHover,
+      onVerseLeave
+    }) => {
+      const isUser = message.sender === 'user';
+
+      if (viewMode === 'stacked') {
+        const numCols = 1 + (isOverlayActive ? selectedLangCodes.length : 0);
+        let gridClass = "grid grid-cols-1 gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm animate-fade-in";
+        if (numCols === 2) gridClass = "grid grid-cols-1 md:grid-cols-2 gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm animate-fade-in";
+        else if (numCols === 3) gridClass = "grid grid-cols-1 md:grid-cols-3 gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm animate-fade-in";
+        else if (numCols === 4) gridClass = "grid grid-cols-1 md:grid-cols-4 gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm animate-fade-in";
+        else if (numCols >= 5) gridClass = "grid grid-cols-1 md:grid-cols-5 gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm animate-fade-in";
+
+        return (
+          <div className={gridClass}>
+            {/* Base English Source Box */}
+            <div className="flex flex-col h-full bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded flex items-center gap-1 uppercase tracking-wider">
+                  English
+                  {isBibleVerse && (
+                    <span
+                      onMouseEnter={(e) => onVerseHover(message, e.currentTarget)}
+                      onMouseLeave={onVerseLeave}
+                      className="ml-1 cursor-help text-amber-600 dark:text-amber-400 font-extrabold hover:underline"
+                    >
+                      • v. {message.verse} <i className="fa-solid fa-magnifying-glass-chart text-[9px]"></i>
+                    </span>
+                  )}
+                </span>
+                {isUser && <span className="text-[9px] font-bold text-blue-500 uppercase">You</span>}
+              </div>
+              <div className="text-[15px] leading-relaxed text-gray-800 dark:text-gray-100 serif-font">
+                <InteractiveText
+                  text={message.text}
+                  isThesaurusActive={isThesaurusActive}
+                  onWordHover={onWordHover}
+                  onWordLeave={onWordLeave}
+                />
+              </div>
+            </div>
+
+            {/* Parallel Foreign Language Panels */}
+            {isOverlayActive && selectedLangCodes.map(code => {
+              const targetLang = LANGUAGES.find(l => l.code === code);
+              if (!targetLang) return null;
+              const cacheKey = `${code}_${selectedLevel}_${translationStyle}`;
+              const translation = message.translations?.[cacheKey];
+
+              return (
+                <div key={code} className="flex flex-col h-full bg-indigo-50/20 dark:bg-indigo-950/10 p-4 rounded-xl border border-indigo-100/50 dark:border-indigo-900/30">
+                  <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 mb-2 flex items-center gap-1.5 border-b border-indigo-100/30 dark:border-indigo-900/20 pb-1.5">
+                    <span className="text-sm">{targetLang.icon}</span> <span className="uppercase tracking-wider">{targetLang.name}</span>
+                  </div>
+                  {translation ? (
+                    <div className="text-[15px] leading-relaxed text-indigo-900 dark:text-indigo-300 font-medium">
+                      <InteractiveText
+                        text={translation}
+                        isThesaurusActive={isThesaurusActive}
+                        onWordHover={onWordHover}
+                        onWordLeave={onWordLeave}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 my-auto py-2">
+                      <div className="loader border-t-indigo-500"></div>
+                      <span>Translating...</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+
+      return (
+        <div className={`flex w-full mb-6 ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+          <div className={`relative w-full max-w-[95%] md:max-w-[85%] rounded-2xl px-5 py-3 shadow-md border ${
+            isUser
+              ? 'bg-blue-600 dark:bg-blue-700 text-white rounded-tr-sm border-blue-500'
+              : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-sm border-gray-100 dark:border-gray-700'
+          }`}>
+            {isBibleVerse && (
+              <div className="text-xs font-semibold text-blue-500 dark:text-blue-400 mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <i className="fa-solid fa-bookmark text-[10px]"></i>
+                  Verse {message.verse}
+                </span>
+                <span
+                  onMouseEnter={(e) => onVerseHover(message, e.currentTarget)}
+                  onMouseLeave={onVerseLeave}
+                  className="cursor-help text-[11px] font-bold bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full transition-all hover:scale-105"
+                >
+                  Compare <i className="fa-solid fa-magnifying-glass-chart text-[9px] ml-0.5"></i>
+                </span>
+              </div>
+            )}
+           
+            <div className={`text-[15px] leading-relaxed ${isOverlayActive && selectedLangCodes.length > 0 ? 'opacity-80 text-sm mb-2 transition-all' : 'transition-all'}`}>
+              <InteractiveText
+                text={message.text}
+                isThesaurusActive={isThesaurusActive}
+                onWordHover={onWordHover}
+                onWordLeave={onWordLeave}
+              />
+            </div>
+
+            {/* Inline Overlay Translation Lists */}
+            {isOverlayActive && selectedLangCodes.length > 0 && (
+              <div className="mt-2 pt-2 border-t border-gray-300 dark:border-gray-600 border-opacity-30 relative flex flex-col gap-3">
+                {selectedLangCodes.map(code => {
+                  const targetLang = LANGUAGES.find(l => l.code === code);
+                  if (!targetLang) return null;
+                  const cacheKey = `${code}_${selectedLevel}_${translationStyle}`;
+                  const translation = message.translations?.[cacheKey];
+
+                  return (
+                    <div key={code} className="relative min-h-[1.5rem]">
+                      <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1.5">
+                        <span className="text-sm">{targetLang.icon}</span> <span className="uppercase tracking-wider">{targetLang.name}</span>
+                      </div>
+                      {translation ? (
+                        <div className="text-[15px] font-medium leading-relaxed animate-fade-in whitespace-pre-wrap text-indigo-700 dark:text-indigo-300">
+                          <InteractiveText
+                            text={translation}
+                            isThesaurusActive={isThesaurusActive}
+                            onWordHover={onWordHover}
+                            onWordLeave={onWordLeave}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                          <div className={`loader ${isUser ? 'loader-white' : 'border-indigo-500'}`}></div>
+                          <span>Translating to {targetLang.name}...</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [messages, setMessages] = useState([
+        {
+          id: '1',
+          text: "Hello! I am your AI study assistant. We can chat about anything here, or you can select any book and chapter from the comprehensive 66-Book public domain Bible Library or the Deuterocanon & Apocrypha list on the left. Toggle translations, choose CEFR vocabulary thresholds, or hover over words to activate the dynamic thesaurus!",
+          sender: 'bot',
+          translations: {},
+          isTranslatingFlags: {}
+        }
+      ]);
+      const [inputText, setInputText] = useState("");
+      const [isChatting, setIsChatting] = useState(false);
+      const [darkMode, setDarkMode] = useState(false);
+      const [isWideLayout, setIsWideLayout] = useState(true);
+     
+      // Dynamic fallback notification state
+      const [fallbackActive, setFallbackActive] = useState(null);
+
+      // Navigation & Layout sidebar controls
+      const [sidebarOpen, setSidebarOpen] = useState(true);
+      const [activeMode, setActiveMode] = useState('chat');
+      const [expandedCategories, setExpandedCategories] = useState({
+        "Pentateuch (Law)": true,
+        "Gospels & Acts": true,
+        "Deuterocanon & Apocrypha": true
+      });
+      const [expandedBooks, setExpandedBooks] = useState({});
+      const [selectedBook, setSelectedBook] = useState(null);
+      const [selectedChapter, setSelectedChapter] = useState(null);
+      const [selectedTranslation, setSelectedTranslation] = useState('WEB');
+      const [bookSearchQuery, setBookSearchQuery] = useState("");
+      const [bibleVerses, setBibleVerses] = useState([]);
+      const [isBibleLoading, setIsBibleLoading] = useState(false);
+
+      // Collapsible settings panels
+      const [controlsCollapsed, setControlsCollapsed] = useState(true);
+
+      // Parallel Translation Overlay configurations
+      const [isOverlayActive, setIsOverlayActive] = useState(false);
+      const [selectedLangCodes, setSelectedLangCodes] = useState(['es']);
+      const [parallelCount, setParallelCount] = useState(1);
+      const [selectedLevel, setSelectedLevel] = useState('ALL');
+      const [translationStyle, setTranslationStyle] = useState('inverted');
+      const [viewMode, setViewMode] = useState('stacked');
+
+      // Thesaurus lookup and popups
+      const [isThesaurusActive, setIsThesaurusActive] = useState(false);
+      const [thesaurusPopup, setThesaurusPopup] = useState(null);
+      const [isDragging, setIsDragging] = useState(false);
+      const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+      const hoverTimer = useRef(null);
+
+      // Instant comparative popups
+      const [verseComparePopup, setVerseComparePopup] = useState(null);
+      const messagesEndRef = useRef(null);
+
+      useEffect(() => {
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }, [darkMode]);
+
+      const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      };
+
+      useEffect(() => {
+        scrollToBottom();
+      }, [messages, bibleVerses, isOverlayActive, selectedLevel, parallelCount, activeMode, viewMode]);
+
+      useEffect(() => {
+        if (!isOverlayActive || selectedLangCodes.length === 0) return;
+        const activeDataset = activeMode === 'bible' ? bibleVerses : messages;
+        if (activeDataset.length === 0) return;
+
+        selectedLangCodes.forEach(langCode => {
+          const targetLang = LANGUAGES.find(l => l.code === langCode);
+          if (!targetLang) return;
+          const cacheKey = `${langCode}_${selectedLevel}_${translationStyle}`;
+
+          const needsTranslation = activeDataset.filter(item => {
+            return !item.translations?.[cacheKey] && !item.isTranslatingFlags?.[cacheKey];
+          });
+
+          if (needsTranslation.length === 0) return;
+
+          needsTranslation.forEach(item => {
+            if (activeMode === 'bible') {
+              setBibleVerses(prev => prev.map(v => v.id === item.id ? {
+                ...v,
+                isTranslatingFlags: { ...v.isTranslatingFlags, [cacheKey]: true }
+              } : v));
+            } else {
+              setMessages(prev => prev.map(m => m.id === item.id ? {
+                ...m,
+                isTranslatingFlags: { ...m.isTranslatingFlags, [cacheKey]: true }
+              } : m));
+            }
+
+            translateText(item.text, targetLang.name, selectedLevel, translationStyle).then(translatedText => {
+              const resultText = translatedText || "[Translation temporarily unavailable]";
+              if (activeMode === 'bible') {
+                setBibleVerses(prev => prev.map(v => {
+                  if (v.id === item.id) {
+                    const newTranslations = { ...v.translations, [cacheKey]: resultText };
+                    const newFlags = { ...v.isTranslatingFlags, [cacheKey]: false };
+                    return { ...v, translations: newTranslations, isTranslatingFlags: newFlags };
+                  }
+                  return v;
+                }));
+              } else {
+                setMessages(prev => prev.map(m => {
+                  if (m.id === item.id) {
+                    const newTranslations = { ...m.translations, [cacheKey]: resultText };
+                    const newFlags = { ...m.isTranslatingFlags, [cacheKey]: false };
+                    return { ...m, translations: newTranslations, isTranslatingFlags: newFlags };
+                  }
+                  return m;
+                }));
+              }
+            });
+          });
+        });
+      }, [messages, bibleVerses, isOverlayActive, selectedLangCodes, selectedLevel, translationStyle, activeMode]);
+
+      const fetchBibleChapter = async (book, chapter, selectedTransCode = selectedTranslation) => {
+        setIsBibleLoading(true);
+        setActiveMode('bible');
+        setSelectedBook(book);
+        setSelectedChapter(chapter);
+        setFallbackActive(null); // Clear previous fallback warnings
+
+        const runFetch = async (transCode) => {
+          const currentTrans = BIBLE_TRANSLATIONS.find(t => t.code === transCode) || BIBLE_TRANSLATIONS[0];
+          const schema = {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                verse: { type: "INTEGER" },
+                text: { type: "STRING" }
+              },
+              required: ["verse", "text"]
+            }
+          };
+
+          const prompt = `Provide the complete and accurate public-domain translation text for the book of "${book}" Chapter ${chapter} using the "${currentTrans.name}" (${currentTrans.code}) translation.
+If the book requested is a deuterocanonical/non-canon book (like Tobit, Judith, Wisdom of Solomon, Sirach, Baruch, 1 & 2 Maccabees, 1 Enoch, or Gospel of Thomas), please translate/retrieve using its most standard recognized public-domain historical translation text (e.g., Charles' version for Enoch, Lambdin/Blatz for Thomas, Brenton/Douay-Rheims/LXX for Deuterocanon).
+Format your response strictly as a JSON array of verses containing 'verse' (integer) and 'text' (string) fields. Do not skip any verses. Provide the entire sequence.`;
+
+          const systemInst = "You are an archival database of historically non-copyrighted public-domain Bible translations and related ancient apocryphal literature.";
+         
+          const responseText = await callGeminiAPI(prompt, systemInst, schema);
+          if (responseText) {
+            try {
+              const parsed = JSON.parse(responseText);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+              }
+            } catch (e) {
+              console.error(`Failed to parse chapter payload for ${transCode}:`, e);
+            }
+          }
+          return null;
+        };
+
+        // Tier 1: Try Primary requested translation
+        let parsedVerses = await runFetch(selectedTransCode);
+        let loadedTransCode = selectedTransCode;
+
+        // Tier 2: Revert to default WEB (World English Bible) if primary failed
+        if (!parsedVerses && selectedTransCode !== 'WEB') {
+          console.warn(`Could not load translation "${selectedTransCode}". Retrying with public domain WEB fallback...`);
+          parsedVerses = await runFetch('WEB');
+          loadedTransCode = 'WEB';
+          if (parsedVerses) {
+            setFallbackActive(`Defaulted to "World English Bible" because the requested translation "${selectedTransCode}" was unavailable for this chapter.`);
+          }
+        }
+
+        // Tier 3: Revert to KJV (King James Version) if WEB fails
+        if (!parsedVerses && loadedTransCode !== 'KJV') {
+          console.warn("Could not load chapter text with WEB. Retrying with classic KJV fallback...");
+          parsedVerses = await runFetch('KJV');
+          loadedTransCode = 'KJV';
+          if (parsedVerses) {
+            setFallbackActive(`Defaulted to classic "King James Version" because the requested translation "${selectedTransCode}" and secondary fallbacks were unavailable.`);
+          }
+        }
+
+        setIsBibleLoading(false);
+       
+        if (parsedVerses) {
+          const mappedVerses = parsedVerses.map((item, index) => ({
+            id: `verse_${index}_${Date.now()}`,
+            verse: item.verse,
+            text: item.text,
+            translations: {},
+            isTranslatingFlags: {}
+          }));
+          setBibleVerses(mappedVerses);
+        } else {
+          // Tier 4: Offline local high-fidelity mock generator
+          setFallbackActive(`Active Offline Mode: Loaded local study passage layout for ${book} ${chapter}. Live cloud compilation is currently unavailable.`);
+          const fallbackVerses = getLocalFallbackVerses(book, chapter);
+          const mappedVerses = fallbackVerses.map((item, index) => ({
+            id: `fallback_${index}_${Date.now()}`,
+            verse: item.verse,
+            text: item.text,
+            translations: {},
+            isTranslatingFlags: {}
+          }));
+          setBibleVerses(mappedVerses);
+        }
+      };
+
+      const fallbackManualGeneration = (book, chapter, transName) => {
+        // Obsoleted by our robust local recursive fallback pipeline above, kept safe
+        const fallbackVerses = getLocalFallbackVerses(book, chapter);
+        const mappedVerses = fallbackVerses.map((item, index) => ({
+          id: `fallback_m_${index}_${Date.now()}`,
+          verse: item.verse,
+          text: item.text,
+          translations: {},
+          isTranslatingFlags: {}
+        }));
+        setBibleVerses(mappedVerses);
+      };
+
+      useEffect(() => {
+        const handleMouseUp = () => {
+          if (!isThesaurusActive) return;
+          const selection = window.getSelection();
+          const text = selection.toString().trim();
+          if (text && text.length > 2) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            triggerThesaurus(text, rect);
+          }
+        };
+
+        document.addEventListener('mouseup', handleMouseUp);
+        return () => document.removeEventListener('mouseup', handleMouseUp);
+      }, [isThesaurusActive]);
+
+      const handleWordHover = (word, element, isClick = false) => {
+        if (hoverTimer.current) clearTimeout(hoverTimer.current);
+        if (isClick) {
+          const rect = element.getBoundingClientRect();
+          triggerThesaurus(word, rect);
+        } else {
+          hoverTimer.current = setTimeout(() => {
+            const rect = element.getBoundingClientRect();
+            triggerThesaurus(word, rect);
+          }, 600);
+        }
+      };
+
+      const handleWordLeave = () => {
+        if (hoverTimer.current) clearTimeout(hoverTimer.current);
+      };
+
+      const triggerThesaurus = async (word, rect) => {
+        setThesaurusPopup({
+          word: word,
+          loading: true,
+          data: null,
+          x: rect.left + (rect.width / 2),
+          y: rect.bottom + 10,
+          elementRect: {
+            top: rect.top,
+            bottom: rect.bottom,
+            left: rect.left,
+            right: rect.right
+          }
+        });
+
+        const primaryLangCode = selectedLangCodes[0] || 'es';
+        const primaryLang = LANGUAGES.find(l => l.code === primaryLangCode);
+        const data = await fetchThesaurusData(word, primaryLang ? primaryLang.name : 'Spanish');
+       
+        setThesaurusPopup(prev => prev && prev.word === word ? { ...prev, loading: false, data: data } : prev);
+      };
+
+      const handleVerseHover = (verseObj, element) => {
+        const rect = element.getBoundingClientRect();
+        const comparisons = [];
+        comparisons.push({ lang: "Original English", flag: "🇺🇸", text: verseObj.text });
+
+        selectedLangCodes.forEach(code => {
+          const targetLang = LANGUAGES.find(l => l.code === code);
+          if (targetLang) {
+            const cacheKey = `${code}_${selectedLevel}_${translationStyle}`;
+            const textVal = verseObj.translations?.[cacheKey] || "Translating...";
+            comparisons.push({ lang: targetLang.name, flag: targetLang.icon, text: textVal });
+          }
+        });
+
+        setVerseComparePopup({
+          verseNum: verseObj.verse,
+          book: selectedBook,
+          chapter: selectedChapter,
+          comparisons: comparisons,
+          x: rect.left,
+          y: rect.bottom + 8
+        });
+      };
+
+      const handleVerseLeave = () => {
+        setVerseComparePopup(null);
+      };
+
+      const handleMouseDown = (e) => {
+        if (!thesaurusPopup) return;
+        setIsDragging(true);
+        setDragOffset({
+          x: e.clientX - thesaurusPopup.x,
+          y: e.clientY - thesaurusPopup.y
+        });
+      };
+
+      useEffect(() => {
+        const handleMouseMove = (e) => {
+          if (isDragging && thesaurusPopup) {
+            setThesaurusPopup(prev => ({
+              ...prev,
+              x: e.clientX - dragOffset.x,
+              y: e.clientY - dragOffset.y
+            }));
+          }
+        };
+
+        const handleMouseUpDrag = () => {
+          setIsDragging(false);
+        };
+
+        if (isDragging) {
+          document.addEventListener('mousemove', handleMouseMove);
+          document.addEventListener('mouseup', handleMouseUpDrag);
+        }
+
+        return () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUpDrag);
+        };
+      }, [isDragging, dragOffset, thesaurusPopup]);
+
+      useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (thesaurusPopup && !e.target.closest('.thesaurus-tooltip') && !e.target.closest('.thesaurus-word')) {
+            setThesaurusPopup(null);
+          }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }, [thesaurusPopup]);
+
+      const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!inputText.trim() || isChatting) return;
+
+        const newUserMsg = {
+          id: Date.now().toString(),
+          text: inputText,
+          sender: 'user',
+          translations: {},
+          isTranslatingFlags: {}
+        };
+
+        setMessages(prev => [...prev, newUserMsg]);
+        setInputText("");
+        setIsChatting(true);
+
+        const systemPrompt = "You are a highly capable AI theological study assistant. Provide informative, objective, and scholarly answers regarding translation variants, historical context, and ancient scriptures (Old Testament, New Testament, Apocrypha).";
+        const aiResponseText = await callGeminiAPI(inputText, systemPrompt);
+
+        const newBotMsg = {
+          id: (Date.now() + 1).toString(),
+          text: aiResponseText || "I could not retrieve an answer at this time. Please check your network and try again.",
+          sender: 'bot',
+          translations: {},
+          isTranslatingFlags: {}
+        };
+
+        setMessages(prev => [...prev, newBotMsg]);
+        setIsChatting(false);
+      };
+
+      const toggleLanguage = (code) => {
+        if (selectedLangCodes.includes(code)) {
+          if (selectedLangCodes.length > 1) {
+            setSelectedLangCodes(prev => prev.filter(c => c !== code));
+          }
+        } else {
+          if (selectedLangCodes.length < parallelCount) {
+            setSelectedLangCodes(prev => [...prev, code]);
+          } else {
+            setSelectedLangCodes(prev => [...prev.slice(1), code]);
+          }
+        }
+      };
+
+      const toggleCategory = (catName) => {
+        setExpandedCategories(prev => ({
+          ...prev,
+          [catName]: !prev[catName]
+        }));
+      };
+
+      const toggleBook = (bookName) => {
+        setExpandedBooks(prev => ({
+          ...prev,
+          [bookName]: !prev[bookName]
+        }));
+      };
+
+      const changeTranslation = (transCode) => {
+        setSelectedTranslation(transCode);
+        if (selectedBook && selectedChapter) {
+          fetchBibleChapter(selectedBook, selectedChapter, transCode);
+        }
+      };
+
+      return (
+        <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ${
+          isWideLayout ? 'p-0 bg-white dark:bg-gray-800' : 'p-0 sm:p-4 bg-gray-150 dark:bg-gray-900'
+        }`}>
+          <div className={`w-full h-full bg-white dark:bg-gray-800 flex flex-col md:flex-row overflow-hidden relative border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+            isWideLayout ? 'max-w-none sm:rounded-none border-none shadow-none' : 'max-w-6xl sm:rounded-3xl shadow-2xl border'
+          }`}>
+           
+            {/* Sidebar Navigation Panel */}
+            <aside className={`shrink-0 border-r border-gray-150 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-all duration-300 flex flex-col h-full ${
+              sidebarOpen ? 'w-full md:w-80' : 'w-0 overflow-hidden hidden md:hidden'
+            } ${sidebarOpen ? 'block' : 'hidden md:flex'}`}>
+             
+              <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-100 dark:bg-gray-900">
+                <span className="font-bold text-xs tracking-wider text-gray-500 dark:text-gray-400 uppercase flex items-center gap-2">
+                  Library Navigator <i className="fa-solid fa-book-bible text-amber-500"></i>
+                </span>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 p-1.5 rounded-lg"
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              {/* Version Selector */}
+              <div className="p-4 bg-amber-500/10 dark:bg-amber-500/5 border-b border-gray-200 dark:border-gray-800">
+                <label className="block text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1.5">
+                  <i className="fa-solid fa-scale-balanced mr-1"></i> Public Domain Version
+                </label>
+                <select
+                  value={selectedTranslation}
+                  onChange={(e) => changeTranslation(e.target.value)}
+                  className="w-full text-xs font-semibold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  {BIBLE_TRANSLATIONS.map(trans => (
+                    <option key={trans.code} value={trans.code}>
+                      {trans.code} - {trans.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="block text-[10px] text-gray-500 dark:text-gray-400 mt-1.5 leading-normal">
+                  {BIBLE_TRANSLATIONS.find(t => t.code === selectedTranslation)?.desc}
+                </span>
+              </div>
+
+              {/* Navigation Action Toggles */}
+              <div className="p-3 space-y-2 border-b border-gray-200 dark:border-gray-800">
+                <button
+                  onClick={() => { setActiveMode('chat'); setSelectedBook(null); }}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-xs transition-all shadow-sm ${
+                    activeMode === 'chat'
+                      ? 'bg-blue-600 text-white shadow-blue-200 dark:shadow-none'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <i className="fa-solid fa-comments text-sm"></i>
+                    AI Assistant Chat
+                  </span>
+                  {activeMode === 'chat' && <span className="w-2 h-2 bg-white rounded-full"></span>}
+                </button>
+
+                {/* Search Box */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={bookSearchQuery}
+                    onChange={(e) => setBookSearchQuery(e.target.value)}
+                    placeholder="Search books, apocrypha..."
+                    className="w-full text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-xl pl-8 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  />
+                  <i className="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-[10px] text-gray-400"></i>
+                  {bookSearchQuery && (
+                    <button onClick={() => setBookSearchQuery("")} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                      <i className="fa-solid fa-times text-xs"></i>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Books Categorization List */}
+              <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                <h4 className="px-2 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                  Ancient Testaments & Scrolls
+                </h4>
+                {BIBLE_CATEGORIES.map(category => {
+                  const filteredBooks = category.books.filter(book =>
+                    book.name.toLowerCase().includes(bookSearchQuery.toLowerCase())
+                  );
+                  if (filteredBooks.length === 0) return null;
+                  const isExpanded = expandedCategories[category.name] || bookSearchQuery.length > 0;
+
+                  return (
+                    <div key={category.name} className="border border-gray-200 dark:border-gray-700/60 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                      <button
+                        onClick={() => toggleCategory(category.name)}
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <i className={`fa-solid ${category.testament === 'ot' ? 'fa-scroll text-amber-600' : category.testament === 'nt' ? 'fa-cross text-blue-600' : 'fa-hand-holding-hand text-purple-600'} text-[10px]`}></i>
+                          {category.name}
+                        </span>
+                        <i className={`fa-solid fa-chevron-${isExpanded ? 'up' : 'down'} text-[10px] text-gray-400`}></i>
+                      </button>
+                     
+                      {isExpanded && (
+                        <div className="p-2 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/10 space-y-2">
+                          {filteredBooks.map(book => {
+                            const isBookSelected = selectedBook === book.name;
+                            const isBookExpanded = expandedBooks[book.name] || isBookSelected || bookSearchQuery.length > 0;
+
+                            return (
+                              <div key={book.name} className="space-y-1 bg-white dark:bg-gray-800 p-1.5 rounded-lg border border-gray-100 dark:border-gray-700/50">
+                                <button
+                                  onClick={() => toggleBook(book.name)}
+                                  className={`w-full flex items-center justify-between text-[11px] font-bold px-1.5 py-1 rounded transition-colors ${
+                                    isBookSelected
+                                      ? 'text-amber-600 dark:text-amber-400 bg-amber-500/5'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-1">
+                                    {isBookSelected && <i className="fa-solid fa-star text-[8px] text-amber-500"></i>}
+                                    {book.name}
+                                  </span>
+                                  <div className="flex items-center gap-1.5 text-[9px] text-gray-400 dark:text-gray-500">
+                                    <span>{book.chapters} chs</span>
+                                    <i className={`fa-solid fa-chevron-${isBookExpanded ? 'up' : 'down'}`}></i>
+                                  </div>
+                                </button>
+                               
+                                {isBookExpanded && (
+                                  <div className="flex flex-wrap gap-1 p-1 max-h-28 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md border border-gray-200/50 dark:border-gray-700/35 mt-1 animate-fade-in">
+                                    {Array.from({ length: book.chapters }).map((_, i) => {
+                                      const chNum = i + 1;
+                                      const isCurrent = selectedBook === book.name && selectedChapter === chNum;
+                                      return (
+                                        <button
+                                          key={chNum}
+                                          onClick={() => fetchBibleChapter(book.name, chNum)}
+                                          className={`w-6 h-6 text-[10px] font-bold rounded-md transition-all ${
+                                            isCurrent
+                                              ? 'bg-amber-500 text-white shadow-sm'
+                                              : 'bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                                          }`}
+                                        >
+                                          {chNum}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </aside>
+
+            {/* Main Study Workspace Area */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-gray-800 transition-colors duration-200 relative">
+             
+              {/* Header Navigation Panel */}
+              <header className="bg-white dark:bg-gray-800 border-b border-gray-150 dark:border-gray-700 p-4 shadow-sm z-10 flex flex-col items-stretch justify-between gap-3">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-xl border border-gray-200 dark:border-gray-700"
+                      title="Toggle side library selector"
+                    >
+                      <i className="fa-solid fa-bars-staggered"></i>
+                    </button>
+                    <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-amber-200/50 dark:shadow-none">
+                      <i className="fa-solid fa-book-open text-base"></i>
+                    </div>
+                    <div>
+                      <h1 className="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100 leading-tight flex items-center gap-1.5">
+                        GlobalStudy Live <span className="text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 px-1.5 py-0.5 rounded-md ml-1 font-semibold">Foundation v1</span>
+                      </h1>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400">Public Domain Translation, Lexical Thesaurus & Study Engine</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setIsWideLayout(!isWideLayout)}
+                      className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent dark:border-gray-600 transition-colors flex items-center justify-center"
+                      title={isWideLayout ? "Switch to Centered Layout" : "Switch to Full Browser Width"}
+                    >
+                      <i className={`fa-solid ${isWideLayout ? 'fa-compress text-blue-500' : 'fa-expand text-gray-600 dark:text-gray-300'}`}></i>
+                    </button>
+                    <button
+                      onClick={() => setDarkMode(!darkMode)}
+                      className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent dark:border-gray-600 transition-colors"
+                      title="Toggle Dark/Light Mode"
+                    >
+                      <i className={`fa-solid ${darkMode ? 'fa-sun text-amber-400' : 'fa-moon text-indigo-600'}`}></i>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Configuration Panel Grid */}
+                <div className="flex flex-col gap-3 w-full border-t border-gray-100 dark:border-gray-700 pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <i className="fa-solid fa-circle-info text-amber-500 text-[10px]"></i> Hover words or select verses to activate translation overlays
+                    </span>
+                   
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setIsThesaurusActive(!isThesaurusActive); setThesaurusPopup(null); }}
+                        className={`flex items-center px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm ${
+                          isThesaurusActive
+                            ? 'bg-amber-500 text-white shadow-amber-200 dark:shadow-none'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                        }`}
+                      >
+                        <i className="fa-solid fa-book-open-reader mr-2"></i>
+                        Thesaurus Mode: {isThesaurusActive ? 'ON' : 'OFF'}
+                      </button>
+
+                      <button
+                        onClick={() => setControlsCollapsed(!controlsCollapsed)}
+                        className={`flex items-center px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm border ${
+                          !controlsCollapsed
+                            ? 'bg-indigo-600 border-indigo-600 text-white'
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <i className="fa-solid fa-sliders mr-2"></i>
+                        Translation Settings
+                        <i className={`fa-solid fa-chevron-${controlsCollapsed ? 'down' : 'up'} ml-2 text-[10px]`}></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Collapsible Overlays & Configuration Stack */}
+                  {!controlsCollapsed && (
+                    <div className="bg-gray-50/50 dark:bg-gray-900/30 border border-gray-150 dark:border-gray-700/60 p-4 rounded-2xl flex flex-col gap-3 animate-fade-in">
+                     
+                      {/* Language Selection Bar */}
+                      <div className="flex flex-wrap items-center bg-gray-50 dark:bg-gray-900 p-2.5 rounded-2xl gap-2 shadow-inner">
+                        <button
+                          onClick={() => setIsOverlayActive(!isOverlayActive)}
+                          className={`flex items-center px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm shrink-0 ${
+                            isOverlayActive
+                              ? 'bg-indigo-600 text-white shadow-indigo-200 dark:shadow-none'
+                              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <i className="fa-solid fa-language mr-2"></i>
+                          Parallel Overlays: {isOverlayActive ? 'ACTIVE' : 'MUTED'}
+                        </button>
+                       
+                        <div className={`flex flex-wrap items-center gap-1.5 transition-all ${isOverlayActive ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                          {LANGUAGES.map(lang => {
+                            const isSelected = selectedLangCodes.includes(lang.code);
+                            return (
+                              <button
+                                key={lang.code}
+                                onClick={() => toggleLanguage(lang.code)}
+                                title={lang.name}
+                                className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all shrink-0 relative ${
+                                  isSelected
+                                    ? 'bg-white dark:bg-gray-700 shadow-md border border-gray-200 dark:border-gray-600 scale-105'
+                                    : 'hover:bg-gray-200 dark:hover:bg-gray-800 opacity-60 grayscale hover:grayscale-0'
+                                }`}
+                              >
+                                {lang.icon}
+                                {isSelected && parallelCount > 1 && (
+                                  <span className="absolute -top-1 -right-1 bg-indigo-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-sm">
+                                    {selectedLangCodes.indexOf(lang.code) + 1}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* parallel channels limit */}
+                      <div className={`flex items-center bg-gray-50 dark:bg-gray-900 p-2 rounded-2xl overflow-x-auto shadow-inner transition-all duration-300 ${isOverlayActive ? 'opacity-100 flex' : 'hidden'}`}>
+                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-2 px-2 shrink-0">
+                          <i className="fa-solid fa-layer-group mr-1"></i> Parallel Channel Limit
+                        </span>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map(num => (
+                            <button
+                              key={num}
+                              onClick={() => {
+                                setParallelCount(num);
+                                if (selectedLangCodes.length > num) {
+                                  setSelectedLangCodes(prev => prev.slice(0, num));
+                                }
+                              }}
+                              className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs transition-all border ${
+                                parallelCount === num
+                                  ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                  : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                              }`}
+                            >
+                              {num}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Row 3: Parallel Columns vs Bubbles */}
+                      <div className="flex items-center bg-gray-50 dark:bg-gray-900 p-2 rounded-2xl overflow-x-auto shadow-inner transition-all duration-300">
+                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-2 px-2 shrink-0">
+                          <i className="fa-solid fa-table-columns mr-1"></i> Structural Layout View
+                        </span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setViewMode('bubble')}
+                            className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all border flex items-center gap-1.5 ${
+                              viewMode === 'bubble'
+                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                            }`}
+                          >
+                            <i className="fa-solid fa-comments text-[10px]"></i> Bubble Stream
+                          </button>
+                          <button
+                            onClick={() => setViewMode('stacked')}
+                            className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all border flex items-center gap-1.5 ${
+                              viewMode === 'stacked'
+                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                            }`}
+                          >
+                            <i className="fa-solid fa-columns text-[10px]"></i> Parallel Columns
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Row 4: CEFR difficulty tiering selector */}
+                      <div className={`flex items-center bg-gray-50 dark:bg-gray-900 p-2 rounded-2xl overflow-x-auto shadow-inner transition-all duration-300 ${isOverlayActive ? 'opacity-100 flex' : 'hidden'}`}>
+                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-2 px-2 shrink-0">
+                          <i className="fa-solid fa-signal mr-1"></i> CEFR Vocab Filter
+                        </span>
+                        <div className="flex gap-1">
+                          {CEFR_LEVELS.map(lvl => (
+                            <button
+                              key={lvl.code}
+                              onClick={() => setSelectedLevel(lvl.code)}
+                              className={`px-3 py-1.5 text-xs rounded-xl font-bold transition-all border ${
+                                selectedLevel === lvl.code
+                                  ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                  : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                              }`}
+                            >
+                              {lvl.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Row 5: Inverted vocabulary translation structures */}
+                      <div className={`flex items-center bg-gray-50 dark:bg-gray-900 p-2 rounded-2xl overflow-x-auto shadow-inner transition-all duration-300 ${isOverlayActive && selectedLevel !== 'ALL' ? 'opacity-100 flex' : 'hidden'}`}>
+                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-2 px-2 shrink-0">
+                          <i className="fa-solid fa-rotate mr-1"></i> Translation Syntax Style
+                        </span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setTranslationStyle('regular')}
+                            className={`px-4 py-1.5 text-xs rounded-xl font-bold transition-all border ${
+                              translationStyle === 'regular'
+                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                            }`}
+                          >
+                            Fully Translated
+                          </button>
+                          <button
+                            onClick={() => setTranslationStyle('inverted')}
+                            className={`px-4 py-1.5 text-xs rounded-xl font-bold transition-all border ${
+                              translationStyle === 'inverted'
+                                ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600 dark:text-indigo-400 border-indigo-200'
+                                : 'text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-200'
+                            }`}
+                          >
+                            Inverted (Annotated Vocabulary)
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+                </div>
+              </header>
+
+              {/* Interactive Main Body Feed */}
+              <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+                {isThesaurusActive && (
+                  <div className="flex justify-center mb-6">
+                    <div className="bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-xs font-semibold px-4 py-2 rounded-full flex items-center shadow-sm border border-amber-200 dark:border-amber-900/50 animate-bounce">
+                      <i className="fa-solid fa-circle-exclamation mr-2"></i>
+                      Thesaurus Active! Highlight phrases or tap words to trigger definitions.
+                    </div>
+                  </div>
+                )}
+
+                {}
+                {activeMode === 'bible' ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl mb-6 shadow-sm animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2 serif-font">
+                          <i className="fa-solid fa-book-bible text-amber-600 dark:text-amber-400"></i>
+                          {selectedBook} — Chapter {selectedChapter}
+                        </h2>
+                        <span className="text-[10px] font-bold bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                          {selectedTranslation}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                        Public domain historical manuscript stream. Hover over verse numbers for instant comparative views across selected parallel target languages.
+                      </p>
+                    </div>
+
+                    {fallbackActive && (
+                      <div className="p-3.5 bg-amber-500/10 dark:bg-amber-500/5 text-amber-850 dark:text-amber-300 text-xs font-medium rounded-xl flex items-start gap-3 border border-amber-500/20 animate-fade-in mb-4">
+                        <i className="fa-solid fa-circle-nodes text-amber-600 dark:text-amber-500 text-sm mt-0.5 shrink-0"></i>
+                        <span className="leading-relaxed">{fallbackActive}</span>
+                        <button onClick={() => setFallbackActive(null)} className="ml-auto text-amber-650 hover:text-amber-800 dark:hover:text-amber-200 shrink-0">
+                          <i className="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                      </div>
+                    )}
+
+                    {isBibleLoading ? (
+                      <div className="flex flex-col items-center justify-center py-24 text-gray-500 dark:text-gray-400">
+                        <div className="loader border-t-amber-500 w-10 h-10 mb-4"></div>
+                        <span className="font-semibold text-xs tracking-wider uppercase">Compiling ancient manuscript files...</span>
+                      </div>
+                    ) : (
+                      bibleVerses.map(verse => (
+                        <MessageBubble
+                          key={verse.id}
+                          message={verse}
+                          isOverlayActive={isOverlayActive}
+                          selectedLangCodes={selectedLangCodes}
+                          selectedLevel={selectedLevel}
+                          translationStyle={translationStyle}
+                          isThesaurusActive={isThesaurusActive}
+                          onWordHover={handleWordHover}
+                          onWordLeave={handleWordLeave}
+                          isBibleVerse={true}
+                          viewMode={viewMode}
+                          onVerseHover={handleVerseHover}
+                          onVerseLeave={handleVerseLeave}
+                        />
+                      ))
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map(msg => (
+                      <MessageBubble
+                        key={msg.id}
+                        message={msg}
+                        isOverlayActive={isOverlayActive}
+                        selectedLangCodes={selectedLangCodes}
+                        selectedLevel={selectedLevel}
+                        translationStyle={translationStyle}
+                        isThesaurusActive={isThesaurusActive}
+                        onWordHover={handleWordHover}
+                        onWordLeave={handleWordLeave}
+                        viewMode={viewMode}
+                        onVerseHover={handleVerseHover}
+                        onVerseLeave={handleVerseLeave}
+                      />
+                    ))}
+                   
+                    {isChatting && (
+                      <div className="flex w-full mb-6 justify-start">
+                        <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center space-x-2 animate-fade-in">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </main>
+
+              {/* Floating Comparative Verse Tooltip */}
+              {verseComparePopup && (
+                <div
+                  className="fixed z-50 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-80 max-w-[90vw] animate-fade-in"
+                  style={{
+                    left: Math.max(10, Math.min(window.innerWidth - 330, verseComparePopup.x)),
+                    top: Math.max(10, Math.min(window.innerHeight - 320, verseComparePopup.y))
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 border-b border-gray-150 dark:border-gray-700 pb-2 mb-2 font-bold text-xs text-amber-600 dark:text-amber-400">
+                    <i className="fa-solid fa-code-compare text-xs"></i>
+                    {verseComparePopup.book} {verseComparePopup.chapter}:{verseComparePopup.verseNum} Comparisons
+                  </div>
+                  <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    {verseComparePopup.comparisons.map((item, idx) => (
+                      <div key={idx} className="text-xs">
+                        <div className="font-bold text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <span>{item.flag}</span> <span>{item.lang}</span>
+                        </div>
+                        <div className="text-gray-700 dark:text-gray-200 leading-relaxed bg-gray-50 dark:bg-gray-900/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800 serif-font">
+                          {item.text}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Draggable Lexical Thesaurus Popup */}
+              {thesaurusPopup && (() => {
+                const tooltipWidth = 288;
+                const estimatedHeight = 280;
+                let leftPos = thesaurusPopup.x - (tooltipWidth / 2);
+                let topPos = thesaurusPopup.y;
+
+                leftPos = Math.max(10, Math.min(window.innerWidth - tooltipWidth - 10, leftPos));
+                if (thesaurusPopup.elementRect) {
+                  const spaceBelow = window.innerHeight - thesaurusPopup.elementRect.bottom;
+                  const spaceAbove = thesaurusPopup.elementRect.top;
+                  if (spaceBelow < estimatedHeight && spaceAbove > spaceBelow) {
+                    topPos = thesaurusPopup.elementRect.top - estimatedHeight;
+                  } else {
+                    topPos = thesaurusPopup.elementRect.bottom + 10;
+                  }
+                }
+                topPos = Math.max(10, Math.min(window.innerHeight - 120, topPos));
+
+                return (
+                  <div
+                    className="thesaurus-tooltip fixed z-50 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-0 w-72 max-w-[90vw] animate-fade-in overflow-hidden"
+                    style={{
+                      left: leftPos,
+                      top: topPos,
+                      userSelect: isDragging ? 'none' : 'auto'
+                    }}
+                  >
+                    <div
+                      onMouseDown={handleMouseDown}
+                      className="flex justify-between items-center bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-3 cursor-move active:bg-gray-100 dark:active:bg-gray-800 transition-colors"
+                    >
+                      <div className="flex items-center space-x-2 overflow-hidden pr-2">
+                        <i className="fa-solid fa-grip-lines text-gray-400 dark:text-gray-500 text-xs"></i>
+                        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xs truncate">"{thesaurusPopup.word}"</h3>
+                      </div>
+                      <button
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={() => setThesaurusPopup(null)}
+                        className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full w-7 h-7 flex items-center justify-center shrink-0 transition-colors"
+                      >
+                        <i className="fa-solid fa-times text-xs"></i>
+                      </button>
+                    </div>
+                   
+                    <div className="p-4">
+                      {thesaurusPopup.loading ? (
+                        <div className="flex flex-col items-center justify-center py-6 text-gray-500 dark:text-gray-400 text-xs">
+                          <div className="loader border-t-amber-500 mb-3"></div>
+                          Retrieving lexical attributes...
+                        </div>
+                      ) : thesaurusPopup.data ? (
+                        <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-1">
+                         
+                          {thesaurusPopup.data.translation && (
+                            <div>
+                              <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 block">
+                                <i className="fa-solid fa-language mr-1"></i> Quick Translation ({LANGUAGES.find(l => l.code === (selectedLangCodes[0] || 'es'))?.name})
+                              </span>
+                              <div className="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 px-3 py-2 rounded-xl text-xs font-semibold">
+                                {thesaurusPopup.data.translation}
+                              </div>
+                            </div>
+                          )}
+
+                          {thesaurusPopup.data.synonyms && thesaurusPopup.data.synonyms.length > 0 && (
+                            <div>
+                              <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 block">
+                                <i className="fa-solid fa-equals mr-1"></i> Synonyms
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {thesaurusPopup.data.synonyms.map((s, i) => (
+                                  <span key={i} className="bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50 px-2 py-1 rounded-lg text-[10px] font-medium">
+                                    {s}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {thesaurusPopup.data.antonyms && thesaurusPopup.data.antonyms.length > 0 && (
+                            <div>
+                              <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 block">
+                                <i className="fa-solid fa-not-equal mr-1"></i> Antonyms
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {thesaurusPopup.data.antonyms.map((a, i) => (
+                                  <span key={i} className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-900/50 px-2 py-1 rounded-lg text-[10px] font-medium">
+                                    {a}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {thesaurusPopup.data.adjectives && thesaurusPopup.data.adjectives.length > 0 && (
+                            <div>
+                              <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 block">
+                                <i className="fa-solid fa-quote-left mr-1"></i> Related Adjectives
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {thesaurusPopup.data.adjectives.map((adj, i) => (
+                                  <span key={i} className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/50 px-2 py-1 rounded-lg text-[10px] font-medium">
+                                    {adj}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      ) : (
+                        <div className="text-red-500 text-xs py-4 text-center">
+                          <i className="fa-solid fa-triangle-exclamation mr-2"></i> Could not compile thesaurus.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Footer Interactive Chat Input */}
+              {activeMode === 'chat' && (
+                <footer className="bg-white dark:bg-gray-800 p-4 border-t border-gray-150 dark:border-gray-700 z-10 transition-colors duration-200">
+                  <form onSubmit={handleSendMessage} className="flex gap-3">
+                    <input
+                      type="text"
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      placeholder="Ask the AI study assistant about translation structures, ancient texts, or history..."
+                      className="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-gray-800 dark:text-gray-100 transition-all text-xs sm:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isChatting || !inputText.trim()}
+                      className="bg-blue-600 dark:bg-blue-700 text-white rounded-2xl px-6 py-3.5 font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center shrink-0"
+                    >
+                      <i className="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                  </form>
+                </footer>
+              )}
+
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
