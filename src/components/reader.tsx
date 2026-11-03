@@ -19,6 +19,7 @@ import {
   WIDE_QUERY,
 } from "@/lib/settings";
 import { ChevronLeft, ChevronRight } from "./icons";
+import { openSearch } from "./search-panel";
 import { useReaderState } from "./use-reader-state";
 
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
@@ -53,20 +54,23 @@ export function ReaderView() {
     return () => clearTimeout(t);
   }, [allLoaded, next, versions]);
 
-  // Jump to #v16 once the text is there.
-  const jumped = useRef(false);
+  // Jump to #v16 once every column's text is there (so later columns don't push the verse away).
+  // Remembered per chapter + hash, so following a search result to another chapter jumps again.
+  const jumped = useRef("");
   useEffect(() => {
-    if (jumped.current || !rows.length) return;
+    if (!allLoaded || !rows.length) return;
     const id = decodeURIComponent(window.location.hash.slice(1));
-    if (!id) return;
+    const key = `${ref.work}/${ref.book}/${ref.chapter}#${id}`;
+    if (!id || jumped.current === key) return;
     const el = document.getElementById(id);
     if (el) {
-      jumped.current = true;
+      jumped.current = key;
       el.scrollIntoView({ block: "center" });
+      document.querySelectorAll(".is-target").forEach((n) => n.classList.remove("is-target"));
       const cells = document.querySelectorAll(`[data-v="${CSS.escape(id.slice(1))}"]`);
       (cells.length ? cells : [el]).forEach((n) => n.classList.add("is-target"));
     }
-  }, [rows]);
+  }, [rows, allLoaded, ref.work, ref.book, ref.chapter]);
 
   // ← / → keys move between chapters (desktop).
   useEffect(() => {
@@ -209,7 +213,17 @@ function Cell({ verse, version, chapter, showNumber }: { verse: Verse | null; ve
       </span>
     );
   return (
-    <span lang={version.language} dir={version.dir} className="reader-text block" style={{ color: color }}>
+    <span
+      lang={version.language}
+      dir={version.dir}
+      className="reader-text block"
+      style={{ color: color }}
+      onDoubleClick={() => {
+        // Double-click a word → search for it in this version.
+        const word = window.getSelection()?.toString().trim().match(/[\p{L}\p{M}\p{N}]+/u)?.[0];
+        if (word) openSearch(word, [version.id]);
+      }}
+    >
       {showNumber && (
         <sup
           className="mr-1 select-none font-sans text-[0.65em] font-semibold text-accent"

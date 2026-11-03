@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
-import { useSettings } from "@/lib/settings";
+import { useMediaQuery, useSettings, WIDE_QUERY } from "@/lib/settings";
 import { Modal } from "./modal";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
 import { CloseIcon } from "./icons";
 import { TabBar, useTabsSync } from "./tabs";
 import { useEdgeSwipes } from "./use-gestures";
+import { closeSearch, openSearch, SearchPanel, useSearchUi } from "./search-panel";
 
 /** Keeps the <html> dark class in sync with the saved theme (and the OS when "system"). */
 function useThemeSync() {
@@ -26,6 +27,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   useThemeSync();
   useTabsSync();
+  const search = useSearchUi();
+  const wide = useMediaQuery(WIDE_QUERY, true);
+  // "/" opens search (desktop keyboard shortcut).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+      if ((e.target as HTMLElement).closest("input, textarea, select, [contenteditable]")) return;
+      e.preventDefault();
+      openSearch();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   // Phone: swipe in from the left edge for the library, up from the bottom edge for reading settings.
   useEdgeSwipes(
     () => setDrawerOpen(true),
@@ -41,7 +55,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Sidebar />
         </aside>
         <main className="relative min-w-0 flex-1">{children}</main>
+        {wide && search.open && (
+          <aside aria-label="Search" className="w-96 shrink-0 border-l border-line bg-panel">
+            <SearchPanel />
+          </aside>
+        )}
       </div>
+
+      <Modal open={!wide && search.open} onClose={closeSearch} variant="sheet" label="Search">
+        <div className="h-[80dvh]">
+          <SearchPanel onNavigate={closeSearch} />
+        </div>
+      </Modal>
 
       <Modal open={drawerOpen} onClose={() => setDrawerOpen(false)} variant="drawer" label="Library">
         <div className="flex h-full flex-col">

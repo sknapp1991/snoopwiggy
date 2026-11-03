@@ -144,7 +144,7 @@ Quick wins (Phase 3a, first):
 - **Reading tabs:** a row of tabs (Matthew 5 | Exodus 3 | …); new tab per book opened, swipe or tap to switch, ✕ to close, saved on the device.
 
 Bigger features:
-- **Full-text search** ("darkness"): build-time inverted index per version, sharded by word prefix as static files. Results grouped by religion → collection → book in collapsible sections, with counts, filters by version/language, and highlighted matches. Ties into the word-study panel.
+- **Full-text search** ("darkness") — *done Nov 2026 (scripts/build-search.ts, search panel; `/` or double-click a word)*: build-time inverted index per version, sharded by word prefix as static files. Results grouped by religion → collection → book in collapsible sections, with counts, filters by version/language, and highlighted matches. Ties into the word-study panel.
 - **Audio read-along:** v1 uses the browser's built-in text-to-speech (Web Speech API): free, works for any language with an installed voice, and highlights the verse being read, with play/pause, speed and voice choice. Pick which column to listen to (e.g. read English + Spanish, listen in Spanish). v2: public-domain human recordings where they exist (e.g. LibriVox), verse-synced when timing data is available.
 
 Additional ideas (Claude):

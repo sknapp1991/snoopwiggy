@@ -25,7 +25,7 @@ export function chapterKey(work: string, ver: string, book: string, chapter: num
   return `${work}/${ver}/${book}/${chapter}`;
 }
 
-type BookFile = { work: string; version: string; book: string; chapters: Record<string, Pick<Chapter, "verses" | "note">> };
+export type BookFile = { work: string; version: string; book: string; chapters: Record<string, Pick<Chapter, "verses" | "note">> };
 /** Texts are served one file per book (scripts/pack-texts.ts); every chapter of a book shares one request. */
 const books = new Map<string, Promise<BookFile>>();
 
@@ -40,6 +40,11 @@ function loadBook(bookKey: string, retry: boolean) {
     books.set(bookKey, p);
   }
   return p;
+}
+
+/** A whole book of one version (shared with the reader's cache; used by search results). */
+export function fetchBook(work: string, version: string, book: string): Promise<BookFile> {
+  return loadBook(`${work}/${version}/${book}`, false);
 }
 
 export function loadChapter(key: string, { retry = false } = {}) {

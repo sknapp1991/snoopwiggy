@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
-import { BookIcon, CloseIcon, LanguagesIcon, MenuIcon, SlidersIcon } from "./icons";
+import { BookIcon, CloseIcon, LanguagesIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
+import { openSearch } from "./search-panel";
 import { FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
@@ -44,6 +45,16 @@ export function TopBar({
       </button>
 
       <div className="hidden flex-1 desk:block" />
+
+      <button
+        type="button"
+        onClick={() => openSearch()}
+        aria-label="Search the text"
+        title="Search (/)"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink desk:border desk:border-line desk:bg-raised"
+      >
+        <SearchIcon />
+      </button>
 
       {/* Desktop controls */}
       <div className="hidden items-center gap-2 desk:flex">

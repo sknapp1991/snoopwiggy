@@ -55,3 +55,6 @@ next-env.d.ts
 
 # generated per-book bundles (scripts/pack-texts.ts)
 /public/texts/
+
+# generated search index (scripts/build-search.ts)
+/public/search/
