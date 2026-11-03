@@ -167,5 +167,7 @@ Goal: go to the previous/next chapter without scrolling to the top or bottom, wi
 - **Column view:** horizontal swipes keep scrolling between versions. Only at the first/last column
   does continuing to pull past the end reveal a "Next chapter ›" hint (pull-to-refresh style); the
   change happens only when dragged past the threshold. Looking across versions can never flip a chapter.
-- **Also:** small floating ‹ › chapter buttons that fade while scrolling and reappear when idle,
-  and a setting to turn chapter swiping off.
+- **Also:** small floating ‹ › chapter buttons that fade while scrolling and reappear when idle.
+- **Setting:** "Swipe to change chapter: one finger (default) / two fingers / off". Two-finger mode
+  must not fight pinch-to-zoom: classify a two-finger gesture as a swipe only if both fingers move the
+  same direction with roughly constant spacing; if the spacing changes it is a pinch.
