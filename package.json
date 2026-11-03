@@ -19,6 +19,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "pack": "tsx scripts/pack-texts.ts && tsx scripts/build-search.ts",
     "search-index": "tsx scripts/build-search.ts",
+    "dict": "tsx scripts/build-dict.ts",
     "predev": "npm run pack",
     "prebuild": "npm run pack"
   },

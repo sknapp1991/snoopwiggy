@@ -9,21 +9,31 @@ import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore } 
 import { catalog, findBook, getVersion, readHref, type BookEntry } from "@/lib/catalog";
 import { fetchBook, type BookFile } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
-import { markMatches, search, suggest, type SearchResult, type Term, type VerseHit } from "@/lib/search";
+import { markMatches, search, suggest, type SearchResult, type VerseHit } from "@/lib/search";
 import { ChevronDown, ChevronRight, CloseIcon, SearchIcon } from "./icons";
 import { useReaderState } from "./use-reader-state";
 import { closePanel, openPanel } from "@/lib/ui-store";
 
 /* ---------- open/close + state that survives closing the panel ---------- */
 
-type UiState = { query: string; versions: string[] | null; nonce: number };
-let ui: UiState = { query: "", versions: null, nonce: 0 };
+type UiState = {
+  query: string;
+  versions: string[] | null;
+  nonce: number;
+  /** Look up English words' equivalents in the other languages. */
+  crossLanguage: boolean;
+  /** Show every chosen version's text under each result (not only the ones that matched). */
+  allVersions: boolean;
+  /** Equivalents the user switched off ("version:word"). */
+  exclude: string[];
+};
+let ui: UiState = { query: "", versions: null, nonce: 0, crossLanguage: true, allVersions: true, exclude: [] };
 const subs = new Set<() => void>();
 const setUi = (patch: Partial<UiState>) => {
   ui = { ...ui, ...patch };
   subs.forEach((l) => l());
 };
-const SERVER_UI: UiState = { query: "", versions: null, nonce: 0 };
+const SERVER_UI: UiState = { query: "", versions: null, nonce: 0, crossLanguage: true, allVersions: true, exclude: [] };
 
 export function useSearchUi() {
   return useSyncExternalStore(
@@ -79,12 +89,17 @@ export function SearchPanel({ onNavigate }: { onNavigate?: () => void }) {
   }, [input]);
 
   // Debounced search.
-  const searchKey = query ? `${query}|${versionKey}` : "";
+  const excludeKey = state.exclude.join(",");
+  const searchKey = query ? `${query}|${versionKey}|${state.crossLanguage}|${excludeKey}` : "";
   useEffect(() => {
     if (!searchKey) return;
     let live = true;
     const t = setTimeout(() => {
-      search(query, versionKey.split(","))
+      search(query, versionKey.split(","), {
+        crossLanguage: state.crossLanguage,
+        languageOf: (v) => getVersion(v)?.language ?? "en",
+        exclude: new Set(excludeKey ? excludeKey.split(",") : []),
+      })
         .then((result) => live && setFound({ key: searchKey, result }))
         .catch((e: Error) => live && setFound({ key: searchKey, error: e.message }));
     }, 250);
@@ -92,7 +107,7 @@ export function SearchPanel({ onNavigate }: { onNavigate?: () => void }) {
       live = false;
       clearTimeout(t);
     };
-  }, [searchKey, query, versionKey]);
+  }, [searchKey, query, versionKey, state.crossLanguage, excludeKey]);
   const current = found?.key === searchKey ? found : null;
   // Keep showing the previous results while the next search runs (less flicker while typing).
   const result = current?.result ?? (searchKey ? found?.result ?? null : null);
@@ -166,6 +181,14 @@ export function SearchPanel({ onNavigate }: { onNavigate?: () => void }) {
           </button>
         </div>
         <VersionFilter work={work} selected={selected} perVersion={result?.perVersion} />
+        <div className="flex flex-wrap gap-1">
+          <Toggle on={state.crossLanguage} onChange={(v) => setUi({ crossLanguage: v })} title="Find the same word in the other languages (e.g. sacrifice → sacrificio)">
+            🌐 Same word in other languages
+          </Toggle>
+          <Toggle on={state.allVersions} onChange={(v) => setUi({ allVersions: v })} title="Show every chosen version's text in the results">
+            Show all versions
+          </Toggle>
+        </div>
         {showSuggestions && (
           <div className="flex flex-wrap gap-1" aria-label="Word suggestions">
             {suggestions.map((s) => (
@@ -198,18 +221,66 @@ export function SearchPanel({ onNavigate }: { onNavigate?: () => void }) {
                 </span>
               )}
             </p>
+            {Object.keys(result.equivalents).length > 0 && (
+              <div className="space-y-1 px-2 pb-2">
+                {Object.entries(result.equivalents).map(([vid, list]) => (
+                  <p key={vid} className="flex flex-wrap items-center gap-1 text-xs text-muted">
+                    <span className="font-semibold">{getVersion(vid)?.abbr}</span> also searched:
+                    {list.map((w) => (
+                      <button
+                        key={w}
+                        type="button"
+                        onClick={() => setUi({ exclude: [...state.exclude, `${vid}:${w}`] })}
+                        title="Not a good match? Tap to leave it out"
+                        dir="auto"
+                        className="inline-flex min-h-7 items-center gap-1 rounded-full border border-line px-2 hover:border-faint"
+                      >
+                        {w} <CloseIcon width={10} height={10} />
+                      </button>
+                    ))}
+                  </p>
+                ))}
+              </div>
+            )}
+            {state.exclude.length > 0 && (
+              <button type="button" onClick={() => setUi({ exclude: [] })} className="mx-2 mb-2 text-xs text-accent hover:underline">
+                Restore {state.exclude.length} removed word{state.exclude.length === 1 ? "" : "s"}
+              </button>
+            )}
             {total === 0 && (
               <p className="px-3 py-6 text-center text-sm text-faint">
                 No verses contain {result.terms.length > 1 ? "all of these words" : "this word"} in the chosen versions. Try a
                 trailing * (e.g. <em>{result.terms[0]?.word}*</em>) or another version.
               </p>
             )}
-            <ResultTree tree={tree} terms={result.terms} total={total} readerVersions={readerVersions} onNavigate={onNavigate} />
+            <ResultTree
+              tree={tree}
+              result={result}
+              shown={state.allVersions ? selected : null}
+              total={total}
+              readerVersions={readerVersions}
+              onNavigate={onNavigate}
+            />
           </>
         )}
         {query && !result && !error && <p className="px-3 py-6 text-center text-sm text-faint">Searching…</p>}
       </div>
     </div>
+  );
+}
+
+function Toggle({ on, onChange, title, children }: { on: boolean; onChange: (v: boolean) => void; title: string; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      title={title}
+      onClick={() => onChange(!on)}
+      className={`min-h-9 rounded-full border px-2.5 text-xs ${on ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:border-faint"}`}
+    >
+      {on ? "✓ " : ""}
+      {children}
+    </button>
   );
 }
 
@@ -337,13 +408,16 @@ function groupHits(work: string, hits: VerseHit[]): RelGroup[] {
 
 function ResultTree({
   tree,
-  terms,
+  result,
+  shown,
   total,
   readerVersions,
   onNavigate,
 }: {
   tree: RelGroup[];
-  terms: Term[];
+  result: SearchResult;
+  /** All versions to show under each verse (null = only the ones that matched). */
+  shown: string[] | null;
   total: number;
   readerVersions: string[];
   onNavigate?: () => void;
@@ -383,7 +457,7 @@ function ResultTree({
                             <GroupButton open={open} onClick={() => toggle(id, openBooks)} count={b.hits.length} level={2}>
                               {b.entry.name}
                             </GroupButton>
-                            {open && <BookHits group={b} terms={terms} readerVersions={readerVersions} onNavigate={onNavigate} />}
+                            {open && <BookHits group={b} result={result} showVersions={shown} readerVersions={readerVersions} onNavigate={onNavigate} />}
                           </li>
                         );
                       })}
@@ -431,12 +505,14 @@ function GroupButton({
 
 function BookHits({
   group,
-  terms,
+  result,
+  showVersions,
   readerVersions,
   onNavigate,
 }: {
   group: BookGroup;
-  terms: Term[];
+  result: SearchResult;
+  showVersions: string[] | null;
   readerVersions: string[];
   onNavigate?: () => void;
 }) {
@@ -444,7 +520,8 @@ function BookHits({
   const [files, setFiles] = useState<Record<string, BookFile | "error">>({});
   const { entry, hits } = group;
   const visible = hits.slice(0, shown);
-  const needed = [...new Set(visible.flatMap((h) => h.versions))].join(",");
+  const linesFor = (h: VerseHit) => showVersions ?? h.versions;
+  const needed = [...new Set(visible.flatMap(linesFor))].join(",");
 
   useEffect(() => {
     let live = true;
@@ -473,13 +550,15 @@ function BookHits({
               {entry.chapterName ?? entry.name} {h.chapter}:{h.v}
             </Link>
             <div className="space-y-1">
-              {h.versions.map((vid) => {
+              {linesFor(h).map((vid) => {
                 const v = getVersion(vid)!;
                 const file = files[vid];
+                const matched = h.versions.includes(vid);
+                const terms = result.termsByVersion[vid] ?? result.terms;
                 const verse = file && file !== "error" ? file.chapters[String(h.chapter)]?.verses.find((x) => x.v === h.v) : undefined;
                 return (
-                  <p key={vid} dir={v.dir} lang={v.language} className="text-sm leading-relaxed">
-                    {h.versions.length > 1 && (
+                  <p key={vid} dir={v.dir} lang={v.language} className={`text-sm leading-relaxed ${matched ? "" : "text-muted"}`}>
+                    {linesFor(h).length > 1 && (
                       <span dir="auto" className="mx-1.5 ms-0 text-[11px] font-semibold text-faint">
                         {v.abbr}
                       </span>

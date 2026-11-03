@@ -226,6 +226,106 @@ function OrderList({ versions, setVersions }: { versions: string[]; setVersions:
   );
 }
 
+/** Saved setups: versions, order, colours, text size, view and widths, one tap to switch. */
+export function SavedSetups() {
+  const s = useSettings();
+  const { ref, versions, setVersions } = useReaderState();
+  const [name, setName] = useState("");
+  const [naming, setNaming] = useState(false);
+  const suggested = versions.map((id) => getVersion(id)?.abbr ?? id).join(" / ");
+  const mine = s.setups.filter((x) => x.work === ref.work);
+  const isCurrent = (x: (typeof mine)[number]) =>
+    x.versions.join() === versions.join() && x.fontSize === s.fontSize && x.langColors === s.langColors && x.view === s.view;
+  const save = () => {
+    const setup = {
+      id: `${Date.now()}`,
+      name: name.trim() || suggested,
+      work: ref.work,
+      versions,
+      view: s.view,
+      fontSize: s.fontSize,
+      langColors: s.langColors,
+      palette: s.palette,
+      versionColors: s.versionColors,
+      colWidth: s.colWidth,
+      colWidthLandscape: s.colWidthLandscape,
+      stackWidth: s.stackWidth,
+    };
+    updateSettings({ setups: [...s.setups, setup] });
+    setName("");
+    setNaming(false);
+  };
+  const apply = (x: (typeof mine)[number]) => {
+    const { view, fontSize, langColors, palette, versionColors, colWidth, colWidthLandscape, stackWidth } = x;
+    updateSettings({ view, fontSize, langColors, palette, versionColors, colWidth, colWidthLandscape, stackWidth });
+    const valid = x.versions.filter((id) => getVersion(id));
+    if (valid.length) setVersions(valid);
+  };
+  return (
+    <div className="space-y-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Saved setups</h3>
+      {mine.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {mine.map((x) => (
+            <span
+              key={x.id}
+              className={`flex min-h-10 items-center rounded-full border text-sm ${isCurrent(x) ? "border-accent bg-accent-soft text-accent" : "border-line bg-raised"}`}
+            >
+              <button type="button" onClick={() => apply(x)} className="flex min-h-10 items-center gap-1.5 pl-3 pr-1" title={`Switch to ${x.name}`}>
+                <span className="flex">
+                  {x.versions.slice(0, 4).map((id) => {
+                    const v = getVersion(id);
+                    const c = v && x.langColors ? x.versionColors[id] || x.palette[v.language] || DEFAULT_PALETTE[v.language] : "";
+                    return <span key={id} className="-ml-1 h-3 w-3 rounded-full border border-paper first:ml-0" style={{ background: c || "var(--faint)" }} />;
+                  })}
+                </span>
+                {x.name}
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSettings({ setups: s.setups.filter((y) => y.id !== x.id) })}
+                aria-label={`Delete setup ${x.name}`}
+                className="flex h-10 w-8 items-center justify-center text-faint hover:text-ink"
+              >
+                <CloseIcon width={14} height={14} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      {naming ? (
+        <form
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={suggested}
+            aria-label="Setup name"
+            className="h-11 min-w-0 flex-1 rounded-lg border border-line bg-raised px-3 text-base outline-none focus:ring-2 focus:ring-accent/50 md:text-sm"
+          />
+          <button type="submit" className="h-11 rounded-lg bg-accent px-4 text-sm font-medium text-accent-ink">
+            Save
+          </button>
+        </form>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setNaming(true)}
+          className="min-h-11 w-full rounded-lg border border-dashed border-line text-sm text-muted hover:border-faint hover:text-ink"
+        >
+          + Save current setup ({suggested}, {s.fontSize}px{s.langColors ? ", colours" : ""})
+        </button>
+      )}
+    </div>
+  );
+}
+
 /** Swipe-to-change-chapter setting and the floating ‹ › buttons. */
 export function ChapterSwipeControl() {
   const { chapterSwipe, floatingNav } = useSettings();
@@ -278,11 +378,19 @@ export function WidthControl() {
   const key = column ? (landscape ? "colWidthLandscape" : "colWidth") : "stackWidth";
   const [min, max, auto] = column ? [COL_MIN, COL_MAX, landscape ? 14 : 17] : [STACK_MIN, STACK_MAX, 48];
   const value = s[key] ?? auto;
+  // While dragging, the settings sheet turns see-through (except this slider) to preview the text behind.
+  const peek = (on: boolean) => {
+    if (on) document.documentElement.dataset.peek = "1";
+    else delete document.documentElement.dataset.peek;
+  };
   return (
-    <div className="space-y-1">
+    <div className="peek-keep space-y-1">
       <div className="flex items-center justify-between">
         <label htmlFor="width-range" className="text-xs font-semibold uppercase tracking-wide text-faint">
           {column ? `Column width${landscape ? " (landscape)" : ""}` : "Reading width"}
+          <span className="ml-2 font-normal normal-case tracking-normal tabular-nums">
+            {s[key] == null ? "auto" : `${value} rem`}
+          </span>
         </label>
         <button type="button" onClick={() => updateSettings({ [key]: null })} className="min-h-8 text-xs text-accent underline-offset-2 hover:underline">
           Auto
@@ -296,8 +404,14 @@ export function WidthControl() {
         step={1}
         value={value}
         onChange={(e) => updateSettings({ [key]: Number(e.target.value) })}
+        onPointerDown={() => peek(true)}
+        onPointerUp={() => peek(false)}
+        onPointerCancel={() => peek(false)}
+        onTouchEnd={() => peek(false)}
+        onBlur={() => peek(false)}
         className="h-11 w-full accent-[var(--accent)]"
       />
+      <p className="text-[11px] text-faint">Drag to preview: the text shows through while you slide.</p>
     </div>
   );
 }

@@ -10,6 +10,22 @@ import { STORAGE_KEY } from "./theme-script";
 export type ViewMode = "column" | "stacked";
 export type Theme = "light" | "dark" | "system";
 
+/** A saved study setup ("template"): versions + how they look. */
+export type Setup = {
+  id: string;
+  name: string;
+  work: string;
+  versions: string[];
+  view: ViewMode | null;
+  fontSize: number;
+  langColors: boolean;
+  palette: Record<string, string>;
+  versionColors: Record<string, string>;
+  colWidth: number | null;
+  colWidthLandscape: number | null;
+  stackWidth: number | null;
+};
+
 export type Settings = {
   /** null = automatic (Column on wide screens, Stacked on phones) */
   view: ViewMode | null;
@@ -45,6 +61,8 @@ export type Settings = {
   chapterSwipe: "one" | "two" | "off";
   /** Floating ‹ › chapter buttons (fade while scrolling). */
   floatingNav: boolean;
+  /** Saved setups, in the order they were made. */
+  setups: Setup[];
 };
 
 export const FONT_MIN = 10;
@@ -90,6 +108,7 @@ const DEFAULTS: Settings = {
   highlightColor: "yellow",
   chapterSwipe: "one",
   floatingNav: true,
+  setups: [],
 };
 
 const num = (v: unknown, lo: number, hi: number) =>
@@ -125,6 +144,9 @@ function read(): Settings {
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
       floatingNav: p.floatingNav !== false,
+      setups: Array.isArray(p.setups)
+        ? p.setups.filter((x): x is Setup => !!x && typeof x.name === "string" && Array.isArray(x.versions)).slice(0, 30)
+        : [],
     };
   } catch {
     return DEFAULTS;

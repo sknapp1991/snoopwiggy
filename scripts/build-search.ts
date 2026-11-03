@@ -127,6 +127,12 @@ async function buildVersion(work: string, version: string) {
   }
   const meta: SearchMeta = { version, books, shards: [...shards.keys()].sort(), words: all.length };
   await writeFile(path.join(dir, "meta.json"), JSON.stringify(meta));
+  // English → this language word equivalents (scripts/build-dict.ts), for cross-language search.
+  try {
+    await writeFile(path.join(dir, "dict.json"), await readFile(path.join(ROOT, "data", "dict", `${version}.json`)));
+  } catch {
+    /* English versions have none */
+  }
   return { files: shards.size + 1, bytes, words: all.length, verses: ordinal };
 }
 

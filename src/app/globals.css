@@ -145,3 +145,27 @@ dialog.sheet[open] {
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(8px); }
 }
+
+/* Width slider preview: while dragging, the settings sheet is see-through except the slider */
+html[data-peek] dialog.sheet {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+html[data-peek] dialog.sheet::backdrop {
+  background: transparent;
+}
+html[data-peek] dialog.sheet * {
+  visibility: hidden;
+}
+html[data-peek] dialog.sheet .peek-keep,
+html[data-peek] dialog.sheet .peek-keep * {
+  visibility: visible;
+}
+html[data-peek] dialog.sheet .peek-keep {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
+}

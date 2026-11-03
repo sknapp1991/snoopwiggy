@@ -8,7 +8,10 @@
  */
 import { normalizeWord, RAW_WORD, shardFile, type SearchMeta, type SearchShard } from "./search-text";
 
-export type Term = { word: string; prefix: boolean };
+/** `maxExtra`: for a prefix term, at most this many letters after it (equivalents: "sacrificio" → "sacrificios"). */
+export type Term = { word: string; prefix: boolean; maxExtra?: number };
+const termMatches = (t: Term, w: string) =>
+  t.prefix ? w.startsWith(t.word) && (t.maxExtra === undefined || [...w].length - [...t.word].length <= t.maxExtra) : w === t.word;
 /** One matching verse: canonical reference + the versions it matched in. */
 export type VerseHit = { book: string; chapter: number; v: string; versions: string[] };
 
@@ -29,6 +32,10 @@ function getJson<T>(url: string, cache: Map<string, Promise<T>>): Promise<T> {
 }
 
 export const loadMeta = (version: string) => getJson(`/search/${version}/meta.json`, metas);
+const dicts = new Map<string, Promise<Record<string, string[]>>>();
+/** English → this version's word equivalents (built by scripts/build-dict.ts); {} when there is none. */
+const loadDict = (version: string) =>
+  getJson<Record<string, string[]>>(`/search/${version}/dict.json`, dicts).catch(() => ({}) as Record<string, string[]>);
 const loadShard = (version: string, prefix: string) => getJson(`/search/${version}/${shardFile(prefix)}.json`, shards);
 
 export function parseQuery(q: string): Term[] {
@@ -74,7 +81,7 @@ async function matchTerm(version: string, meta: SearchMeta, t: Term): Promise<Ma
   const files = await Promise.all(shardsFor(meta, t.word, t.prefix).map((s) => loadShard(version, s)));
   for (const shard of files)
     if (t.prefix) {
-      for (const w in shard) if (w.startsWith(t.word)) out.set(w, decode(shard[w]));
+      for (const w in shard) if (termMatches(t, w)) out.set(w, decode(shard[w]));
     } else if (shard[t.word]) out.set(t.word, decode(shard[t.word]));
   return out;
 }
@@ -105,6 +112,10 @@ function makeDecoder(meta: SearchMeta) {
 
 export type SearchResult = {
   terms: Term[];
+  /** Terms used per version (the query plus its equivalents in that language), for highlighting. */
+  termsByVersion: Record<string, Term[]>;
+  /** Equivalent words that were searched per version, e.g. { rvr1909: ["sacrificio"] } */
+  equivalents: Record<string, string[]>;
   hits: VerseHit[];
   /** verses matched per version */
   perVersion: Record<string, number>;
@@ -112,17 +123,49 @@ export type SearchResult = {
   forms: string[];
 };
 
-export async function search(query: string, versions: string[]): Promise<SearchResult> {
+export type SearchOptions = {
+  /** Versions in other languages also search the English words' equivalents in that language. */
+  crossLanguage?: boolean;
+  /** Language of each version (to know which ones aren't English). */
+  languageOf?: (version: string) => string;
+  /** Equivalents the user turned off, as "version:word". */
+  exclude?: Set<string>;
+};
+
+export async function search(query: string, versions: string[], opts: SearchOptions = {}): Promise<SearchResult> {
   const terms = parseQuery(query);
-  const empty = { terms, hits: [], perVersion: {}, forms: [] };
+  const empty = { terms, termsByVersion: {}, equivalents: {}, hits: [], perVersion: {}, forms: [] };
   if (!terms.length || !versions.length) return empty;
   const byKey = new Map<string, VerseHit>();
   const perVersion: Record<string, number> = {};
+  const termsByVersion: Record<string, Term[]> = {};
+  const equivalents: Record<string, string[]> = {};
   const forms = new Set<string>();
   await Promise.all(
     versions.map(async (version) => {
       const meta = await loadMeta(version);
-      const sets = await Promise.all(terms.map((t) => matchTerm(version, meta, t)));
+      // Each query term becomes a group: the word itself, plus its equivalents in this language.
+      const groups: Term[][] = terms.map((t) => [t]);
+      if (opts.crossLanguage && opts.languageOf?.(version) !== "en") {
+        const dict = await loadDict(version);
+        terms.forEach((t, i) => {
+          if (t.prefix) return;
+          for (const w of dict[t.word] ?? []) {
+            if (opts.exclude?.has(`${version}:${w}`)) continue;
+            // plus close forms (plural, gender): up to 2 more letters, only for longer words
+            groups[i].push({ word: w, prefix: [...w].length >= 4, maxExtra: 2 });
+            (equivalents[version] ??= []).push(w);
+          }
+        });
+      }
+      termsByVersion[version] = groups.flat();
+      const sets = await Promise.all(
+        groups.map(async (g) => {
+          const merged = new Map<string, number[]>();
+          for (const m of await Promise.all(g.map((t) => matchTerm(version, meta, t)))) m.forEach((l, w) => merged.set(w, l));
+          return merged;
+        }),
+      );
       sets.forEach((m) => m.forEach((_, w) => forms.add(w)));
       // AND across terms, OR across the forms of one term.
       let result = null as Set<number> | null;
@@ -143,7 +186,7 @@ export async function search(query: string, versions: string[]): Promise<SearchR
       }
     }),
   );
-  return { terms, hits: [...byKey.values()], perVersion, forms: [...forms].sort() };
+  return { terms, termsByVersion, equivalents, hits: [...byKey.values()], perVersion, forms: [...forms].sort() };
 }
 
 /** Word completions for the last (partial) term: most frequent forms first. */
@@ -165,7 +208,7 @@ export function markMatches(text: string, terms: Term[]): { text: string; hit: b
   let last = 0;
   for (const m of text.matchAll(RAW_WORD)) {
     const w = normalizeWord(m[0]);
-    if (!terms.some((t) => (t.prefix ? w.startsWith(t.word) : w === t.word))) continue;
+    if (!terms.some((t) => termMatches(t, w))) continue;
     if (m.index! > last) parts.push({ text: text.slice(last, m.index), hit: false });
     parts.push({ text: m[0], hit: true });
     last = m.index! + m[0].length;
