@@ -155,3 +155,17 @@ Additional ideas (Claude):
 - Share a verse (link with ?v= and #verse; optional image card).
 - Offline reading (PWA cache of recently read books) and reading plans / verse of the day.
 - Keyboard shortcuts on desktop (←/→ chapter, / search, t theme).
+
+## Swipe between chapters (requested Nov 2026; build after Phase 3)
+
+Goal: go to the previous/next chapter without scrolling to the top or bottom, without accidental triggers.
+- **Stacked view:** one-finger horizontal swipe changes chapter only when it is clearly horizontal
+  (within ~20° of horizontal, |dy| < dx/3), long (≥ 1/3 of screen width) and deliberate (released past
+  the line). Swipes that start in the left 24px edge stay reserved for opening the library drawer.
+  The page follows the finger slightly with a "‹ Genesis 1" / "Genesis 3 ›" hint so the user sees
+  what will happen and can cancel by sliding back.
+- **Column view:** horizontal swipes keep scrolling between versions. Only at the first/last column
+  does continuing to pull past the end reveal a "Next chapter ›" hint (pull-to-refresh style); the
+  change happens only when dragged past the threshold. Looking across versions can never flip a chapter.
+- **Also:** small floating ‹ › chapter buttons that fade while scrolling and reappear when idle,
+  and a setting to turn chapter swiping off.
