@@ -127,3 +127,10 @@ dialog.sheet[open] {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
 }
+
+/* Read-along: the verse being spoken */
+.is-reading {
+  background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+  transition: background 200ms;
+}

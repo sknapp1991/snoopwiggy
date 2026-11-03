@@ -20,6 +20,7 @@ import {
 } from "@/lib/settings";
 import { ChevronLeft, ChevronRight } from "./icons";
 import { openSearch } from "./search-panel";
+import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
 
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
@@ -46,6 +47,7 @@ export function ReaderView() {
   const rows = useMemo(() => alignVerses(entries.map((e) => (e.status === "ok" ? e.data : undefined))), [entries]);
   const { prev, next } = valid ? adjacentChapters(ref) : {};
   const allLoaded = entries.length > 0 && entries.every((e) => e.status === "ok");
+  const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller });
 
   // Prefetch the next chapter once this one is on screen.
   useEffect(() => {
@@ -105,6 +107,7 @@ export function ReaderView() {
   const column = view === "column";
 
   return (
+    <>
     <div
       ref={scroller}
       style={style}
@@ -114,7 +117,7 @@ export function ReaderView() {
     >
       <title>{`${title} · GlobalStudy`}</title>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
-        <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} />
+        <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
 
       {column ? <ColumnView cols={cols} rows={rows} /> : <StackedView cols={cols} rows={rows} />}
@@ -122,8 +125,11 @@ export function ReaderView() {
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <ChapterNav prev={prev} next={next} versions={versions} />
         <Attribution versions={cols.map((c) => c.version)} />
+        <ReadAlongSpacer ra={ra} />
       </div>
     </div>
+    <ReadAlongBar ra={ra} />
+    </>
   );
 }
 
@@ -137,12 +143,14 @@ function ChapterHeader({
   versions,
   prev,
   next,
+  ra,
 }: {
   title: string;
   bookRef: BookRef;
   versions: string[];
   prev?: BookRef;
   next?: BookRef;
+  ra: ReadAlong;
 }) {
   const book = findBook(bookRef.work, bookRef.book)!;
   return (
@@ -154,6 +162,7 @@ function ChapterHeader({
         <h1 className="font-serif text-2xl font-semibold md:text-3xl">{title}</h1>
       </div>
       <div className="flex shrink-0 gap-1">
+        <ListenButton ra={ra} />
         <NavIcon to={prev} versions={versions} label="Previous chapter" icon={<ChevronLeft />} />
         <NavIcon to={next} versions={versions} label="Next chapter" icon={<ChevronRight />} />
       </div>

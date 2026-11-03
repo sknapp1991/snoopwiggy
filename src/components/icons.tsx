@@ -65,3 +65,21 @@ export const ExpandIcon = (p: P) => (
 export const CollapseIcon = (p: P) => (
   <svg {...base(p)}><path d="M7 4l5 5 5-5M7 20l5-5 5 5" /></svg>
 );
+export const HeadphonesIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 15v-3a8 8 0 0116 0v3" /><rect x="3" y="14" width="4" height="7" rx="1.5" /><rect x="17" y="14" width="4" height="7" rx="1.5" /></svg>
+);
+export const PlayIcon = (p: P) => (
+  <svg {...base(p)}><path d="M7 4.5v15l12-7.5z" fill="currentColor" /></svg>
+);
+export const PauseIcon = (p: P) => (
+  <svg {...base(p)}><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" /><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" /></svg>
+);
+export const PrevIcon = (p: P) => (
+  <svg {...base(p)}><path d="M6 5v14M19 5.5v13L9 12z" /></svg>
+);
+export const NextIcon = (p: P) => (
+  <svg {...base(p)}><path d="M18 5v14M5 5.5v13L15 12z" /></svg>
+);
+export const GearIcon = (p: P) => (
+  <svg {...base(p)}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" /></svg>
+);

@@ -28,6 +28,10 @@ export type Settings = {
   palette: Record<string, string>;
   /** Open reading tabs ("bible/mat/5") and the active one. */
   tabs: string[];
+  /** Read-along: speech rate (0.5–2), chosen voice per language (voiceURI), keep going into the next chapter. */
+  ttsRate: number;
+  ttsVoices: Record<string, string>;
+  ttsContinue: boolean;
 };
 
 export const FONT_MIN = 10;
@@ -35,6 +39,7 @@ export const FONT_MAX = 32;
 export const COL_MIN = 10, COL_MAX = 40; // rem
 export const STACK_MIN = 24, STACK_MAX = 100; // rem
 export const MAX_TABS = 12;
+export const TTS_RATE_MIN = 0.5, TTS_RATE_MAX = 2;
 
 /** Colour-blind-friendly defaults (Okabe–Ito based), tuned for both themes via CSS mix. */
 export const DEFAULT_PALETTE: Record<string, string> = {
@@ -62,6 +67,9 @@ const DEFAULTS: Settings = {
   langColors: false,
   palette: {},
   tabs: [],
+  ttsRate: 1,
+  ttsVoices: {},
+  ttsContinue: true,
 };
 
 const num = (v: unknown, lo: number, hi: number) =>
@@ -87,6 +95,9 @@ function read(): Settings {
       langColors: p.langColors === true,
       palette: p.palette && typeof p.palette === "object" ? p.palette : {},
       tabs: Array.isArray(p.tabs) ? p.tabs.filter((t): t is string => typeof t === "string").slice(0, MAX_TABS) : [],
+      ttsRate: num(p.ttsRate, TTS_RATE_MIN, TTS_RATE_MAX) ?? 1,
+      ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
+      ttsContinue: p.ttsContinue !== false,
     };
   } catch {
     return DEFAULTS;
