@@ -45,7 +45,7 @@ export function VerseMenu({
   /** Text of the verse in every visible column. */
   textsFor: (verse: string) => VerseText[];
   versions: string[];
-  onReadFrom?: (verse: string) => void;
+  onReadFrom?: (verse: string, version?: string) => void;
 }) {
   const { menu } = useUi();
   return (
@@ -61,10 +61,10 @@ function MenuBody({
   versions,
   onReadFrom,
 }: {
-  r: StudyRef & { verse: string; focus?: "note" | "ask" };
+  r: StudyRef & { verse: string; focus?: "note" | "ask"; version?: string };
   textsFor: (verse: string) => VerseText[];
   versions: string[];
-  onReadFrom?: (verse: string) => void;
+  onReadFrom?: (verse: string, version?: string) => void;
 }) {
   useStudy(); // re-render on changes
   const highlight = getItem("highlight", r)?.color;
@@ -73,6 +73,7 @@ function MenuBody({
   const savedNote = getItem("note", r)?.text ?? "";
   const [note, setNote] = useState(savedNote);
   const [question, setQuestion] = useState("");
+  const [pasteIn, setPasteIn] = useState<string | null>(null);
   const reference = verseReference(r);
   const texts = textsFor(r.verse);
   const workName = catalog.works.find((w) => w.id === r.work)?.name ?? r.work;
@@ -100,8 +101,10 @@ function MenuBody({
     const prompt = buildAskPrompt({ reference, work: workName, translations: texts, question });
     const copied = await copyText(prompt);
     const url = askUrl(service, prompt);
+    // Services that can't be pre-filled (Gemini): say so here, where it is still visible on return.
+    setPasteIn(url === service.home ? (copied ? service.name : `!${service.name}`) : null);
     window.open(url, "_blank", "noopener,noreferrer");
-    toast(url === service.home ? (copied ? `Prompt copied — paste it into ${service.name}` : `Open ${service.name} and ask there`) : `Opening ${service.name}…`, 4000);
+    toast(url === service.home ? (copied ? `Prompt copied — paste it into ${service.name}` : `Open ${service.name} and ask there`) : `Opening ${service.name}…`, 6000);
   };
   const saveIfChanged = () => {
     if (note.trim() !== savedNote) saveNote(r, note);
@@ -182,7 +185,7 @@ function MenuBody({
               type="button"
               onClick={() => {
                 closeVerseMenu();
-                onReadFrom(r.verse);
+                onReadFrom(r.verse, r.version);
               }}
               className={`${pill} border-line`}
             >
@@ -225,14 +228,33 @@ function MenuBody({
               className="block h-11 w-full rounded-lg border border-line bg-raised px-3 text-base outline-none focus:ring-2 focus:ring-accent/50 md:text-sm"
             />
             <div className="flex gap-2">
-              {ASK_SERVICES.map((s) => (
-                <button key={s.id} type="button" onClick={() => ask(s.id)} className={`${pill} border-line font-medium`}>
+              {ASK_SERVICES.map((s, i) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => ask(s.id)}
+                  className={`${pill} flex-col gap-0 font-medium leading-tight ${i === 0 ? "border-accent bg-accent text-accent-ink" : "border-line"}`}
+                >
                   {s.name}
+                  {!s.url("x") && <span className="text-[10px] font-normal opacity-70">copy &amp; paste</span>}
                 </button>
               ))}
             </div>
+            {pasteIn && (
+              <p role="status" className="rounded-lg border border-accent bg-accent-soft px-3 py-2 text-sm text-ink">
+                {pasteIn.startsWith("!") ? (
+                  <>Couldn’t copy automatically. Select the text you want and copy it, then ask in {pasteIn.slice(1)}.</>
+                ) : (
+                  <>
+                    <strong>Prompt copied.</strong> {pasteIn} can’t be filled in automatically — in its message box, paste
+                    (Ctrl+V, or long-press → Paste on a phone) and send.
+                  </>
+                )}
+              </p>
+            )}
             <p className="text-xs text-faint">
-              Opens the service in a new tab with the verse, every visible translation and your question. The prompt is also copied.
+              Opens the service in a new tab with the verse, every visible translation and your question (ChatGPT and Claude
+              fill it in for you). The prompt is always copied too.
             </p>
           </div>
         )}

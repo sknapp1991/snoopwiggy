@@ -36,6 +36,8 @@ export type Settings = {
   ttsContinue: boolean;
   /** Keep the screen on while reading aloud (speech stops on most phones when the screen locks). */
   ttsKeepAwake: boolean;
+  /** While listening, show the version being read first. */
+  ttsListenFirst: boolean;
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
   highlightColor: string;
@@ -83,6 +85,7 @@ const DEFAULTS: Settings = {
   ttsVoices: {},
   ttsContinue: true,
   ttsKeepAwake: true,
+  ttsListenFirst: true,
   highlightMode: false,
   highlightColor: "yellow",
   chapterSwipe: "one",
@@ -117,6 +120,7 @@ function read(): Settings {
       ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
       ttsContinue: p.ttsContinue !== false,
       ttsKeepAwake: p.ttsKeepAwake !== false,
+      ttsListenFirst: p.ttsListenFirst !== false,
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",

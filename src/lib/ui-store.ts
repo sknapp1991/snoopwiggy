@@ -4,7 +4,8 @@ import { useSyncExternalStore } from "react";
 import type { StudyRef } from "./storage";
 
 export type Panel = "search" | "study" | "ask" | null;
-export type VerseMenuState = (StudyRef & { verse: string; focus?: "note" | "ask" }) | null;
+/** `version`: the column that was tapped (read aloud uses it). */
+export type VerseMenuState = (StudyRef & { verse: string; focus?: "note" | "ask"; version?: string }) | null;
 export type AskContext = StudyRef & { verse: string; texts: { abbr: string; language: string; text: string; dir: "ltr" | "rtl"; lang: string; name: string }[] };
 type Ui = { panel: Panel; menu: VerseMenuState; toast: { id: number; text: string } | null; ask: AskContext | null };
 

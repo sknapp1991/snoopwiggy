@@ -13,6 +13,7 @@ import { getLanguage } from "@/lib/languages";
 import { getSettings, TTS_RATE_MAX, TTS_RATE_MIN, updateSettings, useSettings } from "@/lib/settings";
 import {
   close,
+  getSpeech,
   onWord,
   pause,
   pickVoice,
@@ -31,6 +32,19 @@ import { RAW_WORD } from "@/lib/search-text";
 import { CloseIcon, GearIcon, HeadphonesIcon, NextIcon, PauseIcon, PlayIcon, PrevIcon } from "./icons";
 
 type Col = { version: Version; entry: ChapterEntry };
+
+function buildItems(rows: AlignedRow[], colIndex: number, lang: string): SpeechItem[] {
+  const out: SpeechItem[] = [];
+  for (const row of rows) {
+    const cell = row.cells[colIndex];
+    if (cell && !cell.cont && cell.t) out.push({ v: row.v, text: speakable(cell.t, lang) });
+  }
+  return out;
+}
+const findStart = (items: SpeechItem[], v: string) => {
+  const i = items.findIndex((it) => it.v === v);
+  return i >= 0 ? i : items.findIndex((it) => parseInt(it.v, 10) >= parseInt(v, 10));
+};
 
 export type ReadAlong = ReturnType<typeof useReadAlong>;
 
@@ -62,35 +76,51 @@ export function useReadAlong({
   const loaded = col?.entry.status === "ok";
   const chapterKey = `${bookRef.work}/${bookRef.book}/${bookRef.chapter}`;
 
-  const items: SpeechItem[] = useMemo(() => {
-    if (!loaded) return [];
-    const out: SpeechItem[] = [];
-    for (const row of rows) {
-      const cell = row.cells[colIndex];
-      if (cell && !cell.cont && cell.t) out.push({ v: row.v, text: speakable(cell.t, lang) });
-    }
-    return out;
-  }, [rows, colIndex, lang, loaded]);
+  const items: SpeechItem[] = useMemo(() => (loaded ? buildItems(rows, colIndex, lang) : []), [rows, colIndex, lang, loaded]);
 
   const voice = useMemo(() => pickVoice(allVoices, lang, settings.ttsVoices[lang]), [allVoices, lang, settings.ttsVoices]);
 
   const onDone = () => {
     const s = getSettings();
+    if (getSpeech().until) {
+      setSpeech({ until: null }); // a verse range finished: stop here
+      return;
+    }
     if (s.ttsContinue && next) {
       setSpeech({ continuePending: true, status: "playing" });
       router.push(readHref(next, versions), { scroll: false });
     }
   };
 
-  const startAt = (index: number, overrides?: { rate?: number; voice?: SpeechSynthesisVoice | null }) => {
-    if (!version || !items.length) return;
+  /** Items limited to the chosen verse range (if any). */
+  const ranged = (list: SpeechItem[], until: string | null) => {
+    if (!until) return list;
+    const end = list.findIndex((it) => it.v === until);
+    return end >= 0 ? list.slice(0, end + 1) : list;
+  };
+
+  const startAt = (
+    index: number,
+    overrides?: { rate?: number; voice?: SpeechSynthesisVoice | null; version?: string; until?: string | null },
+  ) => {
+    // Optionally read another column (e.g. the Spanish verse that was tapped).
+    const targetId = overrides?.version ?? version?.id;
+    const ci = cols.findIndex((c) => c.version.id === targetId);
+    const tc = cols[ci];
+    if (!tc || tc.entry.status !== "ok") return;
+    const tl = tc.version.language;
+    const list = ci === colIndex ? items : buildItems(rows, ci, tl);
+    if (!list.length) return;
+    const tv = ci === colIndex ? voice : pickVoice(allVoices, tl, getSettings().ttsVoices[tl]);
+    const until = overrides && "until" in overrides ? overrides.until! : getSpeech().until;
+    setSpeech({ until });
     play({
-      items,
+      items: ranged(list, until),
       start: index,
-      lang,
-      voice: overrides && "voice" in overrides ? overrides.voice! : voice,
+      lang: tl,
+      voice: overrides && "voice" in overrides ? overrides.voice! : tv,
       rate: overrides?.rate ?? getSettings().ttsRate,
-      version: version.id,
+      version: tc.version.id,
       chapterKey,
       onDone,
       keepAwake: getSettings().ttsKeepAwake,
@@ -211,13 +241,20 @@ export function useReadAlong({
       stop();
       setSpeech({ version: id, verse, chapterKey, status: verse ? "paused" : "idle" });
     },
-    /** Start reading at this verse (or the next one this column has). */
-    readFrom(v: string) {
-      let i = items.findIndex((it) => it.v === v);
-      if (i < 0) i = items.findIndex((it) => parseInt(it.v, 10) >= parseInt(v, 10));
+    /** Start reading at this verse (or the next one the column has), in `versionId`'s column if given. */
+    readFrom(v: string, versionId?: string) {
+      const ci = versionId ? cols.findIndex((c) => c.version.id === versionId) : colIndex;
+      const tc = cols[ci];
+      if (!tc || tc.entry.status !== "ok") return;
+      const list = ci === colIndex ? items : buildItems(rows, ci, tc.version.language);
+      const i = findStart(list, v);
       if (i < 0) return;
-      if (!speech.open) setSpeech({ open: true, version: speech.version ?? cols[0]?.version.id ?? null });
-      startAt(i);
+      startAt(i, { version: tc.version.id, until: null });
+    },
+    /** Play verses from–to (inclusive), then stop. */
+    playRange(from: string, to: string) {
+      const i = findStart(items, from);
+      if (i >= 0) startAt(i, { until: to });
     },
     open() {
       setSpeech({ open: true, version: speech.version ?? cols[0]?.version.id ?? null });
@@ -252,6 +289,8 @@ const RATES = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
 /** Player bar along the bottom of the reader. */
 export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
   const [more, setMore] = useState(false);
+  const [picker, setPicker] = useState(false);
+  const [range, setRange] = useState<{ from: string; to: string } | null>(null);
   const settings = useSettings();
   const { speech, version, lang } = ra;
   if (!speech.open || !version) return null;
@@ -287,16 +326,24 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         <button type="button" className={btn} onClick={() => ra.step(1)} aria-label="Next verse" disabled={!ra.ready}>
           <NextIcon />
         </button>
-        <div className="min-w-0 flex-1 px-1 leading-tight" aria-live="polite">
+        <button
+          type="button"
+          onClick={() => setPicker((p) => !p)}
+          aria-expanded={picker}
+          title="Choose a verse or a range of verses"
+          className="min-w-0 flex-1 rounded-lg px-1 py-0.5 text-left leading-tight hover:bg-raised"
+          aria-live="polite"
+        >
           <p className="truncate text-sm font-semibold">
             {chapterTitle(book, ra.bookRef.chapter)}
             {verse ? `:${verse}` : ""}
+            {speech.until ? `–${speech.until}` : ""} <span className="text-faint">▾</span>
           </p>
           <p className="truncate text-xs text-faint">
             {speech.continuePending ? "Next chapter…" : ra.ready ? `${version.abbr} · ${langName}` : "Loading…"}
             {settings.ttsRate !== 1 ? ` · ${settings.ttsRate}×` : ""}
           </p>
-        </div>
+        </button>
         <button
           type="button"
           className={`${btn} ${more ? "bg-raised text-ink" : ""}`}
@@ -310,6 +357,84 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           <CloseIcon />
         </button>
       </div>
+
+      {picker && ra.items.length > 0 && (
+        <div className="mx-auto max-w-3xl space-y-2 px-4 pb-3 pt-1">
+          <p className="text-xs font-semibold uppercase tracking-wide text-faint">Play from verse</p>
+          <div className="grid max-h-36 grid-cols-8 gap-1 overflow-y-auto sm:grid-cols-12">
+            {ra.items.map((it) => (
+              <button
+                key={it.v}
+                type="button"
+                onClick={() => {
+                  ra.readFrom(it.v, version.id);
+                  setPicker(false);
+                }}
+                className={`h-10 rounded-md text-sm tabular-nums ${it.v === verse ? "bg-accent font-semibold text-accent-ink" : "bg-raised hover:bg-accent-soft"}`}
+              >
+                {it.v}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Range</span>
+            <select
+              aria-label="From verse"
+              value={range?.from ?? ra.items[0].v}
+              onChange={(e) => setRange({ from: e.target.value, to: range?.to ?? ra.items[ra.items.length - 1].v })}
+              className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
+            >
+              {ra.items.map((it) => (
+                <option key={it.v} value={it.v}>
+                  {it.v}
+                </option>
+              ))}
+            </select>
+            <span className="text-faint">to</span>
+            <select
+              aria-label="To verse"
+              value={range?.to ?? ra.items[ra.items.length - 1].v}
+              onChange={(e) => setRange({ from: range?.from ?? ra.items[0].v, to: e.target.value })}
+              className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
+            >
+              {ra.items.map((it) => (
+                <option key={it.v} value={it.v}>
+                  {it.v}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => {
+                const from = range?.from ?? ra.items[0].v;
+                const to = range?.to ?? ra.items[ra.items.length - 1].v;
+                const [a, b] = parseInt(from, 10) <= parseInt(to, 10) ? [from, to] : [to, from];
+                ra.playRange(a, b);
+                setPicker(false);
+              }}
+              className="flex h-10 items-center gap-1 rounded-lg bg-accent px-3 font-medium text-accent-ink"
+            >
+              <PlayIcon width={16} height={16} /> Play range
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                ra.readFrom(ra.items[0].v, version.id);
+                setPicker(false);
+              }}
+              className="h-10 rounded-lg border border-line px-3 hover:border-faint"
+            >
+              Whole chapter
+            </button>
+          </div>
+        </div>
+      )}
+
+      {speech.wordTiming === false && !speech.error && langVoices.some((v) => v.localService) && !ra.voice?.localService && (
+        <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted" role="status">
+          This voice can’t follow along word by word. Voices installed on your device (e.g. “Microsoft …”) can — pick one under ⚙ Voice.
+        </p>
+      )}
 
       {(speech.error || noVoice || fallback) && (
         <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted" role="status">
@@ -369,7 +494,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               {!langVoices.length && <option value="">Browser default</option>}
               {langVoices.map((v) => (
                 <option key={v.voiceURI} value={v.voiceURI}>
-                  {v.name} ({v.lang})
+                  {v.name} ({v.lang}){v.localService ? " · on device" : " · online"}
                 </option>
               ))}
             </select>
@@ -385,6 +510,15 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               type="checkbox"
               checked={settings.ttsKeepAwake}
               onChange={(e) => updateSettings({ ttsKeepAwake: e.target.checked })}
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
+            />
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Show the version I’m listening to first</span>
+            <input
+              type="checkbox"
+              checked={settings.ttsListenFirst}
+              onChange={(e) => updateSettings({ ttsListenFirst: e.target.checked })}
               className="h-5 w-5 shrink-0 accent-[var(--accent)]"
             />
           </label>

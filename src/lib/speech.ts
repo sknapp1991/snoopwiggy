@@ -23,6 +23,10 @@ export type SpeechState = {
   verse: string | null;
   /** Set when a chapter finished and the next one should start once it has loaded. */
   continuePending: boolean;
+  /** Playing a verse range: stop after this verse (no continuing into the next chapter). */
+  until: string | null;
+  /** Does the current voice report word positions? null = not known yet. */
+  wordTiming: boolean | null;
   error: string | null;
 };
 
@@ -33,6 +37,8 @@ const IDLE: SpeechState = {
   chapterKey: null,
   verse: null,
   continuePending: false,
+  until: null,
+  wordTiming: null,
   error: null,
 };
 let state: SpeechState = IDLE;
@@ -96,10 +102,13 @@ export function voicesFor(all: SpeechSynthesisVoice[], lang: string) {
 /** The saved voice, else the most natural-sounding one available. */
 export function pickVoice(all: SpeechSynthesisVoice[], lang: string, savedUri?: string) {
   const { list } = voicesFor(all, lang);
+  // Prefer natural voices, then voices on the device (they report word positions, so single words can
+  // be highlighted; Chrome's online "Google …" voices on desktop don't).
   return (
     list.find((v) => v.voiceURI === savedUri) ??
-    list.find((v) => /natural|neural|online/i.test(v.name)) ??
-    list.find((v) => /google/i.test(v.name)) ??
+    list.find((v) => /natural|neural/i.test(v.name)) ??
+    list.find((v) => v.localService && v.default) ??
+    list.find((v) => v.localService) ??
     list.find((v) => v.default) ??
     list[0] ??
     null
@@ -188,6 +197,7 @@ type Run = {
   keepAwake: boolean;
 };
 let run: Run | null = null;
+let lastVoice: string | undefined;
 let token = 0;
 // Keep a reference: Chrome can garbage-collect a playing utterance and never fire onend.
 let current: SpeechSynthesisUtterance | null = null;
@@ -208,10 +218,13 @@ function speakItem(r: Run, my: number) {
   const parts = chunks(item.text);
   let p = 0;
   let base = 0; // words spoken in earlier chunks of this verse
+  let sawWord = false;
   const next = () => {
     if (my !== token) return;
     if (p > 0) base += countWords(parts[p - 1]);
     if (p >= parts.length) {
+      // A whole verse without word positions: this voice can't follow word by word.
+      if (!sawWord && countWords(item.text) > 3 && state.wordTiming !== false) set({ wordTiming: false });
       r.index++;
       speakItem(r, my);
       return;
@@ -224,6 +237,10 @@ function speakItem(r: Run, my: number) {
     const chunkBase = base;
     u.onboundary = (e) => {
       if (my !== token || e.name !== "word") return;
+      if (!sawWord) {
+        sawWord = true;
+        if (state.wordTiming !== true) set({ wordTiming: true });
+      }
       emitWord({ verse: item.v, word: chunkBase + countWords(chunkText.slice(0, e.charIndex)) });
     };
     u.onend = next;
@@ -266,6 +283,10 @@ export function play(opts: {
   };
   if (opts.keepAwake) acquireWake();
   set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing" });
+  if (opts.voice?.voiceURI !== lastVoice) {
+    lastVoice = opts.voice?.voiceURI;
+    set({ wordTiming: null });
+  }
   const r = run;
   // Some browsers ignore speak() right after cancel(); a short delay avoids it.
   setTimeout(() => speakItem(r, my), 60);
@@ -292,7 +313,7 @@ export function stop() {
   run = null;
   current = null;
   if (speechSupported()) window.speechSynthesis.cancel();
-  set({ status: "idle", verse: null, continuePending: false });
+  set({ status: "idle", verse: null, continuePending: false, until: null });
 }
 
 export function close() {

@@ -13,10 +13,11 @@ export type AskService = {
 /** Long prompts make URLs some services reject; past this, open the site and rely on the clipboard. */
 const MAX_URL = 7000;
 
+/** First = default (highlighted): ChatGPT fills the prompt in and works without signing in. */
 export const ASK_SERVICES: AskService[] = [
-  { id: "gemini", name: "Gemini", url: () => null, home: "https://gemini.google.com/app" },
   { id: "chatgpt", name: "ChatGPT", url: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}`, home: "https://chatgpt.com/" },
   { id: "claude", name: "Claude", url: (p) => `https://claude.ai/new?q=${encodeURIComponent(p)}`, home: "https://claude.ai/new" },
+  { id: "gemini", name: "Gemini", url: () => null, home: "https://gemini.google.com/app" },
 ];
 
 export type AskTranslation = { abbr: string; name: string; language: string; text: string };

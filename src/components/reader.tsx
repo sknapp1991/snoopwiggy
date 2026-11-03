@@ -27,6 +27,7 @@ import { HighlightModeBar } from "./highlight-mode";
 import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
 import { openVerseMenu, toast } from "@/lib/ui-store";
+import { useSpeech } from "@/lib/speech";
 import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
 import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./use-chapter-swipe";
@@ -34,7 +35,18 @@ import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./u
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 
 export function ReaderView() {
-  const { ref, entry: book, versions } = useReaderState();
+  const { ref, entry: book, versions: userVersions } = useReaderState();
+  // While listening, the version being read can be shown first (the saved order is unchanged).
+  const speechState = useSpeech();
+  const listenFirstOn = useSettings().ttsListenFirst;
+  const listenFirst =
+    listenFirstOn && speechState.open && speechState.version && userVersions.includes(speechState.version)
+      ? speechState.version
+      : null;
+  const versions = useMemo(
+    () => (listenFirst ? [listenFirst, ...userVersions.filter((v) => v !== listenFirst)] : userVersions),
+    [listenFirst, userVersions],
+  );
   const view = useViewMode();
   const settings = useSettings();
   const { fontSize } = settings;
@@ -89,13 +101,13 @@ export function ReaderView() {
       toast(on ? `${verseReference(r)} saved to Study later` : `Removed ${verseReference(r)} from Study later`);
     },
     openMenu: (v, focus) => openVerseMenu({ ...ref, verse: v, focus }),
-    textTap(v) {
+    textTap(v, version) {
       const r = { ...ref, verse: v };
       if (settings.highlightMode) {
         const cur = getItem("highlight", r)?.color;
         setHighlight(r, cur === settings.highlightColor ? null : settings.highlightColor);
-      } else if (ra.speech.open && ra.supported) ra.readFrom(v);
-      else openVerseMenu(r);
+      } else if (ra.speech.open && ra.supported) ra.readFrom(v, version); // read in the language tapped
+      else openVerseMenu({ ...r, version });
     },
     textDouble(p, version) {
       const w = wordAt(p.x, p.y);
