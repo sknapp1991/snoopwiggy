@@ -17,7 +17,7 @@ Work in phases. At the end of each phase: run it, confirm it works on a desktop 
   Both must be available **at the same time** (e.g., RVR 1909 column next to "English → Spanish (AI)" column). Default for each language = Native when one exists for that text; fall back to AI when not.
 - Highlight, bookmark/save verses, write notes.
 - "Ask AI" about any verse — for now via an "Ask in…" hand-off to Gemini / ChatGPT / Claude (see Study features); a built-in Ask AI panel is designed but hidden behind a feature flag for a future paid tier.
-- Will be sold later (free tier + paid subscription), so architecture must be production-ready.
+- Free product for now (decided 2026-11-03), with the source code in a **public** GitHub repo (sknapp1991/snoopwiggy). Keep the architecture production-ready in case a paid tier comes later. Licensed (copyrighted) texts must never be committed to the public repo. If one is ever added, serve it at runtime from the publisher's API or private storage.
 
 ## Tech stack
 
