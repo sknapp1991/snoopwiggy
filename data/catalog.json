@@ -43,6 +43,37 @@
       "import": { "provider": "ebible", "id": "engwebp", "stripBrackets": false }
     },
     {
+      "id": "asv", "work": "bible", "abbr": "ASV", "name": "American Standard Version",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1901,
+      "translator": "American Revision Committee",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "American Standard Version (1901), public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=eng-asv",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "eng-asv", "stripBrackets": true }
+    },
+    {
+      "id": "ylt", "work": "bible", "abbr": "YLT", "name": "Young's Literal Translation",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1898, "yearNote": "1862, revised 1898",
+      "translator": "Robert Young",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Young's Literal Translation (1898), public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=engylt",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "engylt", "stripBrackets": true }
+    },
+    {
+      "id": "bbe", "work": "bible", "abbr": "BBE", "name": "Bible in Basic English",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1965, "yearNote": "1949, revised 1965",
+      "translator": "S. H. Hooke (editor), Cambridge University Press",
+      "license": "Public Domain (US)",
+      "licenseNote": "Public domain in the US because it was published there without a copyright notice. Its status elsewhere is less certain. FLAG: low risk for a free site, but confirm before any commercial use outside the US.",
+      "attribution": "Bible in Basic English (1965), public domain in the US, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=engBBE",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "engBBE", "stripBrackets": true }
+    },
+    {
       "id": "rvr1909",
       "work": "bible",
       "abbr": "RVR 1909",
@@ -60,6 +91,125 @@
       "licensed": false,
       "versification": "eng",
       "import": { "provider": "ebible", "id": "spaRV1909", "stripBrackets": true }
+    },
+    {
+      "id": "lsg1910", "work": "bible", "abbr": "LSG 1910", "name": "Louis Segond 1910",
+      "language": "fr", "kind": "native", "dir": "ltr", "year": 1910,
+      "translator": "Louis Segond (revised 1910)",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Louis Segond 1910, domaine public, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=fraLSG",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "fraLSG", "stripBrackets": true }
+    },
+    {
+      "id": "riveduta", "work": "bible", "abbr": "Riveduta", "name": "Riveduta (Luzzi)",
+      "language": "it", "kind": "native", "dir": "ltr", "year": 1927,
+      "translator": "Giovanni Luzzi",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Bibbia Riveduta 1927 (Luzzi), pubblico dominio, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=ita1927",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "ita1927", "stripBrackets": true }
+    },
+    {
+      "id": "diodati", "work": "bible", "abbr": "Diodati", "name": "Diodati",
+      "language": "it", "kind": "native", "dir": "ltr", "year": 1885, "yearNote": "1641 translation, 1885 revision",
+      "translator": "Giovanni Diodati",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Bibbia Diodati (1885), pubblico dominio, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=ita1885",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "ita1885", "stripBrackets": true }
+    },
+    {
+      "id": "blivre", "work": "bible", "abbr": "BLIVRE", "name": "Bíblia Livre",
+      "language": "pt", "kind": "native", "dir": "ltr", "year": 2018, "yearNote": "Updated from Almeida 1819 (Textus Receptus)",
+      "translator": "Diego Santos, Mario Sérgio and Marco Teles, after João Ferreira de Almeida",
+      "license": "CC BY 4.0",
+      "licenseNote": "Creative Commons Attribution 4.0: commercial use allowed, but credit is required. The text is shown unaltered apart from formatting.",
+      "attribution": "Bíblia Livre © 2018 Diego Santos, Mario Sérgio e Marco Teles, CC BY 4.0, via eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=porbr2018",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "porbr2018", "stripBrackets": true }
+    },
+    {
+      "id": "luther1912", "work": "bible", "abbr": "Luther 1912", "name": "Lutherbibel 1912",
+      "language": "de", "kind": "native", "dir": "ltr", "year": 1912,
+      "translator": "Martin Luther (1912 revision)",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Lutherbibel 1912, gemeinfrei, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=deu1912",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "deu1912", "stripBrackets": true }
+    },
+    {
+      "id": "elb1905", "work": "bible", "abbr": "ELB 1905", "name": "Elberfelder (unrevidiert)",
+      "language": "de", "kind": "native", "dir": "ltr", "year": 1905, "yearNote": "1871, 1905 edition",
+      "translator": "John Nelson Darby, Carl Brockhaus and others",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Elberfelder Bibel (unrevidiert, 1905), gemeinfrei, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=deuelo",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "deuelo", "stripBrackets": true }
+    },
+    {
+      "id": "synodal", "work": "bible", "abbr": "Синод.", "name": "Синодальный перевод (Synodal)",
+      "language": "ru", "kind": "native", "dir": "ltr", "year": 1876,
+      "translator": "Russian Holy Synod",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Синодальный перевод (1876), общественное достояние, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=russyn",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "russyn", "stripBrackets": true }
+    },
+    {
+      "id": "vulgate", "work": "bible", "abbr": "Vulgata", "name": "Vulgata Clementina",
+      "language": "la", "kind": "native", "dir": "ltr", "year": 1598, "yearNote": "Clementine edition (1592/1598) of Jerome's Vulgate",
+      "translator": "Jerome; Clementine revision",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Vulgata Clementina, public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=latVUC",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "latVUC", "stripBrackets": true }
+    },
+    {
+      "id": "greek", "work": "bible", "abbr": "LXX + TR", "name": "Septuagint (OT) + Textus Receptus (NT)",
+      "language": "el", "kind": "native", "dir": "ltr", "year": 1851, "yearNote": "Brenton's Septuagint edition (1851); Textus Receptus NT",
+      "translator": "Original Koine Greek: Septuagint (Brenton edition) and Textus Receptus",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Septuagint (Brenton edition) and Textus Receptus, public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=grcbrent",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "parts": [ { "id": "grcbrent", "collection": "ot" }, { "id": "grctr", "collection": "nt" } ],
+        "bookAliases": { "DNG": "dan", "ESG": "est" },
+        "chapterMoves": [ { "book": "ezr", "fromChapter": 11, "toBook": "neh", "offset": -10 } ],
+        "skipChapters": [
+          { "book": "jer", "from": 25, "reason": "LXX Jeremiah orders chapters 25–51 differently (oracles against the nations moved)" },
+          { "book": "pro", "from": 24, "reason": "LXX Proverbs 24–31 sections are rearranged" },
+          { "book": "exo", "from": 35, "reason": "LXX Exodus 35–40 (tabernacle construction) is rearranged" },
+          { "book": "1ki", "from": 20, "to": 21, "reason": "LXX 3 Kingdoms swaps chapters 20 and 21" }
+        ] }
+    },
+    {
+      "id": "vandyck", "work": "bible", "abbr": "فان دايك", "name": "Van Dyck (Smith–Van Dyck)",
+      "language": "ar", "kind": "native", "dir": "rtl", "year": 1865,
+      "translator": "Eli Smith and Cornelius Van Dyck",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "ترجمة فان دايك (1865)، ملكية عامة، eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=arb-vd",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "id": "arb-vd", "stripBrackets": true }
+    },
+    {
+      "id": "hebrew", "work": "bible", "abbr": "WLC + SG", "name": "Masoretic Text (WLC) + Salkinson–Ginsburg NT",
+      "language": "he", "kind": "native", "dir": "rtl", "year": 1886, "yearNote": "Westminster Leningrad Codex (OT); Salkinson–Ginsburg Hebrew NT (1886)",
+      "translator": "Masoretic Hebrew text; NT translated by Isaac Salkinson and Christian David Ginsburg",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Westminster Leningrad Codex and Salkinson–Ginsburg New Testament, public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=hebwlc",
+      "licensed": false, "versification": "eng",
+      "import": { "provider": "ebible", "parts": [ { "id": "hebwlc", "collection": "ot" }, { "id": "hebsg", "collection": "nt" } ] }
     }
   ],
   "religions": [
@@ -89,7 +239,7 @@
             { "id": "neh", "name": "Nehemiah", "work": "bible", "chapters": 13 },
             { "id": "est", "name": "Esther", "work": "bible", "chapters": 10 },
             { "id": "job", "name": "Job", "work": "bible", "chapters": 42 },
-            { "id": "psa", "name": "Psalms", "work": "bible", "chapters": 150 },
+            { "id": "psa", "name": "Psalms", "chapterName": "Psalm", "work": "bible", "chapters": 150 },
             { "id": "pro", "name": "Proverbs", "work": "bible", "chapters": 31 },
             { "id": "ecc", "name": "Ecclesiastes", "work": "bible", "chapters": 12 },
             { "id": "sng", "name": "Song of Solomon", "work": "bible", "chapters": 8 },

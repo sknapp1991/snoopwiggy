@@ -26,8 +26,19 @@ export const versionSchema = z.object({
   import: z
     .object({
       provider: z.literal("ebible"),
-      id: z.string().min(1),
+      /** eBible translation id for a whole-Bible source… */
+      id: z.string().min(1).optional(),
+      /** …or one source per collection, e.g. [{id:"grcbrent",collection:"ot"},{id:"grctr",collection:"nt"}] */
+      parts: z.array(z.object({ id: z.string().min(1), collection: z.string().min(1) })).optional(),
       stripBrackets: z.boolean().optional(),
+      /** Source book codes to treat as our book ids, e.g. {"DNG":"dan","ESG":"est"} (Greek Daniel/Esther). */
+      bookAliases: z.record(z.string(), z.string()).optional(),
+      /** Source chapters left out because their order differs from the reference (e.g. LXX Jeremiah 25–51). */
+      skipChapters: z.array(z.object({ book: z.string(), from: z.number().int(), to: z.number().int().optional(), reason: z.string() })).optional(),
+      /** Move a chapter range to another book, e.g. LXX "Esdras B" 11–23 → Nehemiah 1–13. */
+      chapterMoves: z
+        .array(z.object({ book: z.string(), fromChapter: z.number().int(), toBook: z.string(), offset: z.number().int() }))
+        .optional(),
     })
     .optional(),
 });
@@ -37,6 +48,8 @@ export const itemSchema = z.object({
   name: z.string().min(1),
   work: idSchema.optional(),
   chapters: z.number().int().positive().optional(),
+  /** Singular used before a chapter number, e.g. "Psalm" for Psalms ("Psalm 23"). */
+  chapterName: z.string().optional(),
   status: z.enum(["available", "coming-soon"]).optional(),
 });
 
@@ -62,7 +75,7 @@ export const catalogSchema = z.object({
 export const verseSchema = z
   .object({
     /** Canonical verse id (in the work's versification). String so split verses ("3a") are possible. */
-    v: z.string().regex(/^\d+[a-z]?$/),
+    v: z.string().regex(/^\d+[a-z]{0,2}$/),
     /** Verse text. Empty only for continuation slots (see `cont`). */
     t: z.string(),
     /** This cell also covers canonical verses up to here: "26" (same chapter) or "40:5". */
@@ -79,8 +92,10 @@ export const chapterSchema = z.object({
   version: idSchema,
   book: idSchema,
   chapter: z.number().int().positive(),
-  verses: z.array(verseSchema).min(1),
-});
+  verses: z.array(verseSchema),
+  /** Why this chapter has no verses in this version (e.g. a section the source orders differently). */
+  note: z.string().optional(),
+}).refine((c) => c.verses.length > 0 || !!c.note, { message: "empty chapter needs a note" });
 
 export type Version = z.infer<typeof versionSchema>;
 export type CatalogItem = z.infer<typeof itemSchema>;

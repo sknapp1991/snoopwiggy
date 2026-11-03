@@ -1,24 +1,47 @@
 # Text licences
 
-Every text in GlobalStudy must be public domain or carry a licence that allows commercial use.
-No non-commercial (CC-BY-NC) or copyrighted texts are included. Each version also lives in
-`data/catalog.json` (name, year, translator, licence, source URL), and its attribution is shown
-under the text in the reader.
+Every text in GlobalStudy is public domain or carries a licence that allows commercial use. Nothing
+non-commercial (CC-BY-NC) or copyrighted is included. Each version also lives in `data/catalog.json`
+(name, year, translator, licence, source URL), and its attribution is shown under the text in the reader.
+Licences were checked on the eBible.org details page and catalog on 2026-11-03.
 
-| Version | Language | Year | Translator | Licence | Source | Verified |
-|---|---|---|---|---|---|---|
-| King James Version (KJV) | English | 1611 / 1769 standard text | Translators commissioned by King James I | Public domain outside the UK. **UK: Crown letters patent** (see note) | [eBible.org eng-kjv](https://ebible.org/Scriptures/details.php?id=eng-kjv) | 2026-11-03 |
-| World English Bible (WEB) | English | 2020 stable text | eBible.org (Michael Paul Johnson, ed.) and volunteers | Public domain. “World English Bible” is a trademark of eBible.org, and the text must stay unaltered to use the name | [eBible.org engwebp](https://ebible.org/Scriptures/details.php?id=engwebp) | 2026-11-03 |
-| Reina-Valera 1909 (RVR 1909) | Spanish | 1909 | Casiodoro de Reina (1569), rev. Cipriano de Valera (1602), 1909 revision | Public domain | [eBible.org spaRV1909](https://ebible.org/Scriptures/details.php?id=spaRV1909) | 2026-11-03 |
+| Version | Language | Year | Translator / text | Licence | Source |
+|---|---|---|---|---|---|
+| King James Version (KJV) | English | 1611 / 1769 | Translators commissioned by King James I | Public domain outside the UK (see note) | [eng-kjv](https://ebible.org/Scriptures/details.php?id=eng-kjv) |
+| World English Bible (WEB) | English | 2020 | eBible.org (M. P. Johnson, ed.) | Public domain; name is a trademark (text unaltered) | [engwebp](https://ebible.org/Scriptures/details.php?id=engwebp) |
+| American Standard Version (ASV) | English | 1901 | American Revision Committee | Public domain | [eng-asv](https://ebible.org/Scriptures/details.php?id=eng-asv) |
+| Young's Literal Translation (YLT) | English | 1898 | Robert Young | Public domain | [engylt](https://ebible.org/Scriptures/details.php?id=engylt) |
+| Bible in Basic English (BBE) | English | 1965 | S. H. Hooke (ed.) | Public domain in the US (see note) | [engBBE](https://ebible.org/Scriptures/details.php?id=engBBE) |
+| Reina-Valera 1909 | Spanish | 1909 | C. de Reina, rev. C. de Valera | Public domain | [spaRV1909](https://ebible.org/Scriptures/details.php?id=spaRV1909) |
+| Louis Segond 1910 | French | 1910 | Louis Segond | Public domain | [fraLSG](https://ebible.org/Scriptures/details.php?id=fraLSG) |
+| Riveduta (Luzzi) | Italian | 1927 | Giovanni Luzzi | Public domain | [ita1927](https://ebible.org/Scriptures/details.php?id=ita1927) |
+| Diodati | Italian | 1885 | Giovanni Diodati | Public domain | [ita1885](https://ebible.org/Scriptures/details.php?id=ita1885) |
+| Bíblia Livre (BLIVRE) | Portuguese | 2018 | D. Santos, M. Sérgio, M. Teles, after Almeida 1819 | **CC BY 4.0**: credit required (shown in the app) | [porbr2018](https://ebible.org/Scriptures/details.php?id=porbr2018) |
+| Lutherbibel 1912 | German | 1912 | Martin Luther (1912 rev.) | Public domain | [deu1912](https://ebible.org/Scriptures/details.php?id=deu1912) |
+| Elberfelder (unrevidiert) | German | 1905 | J. N. Darby, C. Brockhaus et al. | Public domain | [deuelo](https://ebible.org/Scriptures/details.php?id=deuelo) |
+| Synodal | Russian | 1876 | Russian Holy Synod | Public domain | [russyn](https://ebible.org/Scriptures/details.php?id=russyn) |
+| Vulgata Clementina | Latin | 1598 | Jerome; Clementine edition | Public domain | [latVUC](https://ebible.org/Scriptures/details.php?id=latVUC) |
+| Septuagint + Textus Receptus | Greek | 1851 / — | Brenton's LXX edition (OT); Textus Receptus (NT) | Public domain | [grcbrent](https://ebible.org/Scriptures/details.php?id=grcbrent), [grctr](https://ebible.org/Scriptures/details.php?id=grctr) |
+| Van Dyck | Arabic | 1865 | Eli Smith, Cornelius Van Dyck | Public domain | [arb-vd](https://ebible.org/Scriptures/details.php?id=arb-vd) |
+| WLC + Salkinson–Ginsburg | Hebrew | — / 1886 | Westminster Leningrad Codex (OT); Salkinson & Ginsburg (NT) | Public domain | [hebwlc](https://ebible.org/Scriptures/details.php?id=hebwlc), [hebsg](https://ebible.org/Scriptures/details.php?id=hebsg) |
 
 ## Notes and flags
 
-- **KJV in the United Kingdom:** eBible.org states that letters patent give Cambridge University
-  Press, Oxford University Press and Collins exclusive rights to *print* the KJV in the UK, and that the
-  restriction has no effect outside the UK. Get legal advice before a commercial UK launch.
-- **Formatting changes (no wording changes):** square brackets that KJV and RVR 1909 use to mark
-  supplied words (italics in print) are removed, and whitespace is normalised.
-- **Versification:** eBible's RVR 1909 places some verses at different numbers than the KJV (Hebrew-style
-  chapter breaks, and verses merged into the last verse of a chapter). `data/versification/rvr1909.json`
-  maps it onto the KJV grid so versions line up. Where RVR differs, the reader shows RVR's own verse number.
-  The mapping was proposed by `scripts/suggest-versification.ts` and reviewed by hand.
+- **KJV in the United Kingdom:** letters patent give Cambridge University Press, Oxford University Press
+  and Collins exclusive rights to *print* the KJV in the UK. eBible.org states the restriction has no
+  effect outside the UK. Get legal advice before any commercial UK launch.
+- **BBE:** public domain in the US because it was published there without a copyright notice. Its status
+  elsewhere is less clear. Low risk for a free site; confirm before any commercial use outside the US.
+- **Formatting only, no wording changes:** square brackets used to mark supplied words are removed, and
+  whitespace is normalised.
+- **Versification:** every version is aligned to the KJV verse grid so columns line up. The reviewed maps
+  are in `data/versification/<version>.json`, proposed by `scripts/suggest-versification.ts` (length
+  alignment with verse-number evidence). Where a version numbers a verse differently, its own number is
+  shown next to the text. Verses with no KJV counterpart appear as extra rows (e.g. "3a"). Whole extra
+  chapters (Psalm 151, the Greek and Latin additions to Esther and Daniel) are set aside for the
+  Apocrypha & Deuterocanon section.
+- **Septuagint sections not yet aligned:** Jeremiah 25–51, Proverbs 24–31, Exodus 35–40 and
+  1 Kings 20–21 are ordered differently in the LXX. They are left out of the Greek column, with a note,
+  until a reordering table is added (Phase 4).
+- **Not included:** no public-domain Almeida (Portuguese) or Delitzsch Hebrew NT is available on
+  eBible.org, so Bíblia Livre (CC BY 4.0) and Salkinson–Ginsburg are used instead.

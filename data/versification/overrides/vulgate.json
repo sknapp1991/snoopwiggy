@@ -1,0 +1,18 @@
+{
+  "$comment": "Hand-reviewed. Vulgate Daniel 3: vv. 24-90 Prayer of Azariah / Song of the Three (Apocrypha); 91-97 = KJV 3:24-30; 98-100 = KJV 4:1-3; Vulgate 4:1-34 = KJV 4:4-37. Vulgate Esther 10:4-13 are the Greek additions (extra rows after 10:3); chapters 11-16 are set aside.",
+  "map": {
+    "dan 3:1-23": "dan 3:1-23",
+    "est 11:1-30": "(apocrypha)",
+    "est 12:1-30": "(apocrypha)",
+    "est 13:1-30": "(apocrypha)",
+    "est 14:1-30": "(apocrypha)",
+    "est 15:1-30": "(apocrypha)",
+    "est 16:1-30": "(apocrypha)",
+    "dan 3:24-90": "(apocrypha)",
+    "dan 3:91-97": "dan 3:24-30",
+    "dan 3:98-100": "dan 4:1-3",
+    "dan 4:1-34": "dan 4:4-37",
+    "est 10:1-3": "est 10:1-3",
+    "est 10:4-13": "est 10:3+"
+  }
+}

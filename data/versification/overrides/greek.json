@@ -1,0 +1,9 @@
+{
+  "$comment": "Hand-reviewed. Brenton LXX Daniel 3: vv. 24-90 are the Prayer of Azariah and Song of the Three (Apocrypha); 91-97 = KJV 3:24-30. Daniel 4 matches KJV.",
+  "map": {
+    "dan 3:1-23": "dan 3:1-23",
+    "dan 3:24-90": "(apocrypha)",
+    "dan 3:91-97": "dan 3:24-30",
+    "dan 4:1-37": "dan 4:1-37"
+  }
+}

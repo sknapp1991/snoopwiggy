@@ -25,18 +25,34 @@ export function chapterKey(work: string, ver: string, book: string, chapter: num
   return `${work}/${ver}/${book}/${chapter}`;
 }
 
+type BookFile = { work: string; version: string; book: string; chapters: Record<string, Pick<Chapter, "verses" | "note">> };
+/** Texts are served one file per book (scripts/pack-texts.ts); every chapter of a book shares one request. */
+const books = new Map<string, Promise<BookFile>>();
+
+function loadBook(bookKey: string, retry: boolean) {
+  let p = books.get(bookKey);
+  if (!p || retry) {
+    p = fetch(`/texts/${bookKey}.json`).then(async (res) => {
+      if (!res.ok) throw new Error(res.status === 404 ? "Not available in this version" : `HTTP ${res.status}`);
+      return (await res.json()) as BookFile;
+    });
+    p.catch(() => books.delete(bookKey)); // let a later attempt retry
+    books.set(bookKey, p);
+  }
+  return p;
+}
+
 export function loadChapter(key: string, { retry = false } = {}) {
   const existing = cache.get(key);
   if (existing && !(retry && existing.status === "error")) return;
   cache.set(key, { status: "loading" });
   emit();
-  fetch(`/texts/${key}.json`)
-    .then(async (res) => {
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error ?? `HTTP ${res.status}`);
-      }
-      return (await res.json()) as Chapter;
+  const [work, version, book, ch] = key.split("/");
+  loadBook(`${work}/${version}/${book}`, retry)
+    .then((b) => {
+      const c = b.chapters[ch];
+      if (!c) throw new Error("Chapter not available in this version");
+      return { work, version, book, chapter: Number(ch), ...c } as Chapter;
     })
     .then((data) => cache.set(key, { status: "ok", data }))
     .catch((e: unknown) => {

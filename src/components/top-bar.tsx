@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
 import { BookIcon, CloseIcon, LanguagesIcon, MenuIcon, SlidersIcon } from "./icons";
 import { FontSizeControl, ThemeToggle, VersionChooser, ViewToggle } from "./controls";
@@ -32,7 +33,7 @@ export function TopBar({ onOpenLibrary }: { onOpenLibrary: () => void }) {
         onClick={onOpenLibrary}
         className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold md:hidden"
       >
-        {entry ? `${entry.name} ${ref.chapter}` : "GlobalStudy"}
+        {entry ? chapterTitle(entry, ref.chapter) : "GlobalStudy"}
       </button>
 
       <div className="hidden flex-1 md:block" />

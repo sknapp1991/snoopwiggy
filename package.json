@@ -7,16 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "dev:lan": "next dev -H 0.0.0.0",
+    "dev:lan": "npm run pack && next dev -H 0.0.0.0",
     "import:kjv": "tsx scripts/import-ebible.ts kjv",
     "import:web": "tsx scripts/import-ebible.ts web",
     "import:rvr1909": "tsx scripts/import-ebible.ts rvr1909",
-    "import:all": "npm run import:kjv && npm run import:web && npm run import:rvr1909",
+    "import:all": "tsx scripts/import-ebible.ts kjv && tsx scripts/import-ebible.ts web && tsx scripts/import-ebible.ts asv && tsx scripts/import-ebible.ts ylt && tsx scripts/import-ebible.ts bbe && tsx scripts/import-ebible.ts rvr1909 && tsx scripts/import-ebible.ts lsg1910 && tsx scripts/import-ebible.ts riveduta && tsx scripts/import-ebible.ts diodati && tsx scripts/import-ebible.ts blivre && tsx scripts/import-ebible.ts luther1912 && tsx scripts/import-ebible.ts elb1905 && tsx scripts/import-ebible.ts synodal && tsx scripts/import-ebible.ts vulgate && tsx scripts/import-ebible.ts greek && tsx scripts/import-ebible.ts vandyck && tsx scripts/import-ebible.ts hebrew",
     "validate": "tsx scripts/validate-data.ts",
     "typecheck": "tsc --noEmit",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "pack": "tsx scripts/pack-texts.ts",
+    "predev": "tsx scripts/pack-texts.ts",
+    "prebuild": "tsx scripts/pack-texts.ts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "1.20.15",

@@ -1,0 +1,2068 @@
+{
+ "source": "World English Bible",
+ "samples": [
+  {
+   "id": "psa23",
+   "book": "psa",
+   "chapter": 23,
+   "from": 1,
+   "to": 6,
+   "reference": "Psalm 23",
+   "genre": "poetry"
+  },
+  {
+   "id": "jhn3",
+   "book": "jhn",
+   "chapter": 3,
+   "from": 1,
+   "to": 17,
+   "reference": "John 3:1–17",
+   "genre": "dialogue / theology"
+  }
+ ],
+ "langs": [
+  {
+   "code": "es",
+   "name": "Spanish",
+   "native": "rvr1909"
+  },
+  {
+   "code": "fr",
+   "name": "French"
+  },
+  {
+   "code": "de",
+   "name": "German"
+  },
+  {
+   "code": "la",
+   "name": "Latin"
+  },
+  {
+   "code": "el",
+   "name": "Greek",
+   "note": "Modern Greek"
+  },
+  {
+   "code": "he",
+   "name": "Hebrew",
+   "note": "Modern Hebrew"
+  }
+ ],
+ "providers": {
+  "qwen3-8b": {
+   "label": "qwen3:8b (local)",
+   "kind": "local"
+  },
+  "qwen3-14b": {
+   "label": "qwen3:14b (local)",
+   "kind": "local"
+  },
+  "claude": {
+   "label": "Claude (Opus 5.5)",
+   "kind": "claude"
+  }
+ },
+ "english": {
+  "psa23": [
+   {
+    "v": "1",
+    "t": "A Psalm by David. The LORD is my shepherd; I shall lack nothing."
+   },
+   {
+    "v": "2",
+    "t": "He makes me lie down in green pastures. He leads me beside still waters."
+   },
+   {
+    "v": "3",
+    "t": "He restores my soul. He guides me in the paths of righteousness for his name’s sake."
+   },
+   {
+    "v": "4",
+    "t": "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me. Your rod and your staff, they comfort me."
+   },
+   {
+    "v": "5",
+    "t": "You prepare a table before me in the presence of my enemies. You anoint my head with oil. My cup runs over."
+   },
+   {
+    "v": "6",
+    "t": "Surely goodness and loving kindness shall follow me all the days of my life, and I will dwell in the LORD’s house forever."
+   }
+  ],
+  "jhn3": [
+   {
+    "v": "1",
+    "t": "Now there was a man of the Pharisees named Nicodemus, a ruler of the Jews."
+   },
+   {
+    "v": "2",
+    "t": "He came to Jesus by night and said to him, “Rabbi, we know that you are a teacher who has come from God, for no one can do these signs that you do, unless God is with him.”"
+   },
+   {
+    "v": "3",
+    "t": "Jesus answered him, “Most certainly I tell you, unless one is born anew, he can’t see God’s Kingdom.”"
+   },
+   {
+    "v": "4",
+    "t": "Nicodemus said to him, “How can a man be born when he is old? Can he enter a second time into his mother’s womb and be born?”"
+   },
+   {
+    "v": "5",
+    "t": "Jesus answered, “Most certainly I tell you, unless one is born of water and Spirit, he can’t enter into God’s Kingdom."
+   },
+   {
+    "v": "6",
+    "t": "That which is born of the flesh is flesh. That which is born of the Spirit is spirit."
+   },
+   {
+    "v": "7",
+    "t": "Don’t marvel that I said to you, ‘You must all be born anew.’"
+   },
+   {
+    "v": "8",
+    "t": "The wind blows where it wants to, and you hear its sound, but don’t know where it comes from and where it is going. So is everyone who is born of the Spirit.”"
+   },
+   {
+    "v": "9",
+    "t": "Nicodemus answered him, “How can these things be?”"
+   },
+   {
+    "v": "10",
+    "t": "Jesus answered him, “Are you the teacher of Israel, and don’t understand these things?"
+   },
+   {
+    "v": "11",
+    "t": "Most certainly I tell you, we speak that which we know and testify of that which we have seen, and you don’t receive our witness."
+   },
+   {
+    "v": "12",
+    "t": "If I told you earthly things and you don’t believe, how will you believe if I tell you heavenly things?"
+   },
+   {
+    "v": "13",
+    "t": "No one has ascended into heaven but he who descended out of heaven, the Son of Man, who is in heaven."
+   },
+   {
+    "v": "14",
+    "t": "As Moses lifted up the serpent in the wilderness, even so must the Son of Man be lifted up,"
+   },
+   {
+    "v": "15",
+    "t": "that whoever believes in him should not perish, but have eternal life."
+   },
+   {
+    "v": "16",
+    "t": "For God so loved the world, that he gave his only born Son, that whoever believes in him should not perish, but have eternal life."
+   },
+   {
+    "v": "17",
+    "t": "For God didn’t send his Son into the world to judge the world, but that the world should be saved through him."
+   }
+  ]
+ },
+ "native": {
+  "es": {
+   "psa23": {
+    "version": "Reina-Valera 1909",
+    "verses": [
+     {
+      "v": "1",
+      "t": "Salmo de David. JEHOVÁ es mi pastor; nada me faltará."
+     },
+     {
+      "v": "2",
+      "t": "En lugares de delicados pastos me hará yacer: junto á aguas de reposo me pastoreará."
+     },
+     {
+      "v": "3",
+      "t": "Confortará mi alma; guiaráme por sendas de justicia por amor de su nombre."
+     },
+     {
+      "v": "4",
+      "t": "Aunque ande en valle de sombra de muerte, no temeré mal alguno; porque tú estarás conmigo: tu vara y tu cayado me infundirán aliento."
+     },
+     {
+      "v": "5",
+      "t": "Aderezarás mesa delante de mí, en presencia de mis angustiadores: ungiste mi cabeza con aceite: mi copa está rebosando."
+     },
+     {
+      "v": "6",
+      "t": "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida: y en la casa de Jehová moraré por largos días."
+     }
+    ]
+   },
+   "jhn3": {
+    "version": "Reina-Valera 1909",
+    "verses": [
+     {
+      "v": "1",
+      "t": "Y HABÍA un hombre de los Fariseos que se llamaba Nicodemo, príncipe de los Judíos."
+     },
+     {
+      "v": "2",
+      "t": "Este vino á Jesús de noche, y díjole: Rabbí, sabemos que has venido de Dios por maestro; porque nadie puede hacer estas señales que tú haces, si no fuere Dios con él."
+     },
+     {
+      "v": "3",
+      "t": "Respondió Jesús, y díjole: De cierto, de cierto te digo, que el que no naciere otra vez, no puede ver el reino de Dios."
+     },
+     {
+      "v": "4",
+      "t": "Dícele Nicodemo: ¿Cómo puede el hombre nacer siendo viejo? ¿puede entrar otra vez en el vientre de su madre, y nacer?"
+     },
+     {
+      "v": "5",
+      "t": "Respondió Jesús: De cierto, de cierto te digo, que el que no naciere de agua y del Espíritu, no puede entrar en el reino de Dios."
+     },
+     {
+      "v": "6",
+      "t": "Lo que es nacido de la carne, carne es; y lo que es nacido del Espíritu, espíritu es."
+     },
+     {
+      "v": "7",
+      "t": "No te maravilles de que te dije: Os es necesario nacer otra vez."
+     },
+     {
+      "v": "8",
+      "t": "El viento de donde quiere sopla, y oyes su sonido; mas ni sabes de dónde viene, ni á dónde vaya: así es todo aquel que es nacido del Espíritu."
+     },
+     {
+      "v": "9",
+      "t": "Respondió Nicodemo, y díjole: ¿Cómo puede esto hacerse?"
+     },
+     {
+      "v": "10",
+      "t": "Respondió Jesús, y díjole: ¿Tú eres el maestro de Israel, y no sabes esto?"
+     },
+     {
+      "v": "11",
+      "t": "De cierto, de cierto te digo, que lo que sabemos hablamos, y lo que hemos visto, testificamos; y no recibís nuestro testimonio."
+     },
+     {
+      "v": "12",
+      "t": "Si os he dicho cosas terrenas, y no creéis, ¿cómo creeréis si os dijere las celestiales?"
+     },
+     {
+      "v": "13",
+      "t": "Y nadie subió al cielo, sino el que descendió del cielo, el Hijo del hombre, que está en el cielo."
+     },
+     {
+      "v": "14",
+      "t": "Y como Moisés levantó la serpiente en el desierto, así es necesario que el Hijo del hombre sea levantado;"
+     },
+     {
+      "v": "15",
+      "t": "Para que todo aquel que en él creyere, no se pierda, sino que tenga vida eterna."
+     },
+     {
+      "v": "16",
+      "t": "Porque de tal manera amó Dios al mundo, que ha dado á su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna."
+     },
+     {
+      "v": "17",
+      "t": "Porque no envió Dios á su Hijo al mundo para que condene al mundo, mas para que el mundo sea salvo por él."
+     }
+    ]
+   }
+  }
+ },
+ "translations": {
+  "qwen3-8b": {
+   "es": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Salmo de David. El SEÑOR es mi pastor; nada me faltará."
+      },
+      {
+       "v": "2",
+       "t": "Hace que descanse en praderas verdes. Lleva a mi lado aguas tranquilas."
+      },
+      {
+       "v": "3",
+       "t": "Renueva mi alma. Me guía por los caminos de la justicia por su nombre."
+      },
+      {
+       "v": "4",
+       "t": "Aunque camine por el valle de la sombra de la muerte, no temeré mal alguno, porque tú estás conmigo. Tu vara y tu cayado me consuelan."
+      },
+      {
+       "v": "5",
+       "t": "Prepárasme una mesa delante de mis enemigos. Untas mi cabeza con aceite; mi copa se llena."
+      },
+      {
+       "v": "6",
+       "t": "Bendición y misericordia me seguirán toda la vida, y moraré en la casa del SEÑOR para siempre."
+      }
+     ],
+     "ms": 16134
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "En aquel tiempo había un hombre de los fariseos llamado Nicodemo, sumo sacerdote."
+      },
+      {
+       "v": "2",
+       "t": "Este vino a Jesús de noche y le dijo: «Rabí, sabemos que tú eres maestro que has venido de Dios, porque nadie puede hacer estas señales que hace, a menos que Dios esté con él»."
+      },
+      {
+       "v": "3",
+       "t": "Jesús le respondió: «En verdad, en verdad te digo: quien no nazca de nuevo, no puede ver el Reino de Dios»."
+      },
+      {
+       "v": "4",
+       "t": "Nicodemo le dijo: «¿Cómo puede un hombre nacer cuando ya es viejo? ¿Cómo puede entrar de nuevo en el vientre de su madre y nacer?»."
+      },
+      {
+       "v": "5",
+       "t": "Jesús le respondió: «En verdad, en verdad te digo: quien no nazca del agua y del Espíritu, no puede entrar en el Reino de Dios»."
+      },
+      {
+       "v": "6",
+       "t": "Lo que nace de la carne es carne, y lo que nace del Espíritu es espíritu."
+      },
+      {
+       "v": "7",
+       "t": "No te asombres de que te dije: «Debéis nacer de nuevo»."
+      },
+      {
+       "v": "8",
+       "t": "El viento sopla donde quiere, y oyes su sonido, pero no sabes de dónde viene ni a dónde va. Así es también el que nace del Espíritu»."
+      },
+      {
+       "v": "9",
+       "t": "Nicodemo le respondió: «¿Cómo pueden ser estas cosas?»."
+      },
+      {
+       "v": "10",
+       "t": "Jesús le respondió: «¿Eres tú el maestro de Israel, y no comprendes estas cosas?»."
+      },
+      {
+       "v": "11",
+       "t": "En verdad, en verdad te digo: nosotros hablamos lo que conocemos y testificamos lo que hemos visto, y vosotros no recibís nuestro testimonio."
+      },
+      {
+       "v": "12",
+       "t": "Si yo os hablara de cosas terrenas y vosotros no creyerais, ¿cómo creeréis si os hablo de cosas celestiales?"
+      },
+      {
+       "v": "13",
+       "t": "Nadie subió al cielo, sino el que descendió del cielo, el Hijo del Hombre, que está en el cielo."
+      },
+      {
+       "v": "14",
+       "t": "Como Moisés alzó la serpiente en el desierto, así también debe ser alzado el Hijo del Hombre."
+      },
+      {
+       "v": "15",
+       "t": "Para que todo aquel que crea en él no perezca, sino que tenga vida eterna."
+      },
+      {
+       "v": "16",
+       "t": "Porque Dios amó al mundo de tal manera que dio a su Hijo unigénito, para que todo aquel que crea en él no perezca, sino que tenga vida eterna."
+      },
+      {
+       "v": "17",
+       "t": "Porque no envió Dios a su Hijo al mundo para juzgar al mundo, sino para que el mundo sea salvo por él."
+      }
+     ],
+     "ms": 17095
+    }
+   },
+   "fr": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Un psaume de David. Le SEIGNEUR est mon pasteur ; je manque de rien."
+      },
+      {
+       "v": "2",
+       "t": "Il me fait reposer sur des pâturages verts. Il me conduit près des eaux tranquilles."
+      },
+      {
+       "v": "3",
+       "t": "Il restaure mon âme. Il me guide sur les chemins de la justice, pour son nom."
+      },
+      {
+       "v": "4",
+       "t": "Même si je marche par le vallon de l'ombre de la mort, je ne crains aucun mal, car tu es avec moi. Ton bâton et ton bâti me rassurent."
+      },
+      {
+       "v": "5",
+       "t": "Tu prépares une table devant moi en présence de mes ennemis. Tu as huilé ma tête. Mon bol se remplit de vin."
+      },
+      {
+       "v": "6",
+       "t": "La bonté et la miséricorde me suivront toute ma vie, et je demeurerai dans la maison du SEIGNEUR pour l'éternité."
+      }
+     ],
+     "ms": 5873
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Il y avait un homme des Pharisiens, nommé Nicodème, prince des Juifs."
+      },
+      {
+       "v": "2",
+       "t": "Il vint à Jésus de nuit et lui dit : « Rabbi, nous savons que tu es un maître venu de Dieu, car personne ne peut faire ces signes-là que tu fais, si Dieu n’est pas avec toi. »"
+      },
+      {
+       "v": "3",
+       "t": "Jésus lui répondit : « En vérité, en vérité je te le dis, celui qui ne naît d’un naissance nouvelle ne peut pas voir le Royaume de Dieu. »"
+      },
+      {
+       "v": "4",
+       "t": "Nicodème lui dit : « Comment peut-on naître lorsqu’on est déjà vieux ? Peut-on entrer une seconde fois dans le ventre de sa mère et naître ? »"
+      },
+      {
+       "v": "5",
+       "t": "Jésus lui répondit : « En vérité, en vérité je te le dis, celui qui ne naît de l’eau et de l’Esprit ne peut pas entrer dans le Royaume de Dieu. »"
+      },
+      {
+       "v": "6",
+       "t": "Ce qui est né de la chair est de la chair. Ce qui est né de l’Esprit est de l’Esprit."
+      },
+      {
+       "v": "7",
+       "t": "Ne sois pas étonné que je te dise : « Vous devez tous naître d’une naissance nouvelle. »"
+      },
+      {
+       "v": "8",
+       "t": "Le vent souffle où il veut, et tu entends son bruit, mais tu ne sais ni d’où il vient ni où il va. De même, celui qui est né de l’Esprit."
+      },
+      {
+       "v": "9",
+       "t": "Nicodème lui répondit : « Comment peuvent-ils être ainsi ? »"
+      },
+      {
+       "v": "10",
+       "t": "Jésus lui répondit : « Tu es le maître d’Israël, et tu ne comprends pas ces choses ? »"
+      },
+      {
+       "v": "11",
+       "t": "En vérité, en vérité je te le dis, nous parlons ce que nous connaissons et témoignons de ce que nous avons vu, et pourtant vous ne recevez pas notre témoignage."
+      },
+      {
+       "v": "12",
+       "t": "Si je vous disais des choses terrestres et que vous ne croyiez pas, comment croirez-vous si je vous dis des choses célestes ?"
+      },
+      {
+       "v": "13",
+       "t": "Personne n’est monté au ciel, excepté celui qui est descendu du ciel, le Fils de l’homme, qui est au ciel."
+      },
+      {
+       "v": "14",
+       "t": "Comme Moïse a levé le serpent dans le désert, ainsi doit être levé le Fils de l’homme."
+      },
+      {
+       "v": "15",
+       "t": "Pour que tout celui qui croit en lui ne périsse pas, mais ait la vie éternelle."
+      },
+      {
+       "v": "16",
+       "t": "Car Dieu a tellement aimé le monde qu’il a donné son Fils unique, pour que tout celui qui croit en lui ne périsse pas, mais ait la vie éternelle."
+      },
+      {
+       "v": "17",
+       "t": "Car Dieu n’a pas envoyé son Fils dans le monde pour le juger, mais pour que le monde soit sauvé par lui."
+      }
+     ],
+     "ms": 18645
+    }
+   },
+   "de": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ein Psalm Davids. Der HERR ist mein Hirte; ich mangel an nichts."
+      },
+      {
+       "v": "2",
+       "t": "Er führt mich auf grünen Wiesen und führt mich an stillen Wasser."
+      },
+      {
+       "v": "3",
+       "t": "Er erneuert meine Seele. Er führt mich auf Gerechtigkeitswegen, aus seinem Namen."
+      },
+      {
+       "v": "4",
+       "t": "Selbst wenn ich durch das Tal des Schattens des Todes gehe, fürchte ich mich nicht, denn du bist mit mir. Dein Stock und dein Stab trösten mich."
+      },
+      {
+       "v": "5",
+       "t": "Du bereitest einen Tisch vor mir vor meinem Feind. Du salbst meinen Kopf mit Öl. Mein Kelch überfließt."
+      },
+      {
+       "v": "6",
+       "t": "Gute und Barmherzigkeit folgen mir alle Tage meines Lebens, und ich will in dem Hause des HERRN wohnen ewig."
+      }
+     ],
+     "ms": 5598
+    },
+    "jhn3": {
+     "error": "Unterminated string in JSON at position 67360 (line 1 column 67361)"
+    }
+   },
+   "la": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Psalmus David. Dominus meus pastor est; nihil mihi deficit."
+      },
+      {
+       "v": "2",
+       "t": "Facit me requiescere in pratiis verdes. Ad flumina tranquilla duxit me."
+      },
+      {
+       "v": "3",
+       "t": "Renovat animam meam. In via rectitudinis duxit me pro nomine suo."
+      },
+      {
+       "v": "4",
+       "t": "Etiam si ambulabo per vallem umbrae mortis, timere non debem. Tu es cum me. Stylus et baculus tuos me confortant."
+      },
+      {
+       "v": "5",
+       "t": "Praeponis mensam mea coram inimicis meis. Ungis caput meum oleo. Potabilis est vasa mea."
+      },
+      {
+       "v": "6",
+       "t": "Bonitas et misericordia sequentur me omni die vita mea, et habitabo in domo Domini in aeternum."
+      }
+     ],
+     "ms": 5830
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Erat autem homo de Pharisaeis, nomine Nicodemos, princeps Judaeorum."
+      },
+      {
+       "v": "2",
+       "t": "Venit ad Iesum nocte et dixit ei: 'Rabbi, scimus quod tu es magister qui ex Deo est, quia nullus potest facere signa haec quae facis, nisi Deus sit cum eo.'"
+      },
+      {
+       "v": "3",
+       "t": "Respondit ei Iesus: 'Verus est tibi dico, nisi quis nascatur de novo, non poterit videre Regnum Dei.'"
+      },
+      {
+       "v": "4",
+       "t": "Dixit Nicodemos ei: 'Quomodo potest homo nasci, cum sit jam senex? Potestne iterum intrare in ventrem maternum et nasci?'"
+      },
+      {
+       "v": "5",
+       "t": "Respondit ei Iesus: 'Verus est tibi dico, nisi quis nascatur ex aqua et Spiritu, non poterit intrare in Regnum Dei.'"
+      },
+      {
+       "v": "6",
+       "t": "Quod nascitur de carne est carne. Quod nascitur de Spiritu est Spiritus."
+      },
+      {
+       "v": "7",
+       "t": "Noli mirare quod dixi tibi: 'Omnes vobis nasci de novo oportet.'"
+      },
+      {
+       "v": "8",
+       "t": "Ventus ibat ubi volebat, et audies sonum eius, sed non scis unde venit et ubi ibit. Ita est qui nascitur de Spiritu."
+      },
+      {
+       "v": "9",
+       "t": "Respondit Nicodemos ei: 'Quomodo possunt haec esse?'"
+      },
+      {
+       "v": "10",
+       "t": "Respondit ei Iesus: 'Esne tu magister Israel, et non intelligis haec?'"
+      },
+      {
+       "v": "11",
+       "t": "Verus est tibi dico, loquimur quod scimus, et testimonium de ea quae vidimus ducimus, et tibi non creditur testimonium.'"
+      },
+      {
+       "v": "12",
+       "t": "Si ego tibi dicam ea terrena, et non creditis, quomodo creditis si ego tibi dicam ea caelestia?"
+      },
+      {
+       "v": "13",
+       "t": "Nemo ascendit in caelum, nisi qui descendit de caelo, Filius hominis, qui est in caelo."
+      },
+      {
+       "v": "14",
+       "t": "Sicut Moyses serpens in deserto exaltavit, ita et Filius hominis exaltabitur,"
+      },
+      {
+       "v": "15",
+       "t": "ut qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "16",
+       "t": "Quoniam Deus tanto amavit mundum, ut daret Filium unigenitum, ut qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "17",
+       "t": "Quoniam non misit Deus Filium in mundum ut judicaret mundum, sed ut mundus salvaretur per eum."
+      }
+     ],
+     "ms": 17253
+    }
+   },
+   "el": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Παρθένος από Δαυίδ. Ο Κύριος ἐστὶν ὁ ποιμήν μου· ἀπελεύθερος ἐστὶν ἐμὲ."
+      },
+      {
+       "v": "2",
+       "t": "Ἀγαπᾷ με ἐν πράσινοι ἀγροῖς· ἐπιχειρεῖ με ἐν ἀγκύλοις ὕδατος."
+      },
+      {
+       "v": "3",
+       "t": "Ἀναπαύει τὴν ψυχὴν μου· ἐπιχειρεῖ με ἐν τοῖς δρόμοις δικαιοσύνης ὅτι ἐστὶν ὁ ὄνομα αὐτοῦ."
+      },
+      {
+       "v": "4",
+       "t": "Ἔν τῇ ἀνατολῇ τοῦ ἀπολλυμένου ἐν ἀγκύλοις ἐπιχειρεῖ με· ἀφοβεῖται ἐμὲ ἀκαταστάτως, ὅτι ἐστὶν ὁ παρὼν ἐμοί. ἡ ὀργανίζει ἐμοὶ ἐν ἀγκύλοις ἀπολλυμένου· ἀφοβεῖται ἐμὲ ἀκαταστάτως, ὅτι ἐστὶν ὁ παρὼν ἐμοί."
+      },
+      {
+       "v": "5",
+       "t": "Προσκείμενος ἐμοὶ ἐν ἀγκύλοις ἀπολλυμένου ἀναπαύει τὴν ψυχὴν μου· ἐπιχειρεῖ με ἐν τοῖς δρόμοις δικαιοσύνης ὅτι ἐστὶν ὁ ὄνομα αὐτοῦ."
+      },
+      {
+       "v": "6",
+       "t": "Ἔν τῇ ἀνατολῇ τοῦ ἀπολλυμένου ἐν ἀγκύλοις ἐπιχειρεῖ με· ἀφοβεῖται ἐμὲ ἀκαταστάτως, ὅτι ἐστὶν ὁ παρὼν ἐμοί. ἡ ὀργανίζει ἐμοὶ ἐν ἀγκύλοις ἀπολλυμένου· ἀφοβεῖται ἐμὲ ἀκαταστάτως, ὅτι ἐστὶν ὁ παρὼν ἐμοί."
+      }
+     ],
+     "ms": 20940
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Εδώ ἦν ἄνθρωπος ἐξ Φαρισαίων ὄνομα Νικόδημος ἀρχισυνάγωγος τῶν Ἰουδαίων."
+      },
+      {
+       "v": "2",
+       "t": "Ἦν δὲ ἐπὶ νυκτὶ ἐλθὼν πρὸς τὸν Ἰησοῦν καὶ λέγων αὐτῷ Ἐρραββί, οἴδαμεν ὅτι ἐσύ ἐργάτης ἐστὶς ἐκ θεοῦ, ὅτι οὐδεὶς ἀνὴρ ἀναγκάσαι ἐποίησεν τὰ σημεῖα τὰ τοιαῦτα ἄνευ θεοῦ."
+      },
+      {
+       "v": "3",
+       "t": "ὁ δὲ Ἰησοῦς ἀποκριθεὶς εἶπεν αὐτῷ Ἐγὼ ἀληθῶς σὺ ἀποκρίνεσθαί σοι, ἐὰν μὴ γεννηθῇ ἄνθρωπος ἀναγεννηθῇ, οὐ δύναται ἰδεῖν τὴν βασιλείαν τοῦ θεοῦ."
+      },
+      {
+       "v": "4",
+       "t": "ὁ Νικόδημος ἀπεκρίθη ἐπ᾽ αὐτῷ Ὁ ὅπως ἄνθρωπος γεννηθῇ ὅταν ᾖ ἀρχικός; ἀναπαύσεται δὴ πάλιν εἰς τὴν μήτηρ αὐτοῦ καὶ γεννηθῇ;"
+      },
+      {
+       "v": "5",
+       "t": "ὁ δὲ Ἰησοῦς ἀποκριθεὶς εἶπεν αὐτῷ Ἐγὼ ἀληθῶς σὺ ἀποκρίνεσθαί σοι, ἐὰν μὴ γεννηθῇ ἄνθρωπος ἐκ νερῶν καὶ πνεύματος, οὐ δύναται εἰσελθεῖν εἰς τὴν βασιλείαν τοῦ θεοῦ."
+      },
+      {
+       "v": "6",
+       "t": "ὅ ἐκ σαρκὸς γεννηθέν ἐστὶν σάρξ, ὅ ἐκ πνεύματος γεννηθέν ἐστὶν πνεῦμα."
+      },
+      {
+       "v": "7",
+       "t": "μὴ ἀμαρτάνῃς ὅτι εἶπον σοι ὅτι πάντες ἀναγεννηθῆναι πρέπει."
+      },
+      {
+       "v": "8",
+       "t": "ὁ ἀνεμός ἐρχόμενος ὅπου θέλει, ἀκούεις τὴν ἀκοὴν αὐτοῦ, ἀλλ᾽ οὐκ οἶδας ἐκ ποῦ ἔρχεται καὶ ποῦ ἀποπίπτει. οὕτως ἐστὶν ὁ ἀναγεννηθεὶς ἐκ πνεύματος."
+      },
+      {
+       "v": "9",
+       "t": "ὁ Νικόδημος ἀπεκρίθη αὐτῷ Ὁ ὅπως ἔστιν ταῦτα;"
+      },
+      {
+       "v": "10",
+       "t": "ὁ δὲ Ἰησοῦς ἀποκριθεὶς εἶπεν αὐτῷ Σὺ ἀρχισυνάγωγος τοῦ Ἰσραήλ ἐσύ, καὶ οὐκ ἀναγινώσκεις ταῦτα;"
+      },
+      {
+       "v": "11",
+       "t": "ἐγὼ ἀληθῶς σὺ ἀποκρίνεσθαί σοι, ἡμεῖς λαλοῦμεν ὅσα οἴδαμεν καὶ μαρτυροῦμεν ὅσα ἑωράκαμεν, καὶ ὑμεῖς οὐκ ἀποδέχεσθε τὴν μαρτυρίαν ἡμῶν."
+      },
+      {
+       "v": "12",
+       "t": "ἐὰν ἐγὼ ἀπαγγελῶ ὑμῖν ἐπὶ γῆς καὶ ὑμεῖς μὴ πιστεύσητε, πῶς ἀπαγγελῶ ὑμῖν ἐπὶ οὐρανῷ καὶ ὑμεῖς πιστεύσητε;"
+      },
+      {
+       "v": "13",
+       "t": "οὐδεὶς ἀνεβῆ ἐν οὐρανῷ ἀλλ᾽ ὁ ἐκ οὐρανοῦ κατεβηκὼς ὁ Υἱὸς τοῦ ἀνθρώπου, ὁ ἐν οὐρανῷ."
+      },
+      {
+       "v": "14",
+       "t": "ὡς ἐποίησεν ἀναβῆναι ἀρχισυνάγωγος ἐν τῇ ἀγρίᾳ, οὕτως δὲ πρέπει ὁ Υἱὸς τοῦ ἀνθρώπου ἀναβῆναι."
+      },
+      {
+       "v": "15",
+       "t": "ἵνα πᾶς ὁ πιστεύων ἐν αὐτῷ μὴ ἀπολέσηται ἀλλὰ ἔχῃ ζωὴν αἰώνιον."
+      },
+      {
+       "v": "16",
+       "t": "ὅτι ὁ θεὸς ἠγάπα τὸν κόσμον ὥστε ἀπέδωκεν τὸν μόνον υἱὸν αὐτοῦ, ὅ ὁ πιστεύων ἐν αὐτῷ μὴ ἀπολέσηται ἀλλὰ ἔχῃ ζωὴν αἰώνιον."
+      },
+      {
+       "v": "17",
+       "t": "ὅτι ὁ θεὸς οὐκ ἔστιν ἀπέστειλεν τὸν υἱὸν εἰς τὸν κόσμον ἵνα κρίνῃ τὸν κόσμον, ἀλλ᾽ ἵνα τὸν κόσμον σῴζῃ δι᾽ αὐτοῦ."
+      }
+     ],
+     "ms": 49848
+    }
+   },
+   "he": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "שיר大卫. ה' אדני שלי, לא אבוש. כלום לא יקרע לי."
+      },
+      {
+       "v": "2",
+       "t": "הוא ינחני על כבשים ירוקים, ינ引领ני לצללים של מים נוחמים."
+      },
+      {
+       "v": "3",
+       "t": "הוא יתחזק נפשי, ינ guidingני בדרכיו של צדיק, לשם כבוד השם."
+      },
+      {
+       "v": "4",
+       "t": "למרות שאני עובר דרך הולך של צל מות, לא אירא רע, כי אתה עםני.عصך וסמכתך, הם מנחמי."
+      },
+      {
+       "v": "5",
+       "t": "את מזמין לי שולחן לפני אויבי, אתה שמן את ראשתי בשמן, וקערה שלי מתמלאת."
+      },
+      {
+       "v": "6",
+       "t": "אמת ורבה אהבה תלוותני כל ימי חיי, וארחתי בבית ה' לנצח."
+      }
+     ],
+     "ms": 5872
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "היה שם אדם מפראשים בשם נICODEמוס, נגיד של יהודים."
+      },
+      {
+       "v": "2",
+       "t": "הוא בא אל ישו בלילה ויאמר אליו: 'רבי, אנחנו יודעים שאתה מורה שהבא ממעל, כי לא אחד יכול לעשות את הסימנים האלה שאתה עושה, אלא אם כן אלוהים עםו.'"
+      },
+      {
+       "v": "3",
+       "t": "יושו ענה לו: 'ודאי אני אגיד לך, שאם לא יולד אדם מחדש, לא יראה את ממלכת אלוהים.'"
+      },
+      {
+       "v": "4",
+       "t": "נICODEמוס אמר לו: 'איך יולד אדם כשהוא זר? האם ייכנס בשנית לרחם אמו ויולד?'"
+      },
+      {
+       "v": "5",
+       "t": "יושו ענה לו: 'ודאי אני אגיד לך, שאם לא יולד אדם ממים ורוח, לא ייכנס לממלכת אלוהים.'"
+      },
+      {
+       "v": "6",
+       "t": "הנולד מהlesh הואlesh, והנולד מהרוח הוארוח."
+      },
+      {
+       "v": "7",
+       "t": "לא תהלל על כך שאמרתי לך: 'אתם כולם חייבים להולד מחדש.'"
+      },
+      {
+       "v": "8",
+       "t": "רוח הובילה איפה שהיא רוצה, ואתם שומעים את קוליה, אך לא יודעים מאיפה היא בא ומאיפה היא הולכת. כן כל הנולד מהרוח.'"
+      },
+      {
+       "v": "9",
+       "t": "נICODEמוס ענה לו: 'איך יכול להיות כך?'"
+      },
+      {
+       "v": "10",
+       "t": "יושו ענה לו: 'אתה המורה של ישראל, ולא אתה מבין את הדברים האלה?'"
+      },
+      {
+       "v": "11",
+       "t": "ודאי אני אגיד לך, שאנו מדברים על מה שנודע לנו, ונאמרנו על מה ראינו, ואתם לא מקבלים את העדות שלנו."
+      },
+      {
+       "v": "12",
+       "t": "אם אמרתי לכם על דברים ארץ, ואתם לא מאמינים, איך תאמינו אם אגיד לכם על דברים שמים?"
+      },
+      {
+       "v": "13",
+       "t": "אין אחד עלה לשמاء אלא זה שב descendant מהשמים, האדם הבורא, שהוא בשמים."
+      },
+      {
+       "v": "14",
+       "t": "כמוהו עלה את הנחש במדבר, כן גם האדם הבורא יעלה."
+      },
+      {
+       "v": "15",
+       "t": "כדי שאיש שאמינו בו לא י perish, אלא יקבל חיים עולם."
+      },
+      {
+       "v": "16",
+       "t": "כי אלוהים אהב את העולם, עד שיביא את בנו היחידי, כדי שאיש שאמינו בו לא י perish, אלא יקבל חיים עולם."
+      },
+      {
+       "v": "17",
+       "t": "כי אלוהים לא שלח את בנו לעולם למשפט העולם, אלא כדי שהעולם יושא דרךו."
+      }
+     ],
+     "ms": 15830
+    }
+   }
+  },
+  "qwen3-14b": {
+   "es": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Un salmo de David. El SEÑOR es mi pastor; nada me faltará."
+      },
+      {
+       "v": "2",
+       "t": "Me hace descansar en verdes praderas. Me conduce junto a aguas tranquilas."
+      },
+      {
+       "v": "3",
+       "t": "Restaura mi alma. Guía mis pasos por sendas de justicia por amor a su nombre."
+      },
+      {
+       "v": "4",
+       "t": "Aunque pase por la valle de la sombra de la muerte, no temeré el mal, porque Tú estás conmigo. Tu vara y tu cayado me dan consuelo."
+      },
+      {
+       "v": "5",
+       "t": "Preparas una mesa delante de mí en presencia de mis enemigos. Unges mi cabeza con aceite; mi copa se desborda."
+      },
+      {
+       "v": "6",
+       "t": "Seguramente la bondad y la misericordia me seguirán todos los días de mi vida, y en la casa del SEÑOR habitaré por siempre."
+      }
+     ],
+     "ms": 83425
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Había un hombre de los fariseos, llamado Nicodemo, un dirigente de los judíos."
+      },
+      {
+       "v": "2",
+       "t": "Vino a Jesús de noche y le dijo: «Rabí, sabemos que tú eres un maestro que ha venido de Dios, porque nadie puede hacer estos signos que tú haces, si no es que Dios está con él»."
+      },
+      {
+       "v": "3",
+       "t": "Jesús le respondió: «En verdad, en verdad te digo, si no se nace de nuevo, no puede ver el reino de Dios»."
+      },
+      {
+       "v": "4",
+       "t": "Nicodemo le dijo: «¿Cómo puede un hombre nacer cuando es viejo? ¿Puede entrar una segunda vez en el vientre de su madre y nacer?»"
+      },
+      {
+       "v": "5",
+       "t": "Jesús le respondió: «En verdad, en verdad te digo, si no se nace del agua y del Espíritu, no puede entrar en el reino de Dios»."
+      },
+      {
+       "v": "6",
+       "t": "Lo que es nacido de la carne es carne, y lo que es nacido del Espíritu es espíritu."
+      },
+      {
+       "v": "7",
+       "t": "No te maravilles de que te dije: «Es necesario que todos ustedes sean nacidos de nuevo»."
+      },
+      {
+       "v": "8",
+       "t": "El viento sopla donde quiere, y oyes su sonido, pero no sabes de dónde viene ni adónde va. Así también es todo el que es nacido del Espíritu»."
+      },
+      {
+       "v": "9",
+       "t": "Nicodemo le respondió: «¿Cómo pueden estas cosas ser?»"
+      },
+      {
+       "v": "10",
+       "t": "Jesús le dijo: «¿Eres tú el maestro de Israel, y no entiendes estas cosas?»"
+      },
+      {
+       "v": "11",
+       "t": "En verdad, en verdad te digo, nosotros hablamos lo que sabemos, y testificamos lo que hemos visto, y ustedes no reciben nuestro testimonio."
+      },
+      {
+       "v": "12",
+       "t": "Si les he hablado de cosas terrenales y no creen, ¿cómo creerán si les hablo de cosas celestiales?"
+      },
+      {
+       "v": "13",
+       "t": "Nadie ha subido al cielo, excepto el que descendió del cielo, el Hijo del hombre, que está en el cielo."
+      },
+      {
+       "v": "14",
+       "t": "Así como Moisés levantó la serpiente en el desierto, así también debe ser levantado el Hijo del hombre."
+      },
+      {
+       "v": "15",
+       "t": "Para que todo el que cree en él no perezca, sino que tenga vida eterna."
+      },
+      {
+       "v": "16",
+       "t": "Porque Dios amó al mundo tanto, que dio a su único Hijo, para que todo el que crea en él no perezca, sino que tenga vida eterna."
+      },
+      {
+       "v": "17",
+       "t": "Porque Dios no envió a su Hijo al mundo para juzgar al mundo, sino para que el mundo sea salvo por él."
+      }
+     ],
+     "ms": 186849
+    }
+   },
+   "fr": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Un psaume de David. Le SEIGNEUR est mon berger ; je ne manquerai de rien."
+      },
+      {
+       "v": "2",
+       "t": "Il me fait reposer dans des pâturages verts. Il me conduit près des eaux tranquilles."
+      },
+      {
+       "v": "3",
+       "t": "Il restaure mon âme. Il me guide dans les sentiers de la justice, au nom de son nom."
+      },
+      {
+       "v": "4",
+       "t": "Même si je marche dans la vallée de l'ombre de la mort, je ne craindrai aucun mal, car tu es avec moi. Ta verge et ton bâton, ils me réconfortent."
+      },
+      {
+       "v": "5",
+       "t": "Tu prépares une table devant moi en présence de mes ennemis. Tu oint ma tête d'huile. Mon verre déborde."
+      },
+      {
+       "v": "6",
+       "t": "Assurément, la bonté et la miséricorde me suivront tout le long de ma vie, et je demeurerai dans la maison du SEIGNEUR pour les siècles des siècles."
+      }
+     ],
+     "ms": 61985
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Il y avait un homme des Phariséens, nommé Nicodème, qui était un chef des Juifs."
+      },
+      {
+       "v": "2",
+       "t": "Il vint vers Jésus de nuit et lui dit : « Rabbi, nous savons que tu es un enseignant venu de Dieu, car personne ne peut faire ces miracles que toi, sauf si Dieu est avec lui. »"
+      },
+      {
+       "v": "3",
+       "t": "Jésus lui répondit : « Je te le dis franchement, si l’on n’est pas né d’en haut, on ne peut pas voir le royaume de Dieu. »"
+      },
+      {
+       "v": "4",
+       "t": "Nicodème lui dit : « Comment peut-on être né quand on est vieux ? Est-ce que l’on peut entrer une seconde fois dans le ventre de sa mère et naître ? »"
+      },
+      {
+       "v": "5",
+       "t": "Jésus lui répondit : « Je te le dis franchement, si l’on n’est pas né d’eau et d’Esprit, on ne peut pas entrer dans le royaume de Dieu. »"
+      },
+      {
+       "v": "6",
+       "t": "Ce qui est né de la chair, c’est de la chair ; et ce qui est né de l’Esprit, c’est de l’Esprit."
+      },
+      {
+       "v": "7",
+       "t": "Ne t’étonne pas quand je t’ai dit : « Il faut que vous soyez tous nés d’en haut. »"
+      },
+      {
+       "v": "8",
+       "t": "Le vent souffle où il veut, et tu entends son bruit, mais tu ne sais d’où il vient et où il va. Ainsi en est-il de tout homme qui est né de l’Esprit. »"
+      },
+      {
+       "v": "9",
+       "t": "Nicodème lui répondit : « Comment peuvent ces choses être ? »"
+      },
+      {
+       "v": "10",
+       "t": "Jésus lui répondit : « Tu es le maître d’Israël, et tu ne comprends pas ces choses ? »"
+      },
+      {
+       "v": "11",
+       "t": "Je te le dis franchement, nous parlons de ce que nous connaissons, et nous témoignons de ce que nous avons vu, mais vous ne recevez pas notre témoignage."
+      },
+      {
+       "v": "12",
+       "t": "Si je vous ai parlé de choses terrestres et que vous ne croyez pas, comment croirez-vous si je vous parle de choses célestes ?"
+      },
+      {
+       "v": "13",
+       "t": "Personne n’est monté au ciel, sauf celui qui est descendu du ciel, le Fils de l’homme, qui est au ciel."
+      },
+      {
+       "v": "14",
+       "t": "Comme Moïse a élevé le serpent dans le désert, ainsi doit être élevé le Fils de l’homme."
+      },
+      {
+       "v": "15",
+       "t": "Pour que quiconque croit en lui ne périsse pas, mais ait la vie éternelle."
+      },
+      {
+       "v": "16",
+       "t": "Car Dieu a tant aimé le monde qu’il a donné son Fils unique, afin que quiconque croit en lui ne périsse pas, mais ait la vie éternelle."
+      },
+      {
+       "v": "17",
+       "t": "Car Dieu n’a pas envoyé son Fils dans le monde pour juger le monde, mais pour que le monde soit sauvé par lui."
+      }
+     ],
+     "ms": 188601
+    }
+   },
+   "de": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ein Psalm Davids. Der HERR ist mein Hirte; mir wird nichts fehlen."
+      },
+      {
+       "v": "2",
+       "t": "Er macht mich ruhen in grünen Auen. Er führt mich zu stillen Wasser."
+      },
+      {
+       "v": "3",
+       "t": "Er erquickt meine Seele. Er leitet mich in den Wegen der Gerechtigkeit um seines Namens willen."
+      },
+      {
+       "v": "4",
+       "t": "Selbst wenn ich durch das Tal des Schattens des Todes gehe, fürchte ich kein Böses; denn du bist bei mir. Dein Stock und dein Stab, sie trösten mich."
+      },
+      {
+       "v": "5",
+       "t": "Du bereitest vor mir ein Tisch in Gegenwart meiner Feinde. Du salbst mein Haupt mit Öl; mein Kelch überfließt."
+      },
+      {
+       "v": "6",
+       "t": "Gnade und Barmherzigkeit werden mir folgen alle Tage meines Lebens, und ich will wohnen in des HERRN Haus ewiglich."
+      }
+     ],
+     "ms": 56862
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Es war ein Mann aus den Pharisäern namens Nikodemus, ein Führer der Juden."
+      },
+      {
+       "v": "2",
+       "t": "Er kam zu Jesus in der Nacht und sagte zu ihm: „Rabbi, wir wissen, dass du ein Lehrer bist, der von Gott gekommen ist, denn niemand kann diese Zeichen tun, die du tust, es sei denn, Gott ist mit ihm.“"
+      },
+      {
+       "v": "3",
+       "t": "Jesus antwortete ihm: „Wahrlich, wahrlich, ich sage dir: Es sei nicht jemand geboren von neuem, so kann er das Reich Gottes nicht sehen.“"
+      },
+      {
+       "v": "4",
+       "t": "Nikodemus sagte zu ihm: „Wie kann ein Mensch geboren werden, wenn er alt ist? Kann er ein zweites Mal in das Schoß seiner Mutter zurückkehren und geboren werden?“"
+      },
+      {
+       "v": "5",
+       "t": "Jesus antwortete: „Wahrlich, wahrlich, ich sage dir: Es sei nicht jemand geboren von Wasser und Geist, so kann er in das Reich Gottes eingehen.“"
+      },
+      {
+       "v": "6",
+       "t": "Was von dem Fleisch geboren wird, ist Fleisch; was von dem Geist geboren wird, ist Geist."
+      },
+      {
+       "v": "7",
+       "t": "Tue dich nicht wundern, dass ich dir gesagt habe: ‚Ihr müsst alle von neuem geboren werden.‘"
+      },
+      {
+       "v": "8",
+       "t": "Der Wind weht, wohin er will, und du hörst sein Geräusch, doch weißt nicht, woher er kommt und wohin er geht. So ist es mit jedem, der von dem Geist geboren wird.“"
+      },
+      {
+       "v": "9",
+       "t": "Nikodemus antwortete ihm: „Wie können diese Dinge sein?“"
+      },
+      {
+       "v": "10",
+       "t": "Jesus antwortete ihm: „Bist du der Lehrer Israels und verstehst du das nicht?“"
+      },
+      {
+       "v": "11",
+       "t": "Wahrlich, wahrlich, ich sage dir: Wir sprechen, was wir wissen, und geben Zeugnis von dem, was wir gesehen haben, und ihr nehmt unser Zeugnis nicht an.“"
+      },
+      {
+       "v": "12",
+       "t": "Wenn ich euch irdische Dinge sage und ihr glaubt nicht, wie werdet ihr glauben, wenn ich euch himmlische Dinge sage?“"
+      },
+      {
+       "v": "13",
+       "t": "Niemand ist in den Himmel aufgestiegen, außer der, der vom Himmel herabgekommen ist, der Menschensohn, der im Himmel ist.“"
+      },
+      {
+       "v": "14",
+       "t": "Wie Mose das Schlangenbild in der Wüste erhob, so muss der Menschensohn erhöht werden.“"
+      },
+      {
+       "v": "15",
+       "t": "Damit jeder, der an ihn glaubt, nicht verloren geht, sondern ewiges Leben hat.“"
+      },
+      {
+       "v": "16",
+       "t": "Denn Gott hat so die Welt geliebt, dass er seinen einzigen Sohn gab, damit jeder, der an ihn glaubt, nicht verloren geht, sondern ewiges Leben hat.“"
+      },
+      {
+       "v": "17",
+       "t": "Denn Gott hat seinen Sohn nicht in die Welt gesandt, um die Welt zu richten, sondern damit die Welt durch ihn gerettet wird."
+      }
+     ],
+     "ms": 177038
+    }
+   },
+   "la": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Psalmus David. Dominus pastor meus; nihil deerit mihi."
+      },
+      {
+       "v": "2",
+       "t": "In pratis viridis iacere me facit. Juxta aquas quietas me ducat."
+      },
+      {
+       "v": "3",
+       "t": "Anima mea reficit. In via justitiae educat me propter nomen suum."
+      },
+      {
+       "v": "4",
+       "t": "Et si ambulo in valle umbrae mortis, non timbo malum, quia tu cum me es. Virga tua et baculus tuus consolatio mea sunt."
+      },
+      {
+       "v": "5",
+       "t": "Praeparas mensam coram inimicis meis. Crinem meum unges oleo. Poculum meum superfluit."
+      },
+      {
+       "v": "6",
+       "t": "Securus bonitas et misericordia secutur me in omnibus diebus vitae meae, et habitabo in domo Domini in aeternum."
+      }
+     ],
+     "ms": 57256
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Erat autem vir Phariseorum nomine Nicodemo, princeps Iudaeae."
+      },
+      {
+       "v": "2",
+       "t": "Venit ergo ad Iesum nocte, et dixit ei: Rabbi, scimus quia tu es magister qui ex Deo venisti, quia nemo potest facere signa quae tu facis, nisi Deus cum eo sit."
+      },
+      {
+       "v": "3",
+       "t": "Respondit ei Iesus: Vere te dico, nisi quis renascatur, non potest videre regnum Dei."
+      },
+      {
+       "v": "4",
+       "t": "Dixit ei Nicodemos: Quomodo potest homo renasci cum sit senex? An iterum intrabit in uterum matris suae et nascetur?"
+      },
+      {
+       "v": "5",
+       "t": "Respondit Iesus: Vere te dico, nisi quis nascatur ex aqua et Spiritu, non potest intrare in regnum Dei."
+      },
+      {
+       "v": "6",
+       "t": "Quod nascitur ex carne, carne est; quod nascitur ex Spiritu, Spiritu est."
+      },
+      {
+       "v": "7",
+       "t": "Nolite mirari quod dixi vobis: Oportet vos omnes renasci."
+      },
+      {
+       "v": "8",
+       "t": "Ventus spirat ubi vult, et audit sonum eius, sed nescitis unde veniat et quo vadit. Sic est omnis qui nascitur ex Spiritu."
+      },
+      {
+       "v": "9",
+       "t": "Respondit Nicodemos ei: Quomodo possunt haec fieri?"
+      },
+      {
+       "v": "10",
+       "t": "Respondit Iesus: Tu es magister Israel, et non intelligis haec?"
+      },
+      {
+       "v": "11",
+       "t": "Vere te dico, loquimur quod scimus, et testimonium damus quod vidimus, et non recipitis testimonium nostrum."
+      },
+      {
+       "v": "12",
+       "t": "Si dixero vobis res terrenas, et non creditis, quomodo credetis si dixero vobis res caelestes?"
+      },
+      {
+       "v": "13",
+       "t": "Nemo ascendit in caelum nisi qui descendit ex caelo, Filius hominis, qui est in caelo."
+      },
+      {
+       "v": "14",
+       "t": "Sicut Moyses elevavit serpentem in deserto, ita oportet Filium hominis elevari."
+      },
+      {
+       "v": "15",
+       "t": "Ut qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "16",
+       "t": "Quia tantum amavit Deus mundum, ut Filium unigenitum dederit, ut qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "17",
+       "t": "Nam non misit Deus Filium suum in mundum ut judicet mundum, sed ut mundus salvus fiat per eum."
+      }
+     ],
+     "ms": 158012
+    }
+   },
+   "el": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ψαλμός τῷ Δαβίδ. Κύριος ὁ ποιμήν μου, οὐκ ἀπολῶ ἀπὸ παντὸς."
+      },
+      {
+       "v": "2",
+       "t": "Στρατεύει με ἐν πρασίνοις πασχίδις. Πρὸς ἀκίνητα ὕδατα ἀγωνίζει με."
+      },
+      {
+       "v": "3",
+       "t": "Ἀνακαινοῦ με τὴν ψυχήν μου. Ἐν τοῖς ὁδοῖς τῆς δικαιοσύνης ἀγωνίζει με ἐν τῷ ὀνόματι αὐτοῦ."
+      },
+      {
+       "v": "4",
+       "t": "Καὶ ἐὰν περιπατῶ ἐν τῷ βαθύ τῆς σκιᾶς θανάτου, οὐ μὴ φοβηθῶ κακόν, ὅτι σὺ μετ’ ἐμοῦ εἶ. Τὸ ἔγχειρον σου καὶ ἡ ἀγγελία σου παρακλητικὰ με ἐστίν."
+      },
+      {
+       "v": "5",
+       "t": "Παρασκευάζεις πίνακα ἐν πρόσωπον τῶν ἐχθρῶν μου. Τὸ κεφάλαι μου ἐλαιοῦ σεαυτόν σεαυτῷ ἀναλείπεις. Τὸ ποτήριον μου περισσεύει."
+      },
+      {
+       "v": "6",
+       "t": "Ἀσφαλῶς ἀγαθότης καὶ ἀγάπη ἀκολουθήσουσιν με ἐν πᾶσι ταῖς ἡμέραις τῆς ζωῆς μου, καὶ ἐν τῷ οἴκῳ τοῦ Κυρίου ἐν τοῖς αἰῶνες τῶν αἰώνων κατοικήσω."
+      }
+     ],
+     "ms": 106491
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ήταν ένας άνθρωπος από τους Φαρισαίους, ο Νικοδημός, ένας αρχιερεύς των Ιουδαίων."
+      },
+      {
+       "v": "2",
+       "t": "Ηρχίστηκε προς τον Ιησούν τη νύχτα και είπε αὐτῷ: «Ραββί, γνωρίζομεν ότι εἶς εἶς διδάσκαλος που έρχεται από τον Θεό, επειδή δεν μπορεῖ κανείς να πράξει αυτά τα σημεία που πράττεις, εκτός εάν είναι με τον Θεό.»"
+      },
+      {
+       "v": "3",
+       "t": "Απεκρίθη αὐτῷ ο Ιησούς: «Πλήρως σε λέγω, εάν κανείς δεν γεννηθεί ανακαινισμένος, δεν μπορεῖ να βλέπει τη βασιλεία του Θεοῦ.»"
+      },
+      {
+       "v": "4",
+       "t": "Είπε αὐτῷ ο Νικοδημός: «Πώς μπορεί ένας άνθρωπος να γεννηθεί όταν είναι γεγονός; Θα εισέλθει πάλιν στη κοιλία της μητρός του και θα γεννηθεί;»"
+      },
+      {
+       "v": "5",
+       "t": "Απεκρίθη ο Ιησούς: «Πλήρως σε λέγω, εάν κανείς δεν γεννηθεί από νερό και πνεύμα, δεν μπορεῖ να εισέλθει στη βασιλεία του Θεοῦ.»"
+      },
+      {
+       "v": "6",
+       "t": "Τὸ γεννηθὲν ἀπὸ τὴν σὰρξ ἐστὶν σὰρξ, καὶ τὸ γεννηθὲν ἀπὸ τὸ πνεῦμα ἐστὶν πνεῦμα."
+      },
+      {
+       "v": "7",
+       "t": "Μὴ θαυμάζετε ὅτι εἶπον ὑμῖν: «Πάντες ὑμεῖς ἀναγεννηθῆνε.»"
+      },
+      {
+       "v": "8",
+       "t": "Τὸ πνεῦμα πνέει ποῦ θέλει, καὶ ἀκούετε τὴν φωνὴ αὐτοῦ, ἀλλ’ οὐκ οἶδατε πόθεν ἔρχεται καὶ ποῦ ὑπάγει. Οὕτως ἐστὶν πᾶς ὁ γεννώμενος ἀπὸ τοῦ πνεύματος.»"
+      },
+      {
+       "v": "9",
+       "t": "Εἶπεν αὐτῷ ὁ Νικοδημός: «Πῶς μποροῦν αὗται αἱ πράγματα να γίνουν;»"
+      },
+      {
+       "v": "10",
+       "t": "Απεκρίθη αὐτῷ ὁ Ιησούς: «Εἶσαι σὺ ὁ διδάσκαλος τῶν Ἰσραηλ καὶ οὐκ ἐνοηθήκας αὐτά;»"
+      },
+      {
+       "v": "11",
+       "t": "Πλήρως σε λέγω, ἀποκαταγγέλλομεν ἃ γινώσκομεν καὶ μαρτυροῦμεν ἃ ἑώρακαμεν, καὶ ὑμεῖς οὐ λαμβάνετε τὴν μαρτυρία ἡμῶν."
+      },
+      {
+       "v": "12",
+       "t": "Εἰ ἀπεκαταγγείλω ὑμῖν ἀνθρωπίνα πράγματα καὶ οὐ πιστεύετε, πῶς πιστεύσετε εἰ ἀπεκαταγγείλω ὑμῖν ἐπουράνια πράγματα;"
+      },
+      {
+       "v": "13",
+       "t": "Οὐδεὶς ἀνέβη εἰς τὸν οὐρανόν εἰ μὴ ὁ καταβαντὶς ἀπὸ τοῦ οὐρανοῦ, ὁ υἱὸς τοῦ ἀνθρώπου, ὁ ὢν ἐν τῷ οὐρανῷ."
+      },
+      {
+       "v": "14",
+       "t": "Ως ὁ Μωϋσῆς ἀνεῴχρη τὴν ὄφιν ἐν τῇ ἐρήμῳ, οὕτως δεῖ τὸν υἱὸν τοῦ ἀνθρώπου νὰ ἀναβληθῇ."
+      },
+      {
+       "v": "15",
+       "t": "ἵνα πᾶς ὁ πιστεύων εἰς αὐτὸν μὴ ἀπολέσῃ τὴν ψυχὴν αὐτοῦ, ἀλλ’ ἔχῃ ζωὴν αἰώνιον."
+      },
+      {
+       "v": "16",
+       "t": "Ὃτι οὕτως ἠγάπησεν ὁ Θεὸς τὸν κόσμον, ὥστε τὸν μονογενῆ υἱὸν ἀπέστειλεν, ἵνα πᾶς ὁ πιστεύων εἰς αὐτὸν μὴ ἀπολέσῃ τὴν ψυχὴν αὐτοῦ, ἀλλ’ ἔχῃ ζωὴν αἰώνιον."
+      },
+      {
+       "v": "17",
+       "t": "Οὐ γὰρ ἀπέστειλεν ὁ Θεὸς τὸν υἱὸν αὐτοῦ εἰς τὸν κόσμον ἵνα κρίνῃ τὸν κόσμον, ἀλλ’ ἵνα σωθῇ ὁ κόσμος δι’ αὐτοῦ."
+      }
+     ],
+     "ms": 400178
+    }
+   },
+   "he": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "משיר של דוד. יהוה רעי, לא א חסר כל"
+      },
+      {
+       "v": "2",
+       "t": "ישבני במרעה חלד, מובילני למים נוחים"
+      },
+      {
+       "v": "3",
+       "t": "נשא את נשמתי, מדריך בדרכי צדק לשבח שמו"
+      },
+      {
+       "v": "4",
+       "t": "ואף אם אהלך במערת צל מות, לא אירא רעה, כי אתה עמדי. מקלך וعصיך מנחמיםני"
+      },
+      {
+       "v": "5",
+       "t": "תכין עלי שולחן לפני איברי, תצית שמן על ראשי, כוסי מתמלא"
+      },
+      {
+       "v": "6",
+       "t": "כertain טוב ורחמים יתפללו עלי כל ימי חיי, ואשב בבית יהוה לעולם"
+      }
+     ],
+     "ms": 51167
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "היה איש מפְּרִישִׁים שֵׁם נִכּוֹדִים, שֹׂדֵק בַּיִת לַיִּשְׂרָאֵל."
+      },
+      {
+       "v": "2",
+       "t": "בָּא אֵלָיו בַּלַּיְלָה וְאָמַר לוֹ: \"רַבִּי, יָדַעְנוּ שֶׁאַתָּה מְלֶמֶדֶת מֵאֵלָה, כִּי אֵין אִישׁ מַעֲשֶׂה אֵלֶּה שֶׁתַּעֲשֶׂה אִלּוּ אֵלָה אֵצֵלָה.\""
+      },
+      {
+       "v": "3",
+       "t": "אָמַר לוֹ יֵשׁוּעַ: \"אַךְ אָמַרְתִּי לָכֶם, אִלּוּ לֹא יִוָּלֵד אָדָם שֵׁנִי, לֹא יִרְאֶה אֶת מַלְכוּת הָאֱלֹהִים.\""
+      },
+      {
+       "v": "4",
+       "t": "אָמַר לוֹ נִכּוֹדִים: \"אֵיךְ יִוָּלֵד אָדָם בְּשֵׂבַע, הֲיָכוֹל לָבוֹא שֵׁנִי אֶל בֵּית אִמּוֹ וְיִוָּלֵד?\""
+      },
+      {
+       "v": "5",
+       "t": "אָמַר יֵשׁוּעַ: \"אַךְ אָמַרְתִּי לָכֶם, אִלּוּ לֹא יִוָּלֵד מַיִם וְרוּחַ, לֹא יָבוֹא אֶל מַלְכוּת הָאֱלֹהִים.\""
+      },
+      {
+       "v": "6",
+       "t": "הַמּוּלָד מִבָּשָׂר בָּשָׂר, הַמּוּלָד מֵרוּחַ רוּחַ."
+      },
+      {
+       "v": "7",
+       "t": "אַל תִּתְפַּתְּחוּ שֶׁאָמַרְתִּי לָכֶם: \"כָּל אַתֶּם נִבְלָדִים שֵׁנִי.\""
+      },
+      {
+       "v": "8",
+       "t": "הַנֶּפֶשׁ נִשְׁמָה מִשָּׁמַיִם, וְשָׁמַעְתֶּם אֶת קוֹלָהּ, וְאֵין לָכֶם מַעֲרֵיךְ מֵאֵלָה וְאֵיפֶה הִיא הָלְכָה. כָּךְ הַמּוּלָד מֵרוּחַ.\""
+      },
+      {
+       "v": "9",
+       "t": "אָמַר נִכּוֹדִים לָהּ: \"אֵיךְ יִהְיוּ הָעֵבְרִים הָאֵלֶּה?\""
+      },
+      {
+       "v": "10",
+       "t": "אָמַר יֵשׁוּעַ: \"הֲרֵי אַתָּה מְלֶמֶדֶת אֶת יִשְׂרָאֵל, וְאֵין לָךְ מַעֲרֵיךְ לָהֶם?\""
+      },
+      {
+       "v": "11",
+       "t": "אַךְ אָמַרְתִּי לָכֶם, אֲנַחְנוּ מְדַבְּרִים אֶת הַדְּבָרִים שֶׁאֲנַחְנוּ יָדַעְנוּ, וּמַעֲרִיכִים אֶת הַדְּבָרִים שֶׁרָאִינוּ, וְאֵין לָכֶם מַעֲרֵיךְ לַעֲבוֹדָה הַשְּׁמָיִם.\""
+      },
+      {
+       "v": "12",
+       "t": "אִם אָמַרְתִּי לָכֶם דְּבָרִים אֲרֵץ, וְאֵין לָכֶם מַעֲרֵיךְ לָהֶם, הֵיכֶן תִּמְצָאוּ מַעֲרֵיךְ לַדְּבָרִים הַשְּׁמָיִם?\""
+      },
+      {
+       "v": "13",
+       "t": "אֵין אִישׁ עָלָה אֶל שָׁמַיִם, אֵלָה הַמּוֹרֵד מֵהַשָּׁמַיִם, בֶּן אָדָם, הַמֵּת בַּשָּׁמַיִם.\""
+      },
+      {
+       "v": "14",
+       "t": "כַּאֲשֶׁר עָלָה מֹשֶׁה אֶת הַנָּחָשׁ בַּמִּדְבָּר, כֵּן יֵעָלֶה בֶּן הָאָדָם.\""
+      },
+      {
+       "v": "15",
+       "t": "לְמַעַן כָּל הַמַּאֲמִין בּוֹ לֹא יָמוּת, כִּי יִהְיֶה לָהֶם חַיֵּי עוֹלָם.\""
+      },
+      {
+       "v": "16",
+       "t": "כִּי כֵן אָהַב הָאֱלֹהִים אֶת הָעוֹלָם, כִּי נָתַן אֶת בְּנֵהוּ אֶת הַמָּשִׁיחַ, לְמַעַן כָּל הַמַּאֲמִין בּוֹ לֹא יָמוּת, כִּי יִהְיֶה לָהֶם חַיֵּי עוֹלָם.\""
+      },
+      {
+       "v": "17",
+       "t": "כִּי לֹא שְׁלָחַ הָאֱלֹהִים אֶת בְּנֵהוּ אֶל הָעוֹלָם לִשְׁפֹּט אֶת הָעוֹלָם, כִּי לְמַעַן הָעוֹלָם לִהְיוֹת נִצָּח בּוֹ."
+      }
+     ],
+     "ms": 481938
+    }
+   }
+  },
+  "claude": {
+   "es": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Salmo de David. El SEÑOR es mi pastor; nada me faltará."
+      },
+      {
+       "v": "2",
+       "t": "En verdes pastos me hace descansar; junto a aguas tranquilas me conduce."
+      },
+      {
+       "v": "3",
+       "t": "Restaura mi alma; me guía por sendas de justicia por amor de su nombre."
+      },
+      {
+       "v": "4",
+       "t": "Aunque ande por el valle de sombra de muerte, no temeré mal alguno, porque tú estás conmigo; tu vara y tu cayado me consuelan."
+      },
+      {
+       "v": "5",
+       "t": "Preparas mesa delante de mí en presencia de mis enemigos; unges mi cabeza con aceite; mi copa rebosa."
+      },
+      {
+       "v": "6",
+       "t": "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa del SEÑOR moraré para siempre."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Había entre los fariseos un hombre llamado Nicodemo, principal entre los judíos."
+      },
+      {
+       "v": "2",
+       "t": "Este vino a Jesús de noche y le dijo: «Rabí, sabemos que eres maestro venido de Dios, porque nadie puede hacer estas señales que tú haces si Dios no está con él»."
+      },
+      {
+       "v": "3",
+       "t": "Jesús le respondió: «De cierto, de cierto te digo que el que no nace de nuevo no puede ver el reino de Dios»."
+      },
+      {
+       "v": "4",
+       "t": "Nicodemo le dijo: «¿Cómo puede un hombre nacer siendo viejo? ¿Puede acaso entrar por segunda vez en el vientre de su madre y nacer?»."
+      },
+      {
+       "v": "5",
+       "t": "Jesús respondió: «De cierto, de cierto te digo que el que no nace del agua y del Espíritu no puede entrar en el reino de Dios."
+      },
+      {
+       "v": "6",
+       "t": "Lo que nace de la carne, carne es; y lo que nace del Espíritu, espíritu es."
+      },
+      {
+       "v": "7",
+       "t": "No te maravilles de que te haya dicho: “Os es necesario nacer de nuevo”."
+      },
+      {
+       "v": "8",
+       "t": "El viento sopla donde quiere, y oyes su sonido, pero no sabes de dónde viene ni adónde va. Así es todo aquel que nace del Espíritu»."
+      },
+      {
+       "v": "9",
+       "t": "Nicodemo le respondió: «¿Cómo puede ser esto?»."
+      },
+      {
+       "v": "10",
+       "t": "Jesús le respondió: «¿Tú eres el maestro de Israel, y no entiendes estas cosas?"
+      },
+      {
+       "v": "11",
+       "t": "De cierto, de cierto te digo que hablamos de lo que sabemos y damos testimonio de lo que hemos visto; y no recibís nuestro testimonio."
+      },
+      {
+       "v": "12",
+       "t": "Si os he hablado de cosas terrenales y no creéis, ¿cómo creeréis si os hablo de las celestiales?"
+      },
+      {
+       "v": "13",
+       "t": "Nadie ha subido al cielo sino el que descendió del cielo, el Hijo del Hombre, que está en el cielo."
+      },
+      {
+       "v": "14",
+       "t": "Y como Moisés levantó la serpiente en el desierto, así es necesario que el Hijo del Hombre sea levantado,"
+      },
+      {
+       "v": "15",
+       "t": "para que todo aquel que en él cree no se pierda, sino que tenga vida eterna."
+      },
+      {
+       "v": "16",
+       "t": "Porque de tal manera amó Dios al mundo, que dio a su Hijo unigénito, para que todo aquel que en él cree no se pierda, sino que tenga vida eterna."
+      },
+      {
+       "v": "17",
+       "t": "Porque Dios no envió a su Hijo al mundo para juzgar al mundo, sino para que el mundo sea salvo por medio de él."
+      }
+     ]
+    }
+   },
+   "fr": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Psaume de David. L’Éternel est mon berger : je ne manquerai de rien."
+      },
+      {
+       "v": "2",
+       "t": "Il me fait reposer dans de verts pâturages, il me conduit près des eaux paisibles."
+      },
+      {
+       "v": "3",
+       "t": "Il restaure mon âme, il me guide dans les sentiers de la justice, à cause de son nom."
+      },
+      {
+       "v": "4",
+       "t": "Même si je marche dans la vallée de l’ombre de la mort, je ne crains aucun mal, car tu es avec moi : ta houlette et ton bâton me rassurent."
+      },
+      {
+       "v": "5",
+       "t": "Tu dresses devant moi une table, en face de mes ennemis ; tu oins d’huile ma tête, et ma coupe déborde."
+      },
+      {
+       "v": "6",
+       "t": "Oui, le bonheur et la grâce m’accompagneront tous les jours de ma vie, et j’habiterai dans la maison de l’Éternel pour toujours."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Il y avait parmi les pharisiens un homme nommé Nicodème, l’un des chefs des Juifs."
+      },
+      {
+       "v": "2",
+       "t": "Il vint de nuit trouver Jésus et lui dit : « Rabbi, nous savons que tu es un maître venu de Dieu, car personne ne peut accomplir les signes que tu accomplis si Dieu n’est pas avec lui. »"
+      },
+      {
+       "v": "3",
+       "t": "Jésus lui répondit : « En vérité, en vérité, je te le dis : à moins de naître de nouveau, nul ne peut voir le royaume de Dieu. »"
+      },
+      {
+       "v": "4",
+       "t": "Nicodème lui dit : « Comment un homme peut-il naître quand il est vieux ? Peut-il entrer une seconde fois dans le sein de sa mère et naître ? »"
+      },
+      {
+       "v": "5",
+       "t": "Jésus répondit : « En vérité, en vérité, je te le dis : à moins de naître d’eau et d’Esprit, nul ne peut entrer dans le royaume de Dieu."
+      },
+      {
+       "v": "6",
+       "t": "Ce qui est né de la chair est chair, et ce qui est né de l’Esprit est esprit."
+      },
+      {
+       "v": "7",
+       "t": "Ne t’étonne pas que je t’aie dit : “Il faut que vous naissiez de nouveau.”"
+      },
+      {
+       "v": "8",
+       "t": "Le vent souffle où il veut, et tu en entends le bruit ; mais tu ne sais ni d’où il vient ni où il va. Il en est ainsi de quiconque est né de l’Esprit. »"
+      },
+      {
+       "v": "9",
+       "t": "Nicodème lui répondit : « Comment cela peut-il se faire ? »"
+      },
+      {
+       "v": "10",
+       "t": "Jésus lui répondit : « Tu es le maître d’Israël, et tu ne comprends pas ces choses ?"
+      },
+      {
+       "v": "11",
+       "t": "En vérité, en vérité, je te le dis : nous disons ce que nous savons, et nous rendons témoignage de ce que nous avons vu ; et vous ne recevez pas notre témoignage."
+      },
+      {
+       "v": "12",
+       "t": "Si vous ne croyez pas quand je vous ai parlé des choses terrestres, comment croirez-vous quand je vous parlerai des choses célestes ?"
+      },
+      {
+       "v": "13",
+       "t": "Personne n’est monté au ciel, sinon celui qui est descendu du ciel, le Fils de l’homme qui est dans le ciel."
+      },
+      {
+       "v": "14",
+       "t": "Et comme Moïse éleva le serpent dans le désert, de même il faut que le Fils de l’homme soit élevé,"
+      },
+      {
+       "v": "15",
+       "t": "afin que quiconque croit en lui ne périsse pas, mais qu’il ait la vie éternelle."
+      },
+      {
+       "v": "16",
+       "t": "Car Dieu a tant aimé le monde qu’il a donné son Fils unique, afin que quiconque croit en lui ne périsse pas, mais qu’il ait la vie éternelle."
+      },
+      {
+       "v": "17",
+       "t": "Dieu, en effet, n’a pas envoyé son Fils dans le monde pour juger le monde, mais pour que le monde soit sauvé par lui."
+      }
+     ]
+    }
+   },
+   "de": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ein Psalm Davids. Der HERR ist mein Hirte; mir wird nichts mangeln."
+      },
+      {
+       "v": "2",
+       "t": "Er lässt mich lagern auf grünen Auen, er führt mich zu stillen Wassern."
+      },
+      {
+       "v": "3",
+       "t": "Er erquickt meine Seele, er leitet mich auf Pfaden der Gerechtigkeit um seines Namens willen."
+      },
+      {
+       "v": "4",
+       "t": "Auch wenn ich durch das Tal des Todesschattens gehe, fürchte ich kein Unheil, denn du bist bei mir; dein Stecken und dein Stab, sie trösten mich."
+      },
+      {
+       "v": "5",
+       "t": "Du bereitest vor mir einen Tisch im Angesicht meiner Feinde. Du salbst mein Haupt mit Öl, mein Becher fließt über."
+      },
+      {
+       "v": "6",
+       "t": "Ja, Güte und Gnade werden mir folgen alle Tage meines Lebens, und ich werde im Haus des HERRN wohnen für immer."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Es war aber ein Mensch unter den Pharisäern mit Namen Nikodemus, ein Oberster der Juden."
+      },
+      {
+       "v": "2",
+       "t": "Der kam bei Nacht zu Jesus und sprach zu ihm: „Rabbi, wir wissen, dass du ein Lehrer bist, von Gott gekommen; denn niemand kann diese Zeichen tun, die du tust, es sei denn, Gott ist mit ihm.“"
+      },
+      {
+       "v": "3",
+       "t": "Jesus antwortete und sprach zu ihm: „Wahrlich, wahrlich, ich sage dir: Wenn jemand nicht von neuem geboren wird, kann er das Reich Gottes nicht sehen.“"
+      },
+      {
+       "v": "4",
+       "t": "Nikodemus spricht zu ihm: „Wie kann ein Mensch geboren werden, wenn er alt ist? Kann er etwa zum zweiten Mal in den Leib seiner Mutter hineingehen und geboren werden?“"
+      },
+      {
+       "v": "5",
+       "t": "Jesus antwortete: „Wahrlich, wahrlich, ich sage dir: Wenn jemand nicht aus Wasser und Geist geboren wird, kann er nicht in das Reich Gottes hineinkommen."
+      },
+      {
+       "v": "6",
+       "t": "Was aus dem Fleisch geboren ist, das ist Fleisch; und was aus dem Geist geboren ist, das ist Geist."
+      },
+      {
+       "v": "7",
+       "t": "Wundere dich nicht, dass ich dir gesagt habe: ‚Ihr müsst von neuem geboren werden.‘"
+      },
+      {
+       "v": "8",
+       "t": "Der Wind weht, wo er will, und du hörst sein Sausen; aber du weißt nicht, woher er kommt und wohin er geht. So ist es mit jedem, der aus dem Geist geboren ist.“"
+      },
+      {
+       "v": "9",
+       "t": "Nikodemus antwortete und sprach zu ihm: „Wie kann das geschehen?“"
+      },
+      {
+       "v": "10",
+       "t": "Jesus antwortete und sprach zu ihm: „Du bist der Lehrer Israels und verstehst das nicht?"
+      },
+      {
+       "v": "11",
+       "t": "Wahrlich, wahrlich, ich sage dir: Wir reden, was wir wissen, und bezeugen, was wir gesehen haben; und ihr nehmt unser Zeugnis nicht an."
+      },
+      {
+       "v": "12",
+       "t": "Wenn ich euch von irdischen Dingen gesagt habe und ihr glaubt nicht, wie werdet ihr glauben, wenn ich euch von himmlischen Dingen sage?"
+      },
+      {
+       "v": "13",
+       "t": "Und niemand ist in den Himmel hinaufgestiegen außer dem, der aus dem Himmel herabgekommen ist, der Sohn des Menschen, der im Himmel ist."
+      },
+      {
+       "v": "14",
+       "t": "Und wie Mose in der Wüste die Schlange erhöht hat, so muss der Sohn des Menschen erhöht werden,"
+      },
+      {
+       "v": "15",
+       "t": "damit jeder, der an ihn glaubt, nicht verloren geht, sondern ewiges Leben hat."
+      },
+      {
+       "v": "16",
+       "t": "Denn so hat Gott die Welt geliebt, dass er seinen eingeborenen Sohn gab, damit jeder, der an ihn glaubt, nicht verloren geht, sondern ewiges Leben hat."
+      },
+      {
+       "v": "17",
+       "t": "Denn Gott hat seinen Sohn nicht in die Welt gesandt, damit er die Welt richte, sondern damit die Welt durch ihn gerettet werde."
+      }
+     ]
+    }
+   },
+   "la": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Psalmus David. Dominus pastor meus est; nihil mihi deerit."
+      },
+      {
+       "v": "2",
+       "t": "In pascuis virentibus me cubare facit; ad aquas quietas deducit me."
+      },
+      {
+       "v": "3",
+       "t": "Animam meam reficit; ducit me per semitas iustitiae propter nomen suum."
+      },
+      {
+       "v": "4",
+       "t": "Etiam si ambulavero in valle umbrae mortis, non timebo mala, quoniam tu mecum es; virga tua et baculus tuus, ipsa me consolantur."
+      },
+      {
+       "v": "5",
+       "t": "Paras in conspectu meo mensam coram inimicis meis; ungis oleo caput meum, et calix meus redundat."
+      },
+      {
+       "v": "6",
+       "t": "Profecto bonitas et misericordia subsequentur me omnibus diebus vitae meae, et habitabo in domo Domini in aeternum."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Erat autem homo ex pharisaeis, Nicodemus nomine, princeps Iudaeorum."
+      },
+      {
+       "v": "2",
+       "t": "Hic venit ad Iesum nocte et dixit ei: «Rabbi, scimus te magistrum a Deo venisse; nemo enim potest haec signa facere quae tu facis, nisi Deus sit cum eo.»"
+      },
+      {
+       "v": "3",
+       "t": "Respondit Iesus et dixit ei: «Amen, amen dico tibi: nisi quis denuo natus fuerit, non potest videre regnum Dei.»"
+      },
+      {
+       "v": "4",
+       "t": "Dicit ad eum Nicodemus: «Quomodo potest homo nasci, cum senex sit? Numquid potest in ventrem matris suae iterum introire et nasci?»"
+      },
+      {
+       "v": "5",
+       "t": "Respondit Iesus: «Amen, amen dico tibi: nisi quis natus fuerit ex aqua et Spiritu, non potest introire in regnum Dei."
+      },
+      {
+       "v": "6",
+       "t": "Quod natum est ex carne, caro est; et quod natum est ex Spiritu, spiritus est."
+      },
+      {
+       "v": "7",
+       "t": "Ne mireris quia dixi tibi: ‹Oportet vos nasci denuo.›"
+      },
+      {
+       "v": "8",
+       "t": "Ventus ubi vult spirat, et vocem eius audis, sed nescis unde veniat aut quo vadat; sic est omnis qui natus est ex Spiritu.»"
+      },
+      {
+       "v": "9",
+       "t": "Respondit Nicodemus et dixit ei: «Quomodo possunt haec fieri?»"
+      },
+      {
+       "v": "10",
+       "t": "Respondit Iesus et dixit ei: «Tu es magister Israel, et haec non intellegis?"
+      },
+      {
+       "v": "11",
+       "t": "Amen, amen dico tibi: quod scimus loquimur, et quod vidimus testamur; et testimonium nostrum non accipitis."
+      },
+      {
+       "v": "12",
+       "t": "Si terrena dixi vobis et non creditis, quomodo, si dixero vobis caelestia, credetis?"
+      },
+      {
+       "v": "13",
+       "t": "Et nemo ascendit in caelum, nisi qui de caelo descendit, Filius hominis, qui est in caelo."
+      },
+      {
+       "v": "14",
+       "t": "Et sicut Moyses exaltavit serpentem in deserto, ita exaltari oportet Filium hominis,"
+      },
+      {
+       "v": "15",
+       "t": "ut omnis qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "16",
+       "t": "Sic enim Deus dilexit mundum, ut Filium suum unigenitum daret, ut omnis qui credit in eum non pereat, sed habeat vitam aeternam."
+      },
+      {
+       "v": "17",
+       "t": "Non enim misit Deus Filium suum in mundum ut iudicet mundum, sed ut salvetur mundus per ipsum."
+      }
+     ]
+    }
+   },
+   "el": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Ψαλμός του Δαβίδ. Ο ΚΥΡΙΟΣ είναι ο ποιμένας μου· τίποτα δεν θα μου λείψει."
+      },
+      {
+       "v": "2",
+       "t": "Με αναπαύει σε χλοερά λιβάδια· με οδηγεί δίπλα σε ήρεμα νερά."
+      },
+      {
+       "v": "3",
+       "t": "Αναζωογονεί την ψυχή μου· με οδηγεί σε μονοπάτια δικαιοσύνης για χάρη του ονόματός του."
+      },
+      {
+       "v": "4",
+       "t": "Ακόμα κι αν περπατήσω μέσα στην κοιλάδα της σκιάς του θανάτου, δεν θα φοβηθώ κανένα κακό, γιατί εσύ είσαι μαζί μου· το ραβδί σου και η ποιμενική σου ράβδος, αυτά με παρηγορούν."
+      },
+      {
+       "v": "5",
+       "t": "Ετοιμάζεις τραπέζι μπροστά μου, ενώπιον των εχθρών μου· χρίεις το κεφάλι μου με λάδι· το ποτήρι μου ξεχειλίζει."
+      },
+      {
+       "v": "6",
+       "t": "Σίγουρα η καλοσύνη και το έλεος θα με ακολουθούν όλες τις ημέρες της ζωής μου, και θα κατοικώ στον οίκο του ΚΥΡΙΟΥ για πάντα."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "Υπήρχε ένας άνθρωπος από τους Φαρισαίους, που λεγόταν Νικόδημος, άρχοντας των Ιουδαίων."
+      },
+      {
+       "v": "2",
+       "t": "Αυτός ήρθε στον Ιησού τη νύχτα και του είπε: «Ραββί, ξέρουμε ότι είσαι δάσκαλος που ήρθε από τον Θεό· γιατί κανείς δεν μπορεί να κάνει αυτά τα σημεία που κάνεις εσύ, αν ο Θεός δεν είναι μαζί του.»"
+      },
+      {
+       "v": "3",
+       "t": "Ο Ιησούς του αποκρίθηκε: «Αλήθεια, αλήθεια σου λέω, αν κάποιος δεν γεννηθεί ξανά, δεν μπορεί να δει τη βασιλεία του Θεού.»"
+      },
+      {
+       "v": "4",
+       "t": "Ο Νικόδημος του λέει: «Πώς μπορεί ένας άνθρωπος να γεννηθεί όταν είναι γέρος; Μήπως μπορεί να μπει δεύτερη φορά στην κοιλιά της μητέρας του και να γεννηθεί;»"
+      },
+      {
+       "v": "5",
+       "t": "Ο Ιησούς αποκρίθηκε: «Αλήθεια, αλήθεια σου λέω, αν κάποιος δεν γεννηθεί από νερό και Πνεύμα, δεν μπορεί να μπει στη βασιλεία του Θεού."
+      },
+      {
+       "v": "6",
+       "t": "Ό,τι έχει γεννηθεί από τη σάρκα είναι σάρκα, και ό,τι έχει γεννηθεί από το Πνεύμα είναι πνεύμα."
+      },
+      {
+       "v": "7",
+       "t": "Μην απορείς που σου είπα: “Πρέπει όλοι σας να γεννηθείτε ξανά.”"
+      },
+      {
+       "v": "8",
+       "t": "Ο άνεμος φυσάει όπου θέλει, και ακούς τον ήχο του, αλλά δεν ξέρεις από πού έρχεται και πού πηγαίνει. Έτσι είναι καθένας που έχει γεννηθεί από το Πνεύμα.»"
+      },
+      {
+       "v": "9",
+       "t": "Ο Νικόδημος του αποκρίθηκε: «Πώς μπορούν να γίνουν αυτά;»"
+      },
+      {
+       "v": "10",
+       "t": "Ο Ιησούς του αποκρίθηκε: «Εσύ είσαι ο δάσκαλος του Ισραήλ και δεν τα καταλαβαίνεις αυτά;"
+      },
+      {
+       "v": "11",
+       "t": "Αλήθεια, αλήθεια σου λέω, μιλάμε γι’ αυτό που ξέρουμε και μαρτυρούμε γι’ αυτό που έχουμε δει, κι εσείς δεν δέχεστε τη μαρτυρία μας."
+      },
+      {
+       "v": "12",
+       "t": "Αν σας μίλησα για τα επίγεια και δεν πιστεύετε, πώς θα πιστέψετε αν σας μιλήσω για τα επουράνια;"
+      },
+      {
+       "v": "13",
+       "t": "Κανείς δεν έχει ανέβει στον ουρανό παρά μόνο εκείνος που κατέβηκε από τον ουρανό, ο Υιός του ανθρώπου, που είναι στον ουρανό."
+      },
+      {
+       "v": "14",
+       "t": "Και όπως ο Μωυσής ύψωσε το φίδι στην έρημο, έτσι πρέπει να υψωθεί ο Υιός του ανθρώπου,"
+      },
+      {
+       "v": "15",
+       "t": "ώστε καθένας που πιστεύει σ’ αυτόν να μη χαθεί, αλλά να έχει αιώνια ζωή."
+      },
+      {
+       "v": "16",
+       "t": "Γιατί τόσο πολύ αγάπησε ο Θεός τον κόσμο, ώστε έδωσε τον μονογενή Υιό του, για να μη χαθεί καθένας που πιστεύει σ’ αυτόν, αλλά να έχει αιώνια ζωή."
+      },
+      {
+       "v": "17",
+       "t": "Γιατί ο Θεός δεν έστειλε τον Υιό του στον κόσμο για να κρίνει τον κόσμο, αλλά για να σωθεί ο κόσμος μέσω αυτού."
+      }
+     ]
+    }
+   },
+   "he": {
+    "psa23": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "מזמור לדוד. יהוה הוא רועי; לא יחסר לי דבר."
+      },
+      {
+       "v": "2",
+       "t": "בנאות דשא הוא מרביץ אותי, אל מים שקטים הוא מוביל אותי."
+      },
+      {
+       "v": "3",
+       "t": "את נפשי הוא משיב; הוא מנחה אותי בשבילי צדק למען שמו."
+      },
+      {
+       "v": "4",
+       "t": "גם אם אלך בעמק צל המוות, לא אפחד מרע, כי אתה איתי; שבטך ומשענתך – הם מנחמים אותי."
+      },
+      {
+       "v": "5",
+       "t": "אתה עורך לפניי שולחן נגד אויביי; אתה משח בשמן את ראשי, כוסי עולה על גדותיה."
+      },
+      {
+       "v": "6",
+       "t": "אכן טוב וחסד ילוו אותי כל ימי חיי, ואשכון בבית יהוה לעולמים."
+      }
+     ]
+    },
+    "jhn3": {
+     "verses": [
+      {
+       "v": "1",
+       "t": "והיה איש מן הפרושים ושמו נקדימון, אחד מראשי היהודים."
+      },
+      {
+       "v": "2",
+       "t": "הוא בא אל ישוע בלילה ואמר לו: \"רבי, אנו יודעים כי מורה אתה שבא מאת האלוהים, שכן איש אינו יכול לעשות את האותות שאתה עושה, אלא אם כן האלוהים עמו.\""
+      },
+      {
+       "v": "3",
+       "t": "ענה ישוע ואמר לו: \"אמן, אמן אני אומר לך: מי שאינו נולד מחדש אינו יכול לראות את מלכות האלוהים.\""
+      },
+      {
+       "v": "4",
+       "t": "אמר אליו נקדימון: \"איך יכול אדם להיוולד כשהוא זקן? האם יוכל להיכנס שנית אל בטן אמו ולהיוולד?\""
+      },
+      {
+       "v": "5",
+       "t": "ענה ישוע: \"אמן, אמן אני אומר לך: מי שאינו נולד מן המים ומן הרוח אינו יכול להיכנס אל מלכות האלוהים."
+      },
+      {
+       "v": "6",
+       "t": "הנולד מן הבשר בשר הוא, והנולד מן הרוח רוח הוא."
+      },
+      {
+       "v": "7",
+       "t": "אל תתמה על שאמרתי לך: 'עליכם כולכם להיוולד מחדש'."
+      },
+      {
+       "v": "8",
+       "t": "הרוח נושבת אל אשר תחפוץ, ואתה שומע את קולה, אך אינך יודע מאין היא באה ולאן היא הולכת. כך הוא כל הנולד מן הרוח.\""
+      },
+      {
+       "v": "9",
+       "t": "ענה נקדימון ואמר לו: \"איך יכולים הדברים האלה להיות?\""
+      },
+      {
+       "v": "10",
+       "t": "ענה ישוע ואמר לו: \"אתה מורה ישראל, ואת אלה אינך מבין?"
+      },
+      {
+       "v": "11",
+       "t": "אמן, אמן אני אומר לך: את אשר אנו יודעים אנו מדברים, ועל אשר ראינו אנו מעידים, ואתם אינכם מקבלים את עדותנו."
+      },
+      {
+       "v": "12",
+       "t": "אם סיפרתי לכם על דברים שבארץ ואינכם מאמינים, איך תאמינו אם אספר לכם על דברים שבשמים?"
+      },
+      {
+       "v": "13",
+       "t": "איש לא עלה השמימה זולת זה שירד מן השמים, בן האדם, אשר בשמים."
+      },
+      {
+       "v": "14",
+       "t": "וכשם שהרים משה את הנחש במדבר, כך צריך בן האדם להיות מורם,"
+      },
+      {
+       "v": "15",
+       "t": "כדי שכל המאמין בו לא יאבד, אלא יהיו לו חיי עולם."
+      },
+      {
+       "v": "16",
+       "t": "כי כה אהב האלוהים את העולם, עד כי נתן את בנו יחידו, למען אשר כל המאמין בו לא יאבד, אלא יהיו לו חיי עולם."
+      },
+      {
+       "v": "17",
+       "t": "כי לא שלח האלוהים את בנו אל העולם כדי לשפוט את העולם, אלא כדי שהעולם ייוושע על ידו."
+      }
+     ]
+    }
+   }
+  }
+ }
+}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
-import { adjacentChapters, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
+import { adjacentChapters, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
 import type { Verse, Version } from "@/lib/schema";
@@ -68,7 +68,7 @@ export function ReaderView() {
 
   if (!valid || !book) return <NotFound />;
 
-  const title = `${book.name} ${ref.chapter}`;
+  const title = chapterTitle(book, ref.chapter);
   const style = { "--reader-size": `${fontSize}px` } as CSSProperties;
   const column = view === "column";
 
@@ -93,8 +93,7 @@ export function ReaderView() {
 }
 
 function refLabel(r: BookRef) {
-  const b = findBook(r.work, r.book);
-  return `${b?.name ?? r.book} ${r.chapter}`;
+  return chapterTitle(findBook(r.work, r.book), r.chapter, r.book);
 }
 
 function ChapterHeader({
@@ -213,6 +212,9 @@ function ColumnView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
           >
             <VersionLabel version={c.version} />
             {c.entry.status === "error" && <ColumnError col={c} />}
+            {c.entry.status === "ok" && c.entry.data.note && (
+              <p className="mt-1 text-xs font-normal leading-snug text-faint">{c.entry.data.note}</p>
+            )}
           </div>
         ))}
       </div>
@@ -259,6 +261,13 @@ function StackedView({ cols, rows }: { cols: Col[]; rows: AlignedRow[] }) {
           <VersionLabel version={c.version} compact /> <ColumnError col={c} inline />
         </div>
       ))}
+      {cols.map((c) =>
+        c.entry.status === "ok" && c.entry.data.note ? (
+          <p key={`note-${c.version.id}`} className="mb-3 rounded-lg border border-line bg-raised px-3 py-2 text-xs text-muted">
+            <VersionLabel version={c.version} compact /> — {c.entry.data.note}
+          </p>
+        ) : null,
+      )}
       {loading ? (
         <Skeleton />
       ) : (

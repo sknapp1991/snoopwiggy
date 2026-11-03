@@ -42,7 +42,7 @@ async function main() {
   const counts = new Map<string, Map<string, Map<string, number>>>();
 
   for (const v of catalog.versions) {
-    const dir = path.join(ROOT, "public", "texts", v.work, v.id);
+    const dir = path.join(ROOT, "data", "texts", v.work, v.id);
     const expected = books.get(v.work) ?? new Map();
     let chapters = 0;
     let verses = 0;

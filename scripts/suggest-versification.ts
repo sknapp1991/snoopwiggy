@@ -12,7 +12,7 @@
  * Run it against a "raw" import, i.e. one done with the mapping file temporarily absent
  * (import-ebible.ts --no-map).
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { catalogSchema, chapterSchema } from "../src/lib/schema";
 
@@ -65,8 +65,14 @@ const MOVES: [number, number, number][] = [
 
 async function loadBook(work: string, version: string, book: string, chapters: number): Promise<V[]> {
   const out: V[] = [];
-  for (let ch = 1; ch <= chapters; ch++) {
-    const p = path.join(ROOT, "public", "texts", work, version, book, `${ch}.json`);
+  // Read every chapter the version actually has (it may have more than the catalog, e.g. Joel 4 in Hebrew numbering).
+  const have = (await readdir(path.join(ROOT, "data", "texts", work, version, book)))
+    .filter((f) => /^\d+\.json$/.test(f))
+    .map((f) => parseInt(f));
+  const last = Math.max(chapters, ...have);
+  for (let ch = 1; ch <= last; ch++) {
+    if (!have.includes(ch)) continue;
+    const p = path.join(ROOT, "data", "texts", work, version, book, `${ch}.json`);
     const c = chapterSchema.parse(JSON.parse(await readFile(p, "utf8")));
     for (const x of c.verses) out.push({ ref: `${ch}:${x.v}`, ch, v: x.v, t: x.t });
   }
@@ -85,6 +91,12 @@ function align(a: V[], b: V[]) {
   const pa = [0], pb = [0];
   for (const x of a) pa.push(pa[pa.length - 1] + x.t.length);
   for (const x of b) pb.push(pb[pb.length - 1] + x.t.length);
+  // Verse numbers are evidence too: most sources follow the reference grid and only leave a slot empty
+  // where they omit a verse. Pairing a verse with its own number is cheap, a reference verse whose number
+  // the version lacks is an expected gap, and anything else must be justified by the lengths.
+  const bRefs = new Set(b.map((x) => x.ref));
+  const aRefs = new Set(a.map((x) => x.ref));
+  const SAME = -Math.log(0.9), SHIFTED = -Math.log(0.8), GAP_EXPECTED = -Math.log(0.6);
   for (let i = 0; i <= n; i++)
     for (let j = 0; j <= m; j++) {
       if (i === 0 && j === 0) continue;
@@ -95,8 +107,14 @@ function align(a: V[], b: V[]) {
         const prev = cost[(i - di) * W + (j - dj)];
         if (prev === Infinity) continue;
         const l1 = pa[i] - pa[i - di], l2 = pb[j] - pb[j - dj];
-        // discourage pairing across chapter boundaries in the reference unless lengths demand it
-        const cc = prev - Math.log(prior) + lenCost(l1, l2, c);
+        let p = -Math.log(prior);
+        if (di === 1 && dj === 1) p = a[i - 1].ref === b[j - 1].ref ? SAME : SHIFTED;
+        else if (di === 1 && dj === 0 && !bRefs.has(a[i - 1].ref)) p = GAP_EXPECTED;
+        // An extra verse whose number doesn't exist in the reference at all (LXX Daniel 3:31–90,
+        // Vulgate Esther 10:4ff) is an expected insertion, not something to force into a pairing.
+        else if (di === 0 && dj === 1 && !aRefs.has(b[j - 1].ref)) p = GAP_EXPECTED;
+        // An omitted/added verse is judged by its prior alone, not by how long the missing text is.
+        const cc = prev + p + (di === 0 || dj === 0 ? 0 : lenCost(l1, l2, c));
         if (cc < best) { best = cc; bi = k; }
       }
       cost[i * W + j] = best;
@@ -119,28 +137,64 @@ async function main() {
   const ver = catalog.versions.find((v) => v.id === verId)!;
   const mapping: Record<string, string> = {};
   let regions = 0;
+  let rejected = 0;
   for (const r of catalog.religions)
     for (const col of r.collections)
       for (const it of col.items) {
         if (it.work !== ver.work || !it.chapters) continue;
-        const a = await loadBook(ver.work, refId, it.id, it.chapters);
+        // Reference chapters the version leaves out (reordered sections) are dropped on both sides,
+        // otherwise the remaining chapters get stretched across the whole book.
+        const skip = (ver.import?.skipChapters ?? []).filter((r) => r.book === it.id);
+        const a = (await loadBook(ver.work, refId, it.id, it.chapters)).filter(
+          (x) => !skip.some((r) => x.ch >= r.from && x.ch <= (r.to ?? 999)),
+        );
         const b = await loadBook(ver.work, verId, it.id, it.chapters);
         const pairs = align(a, b);
+        // Chapters whose verse count differs between the two (a real numbering difference, an omitted
+        // verse, or a squeezed/moved verse). Regions that touch none of them are textual-variant noise
+        // (e.g. KJV's longer reading in Acts 9:5–6) and keep the identity mapping.
+        const count = (xs: V[]) => xs.reduce((m, x) => m.set(x.ch, (m.get(x.ch) ?? 0) + 1), new Map<number, number>());
+        const ca = count(a), cb = count(b);
+        const differs = new Set([...new Set([...ca.keys(), ...cb.keys()])].filter((ch) => ca.get(ch) !== cb.get(ch)));
         let region: string[] = [];
+        let regionMap: Record<string, string> = {};
+        let regionChapters = new Set<number>();
         const flush = () => {
-          if (region.length) { regions++; console.log(region.join("\n") + "\n"); region = []; }
+          if (region.length) {
+            regions++;
+            Object.assign(mapping, regionMap);
+            console.log(region.join("\n") + "\n");
+          }
+          region = [];
+          regionMap = {};
+          regionChapters = new Set();
         };
+        let lastA: V | undefined;
         for (const p of pairs) {
+          if (p.a.length) lastA = p.a[p.a.length - 1];
           const aRefs = p.a.map((x) => x.ref);
           const bRefs = p.b.map((x) => x.ref);
           const identity = p.a.length === 1 && p.b.length === 1 && aRefs[0] === bRefs[0];
           const reviewed = [...p.a, ...p.b].every((x) => (REVIEWED_IDENTITY[verId] ?? []).includes(`${it.id} ${x.ch}`));
           if (identity || reviewed) { flush(); continue; }
+          // Judge each pair on its own: a remap is only believable inside a chapter whose verse count differs
+          // between the two versions. Elsewhere it is length noise (loose or abridged renderings), keep identity.
+          const crossesChapters = p.a.length > 0 && p.b.length > 0 && p.a[0].ch !== p.b[0].ch;
+          if (!crossesChapters && ![...p.a, ...p.b].some((x) => differs.has(x.ch))) { rejected++; flush(); continue; }
           if (!region.length) region.push(`### ${it.id} (${it.name})`);
           const first = p.a[0], last = p.a[p.a.length - 1];
           const end = !last || last === first ? "" : "-" + (last.ch === first.ch ? last.v : last.ref);
-          const target = first ? `${it.id} ${first.ref}${end}` : "(none)";
-          for (const x of p.b) mapping[`${it.id} ${x.ref}`] = target;
+          // No reference counterpart: a whole extra chapter goes to the Apocrypha section; a verse inside
+          // a book becomes an extra row after the last aligned reference verse ("book c:v+").
+          const target = first
+            ? `${it.id} ${first.ref}${end}`
+            : p.b.every((x) => x.ch > it.chapters!)
+              ? "(apocrypha)"
+              : lastA
+                ? `${it.id} ${lastA.ref}+`
+                : "(none)";
+          for (const x of p.b) regionMap[`${it.id} ${x.ref}`] = target;
+          for (const x of [...p.a, ...p.b]) regionChapters.add(x.ch);
           const ta = p.a.map((x) => `[${x.ref}] ${x.t}`).join(" ");
           const tb = p.b.map((x) => `[${x.ref}] ${x.t}`).join(" ");
           region.push(`  ${refId} ${aRefs.join(",") || "—"}  <=  ${verId} ${bRefs.join(",") || "—"}`);
@@ -149,7 +203,31 @@ async function main() {
         }
         flush();
       }
-  console.log(`${regions} region(s), ${Object.keys(mapping).length} remapped verse slot(s)`);
+  console.log(`${regions} region(s), ${Object.keys(mapping).length} remapped verse slot(s), ${rejected} noise pair(s) ignored`);
+  // Hand-reviewed overrides (data/versification/overrides/<version>.json) for documented differences the
+  // length alignment cannot see, e.g. the 67-verse Prayer of Azariah inserted in LXX/Vulgate Daniel 3.
+  //   "dan 3:24-90": "(apocrypha)"   "dan 3:91-97": "dan 3:24-30"   "est 10:4-13": "est 10:3+"
+  try {
+    const ov = JSON.parse(await readFile(path.join(ROOT, "data", "versification", "overrides", `${verId}.json`), "utf8")).map as Record<string, string>;
+    const range = (r: string) => {
+      const m = /^(\S+) (\d+):(\d+)(?:-(\d+))?$/.exec(r);
+      if (!m) throw new Error(`bad override range ${r}`);
+      const from = +m[3], to = m[4] ? +m[4] : from;
+      return Array.from({ length: to - from + 1 }, (_, i) => `${m[1]} ${m[2]}:${from + i}`);
+    };
+    let n = 0;
+    for (const [src, dst] of Object.entries(ov)) {
+      const srcs = range(src);
+      const dsts = dst === "(apocrypha)" || dst.endsWith("+") ? srcs.map(() => dst) : range(dst);
+      if (dsts.length !== srcs.length) throw new Error(`override ${src} -> ${dst}: ranges differ in length`);
+      srcs.forEach((k, i) => { mapping[k] = dsts[i]; n++; });
+      // identity targets need no entry
+      srcs.forEach((k) => { if (mapping[k] === k) delete mapping[k]; });
+    }
+    console.log(`applied ${n} override(s) from data/versification/overrides/${verId}.json`);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+  }
   if (flags.includes("--write")) {
     const dir = path.join(ROOT, "data", "versification");
     await mkdir(dir, { recursive: true });

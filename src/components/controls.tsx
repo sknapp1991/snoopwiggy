@@ -6,8 +6,6 @@ import type { Version } from "@/lib/schema";
 import { CheckIcon, ColumnsIcon, MoonIcon, RowsIcon, SunIcon } from "./icons";
 import { useReaderState } from "./use-reader-state";
 
-/** English versions planned for the next phase (shown disabled so the layout is final). */
-const PLANNED_ENGLISH = ["ASV", "YLT", "BBE"];
 
 export function ViewToggle({ full = false }: { full?: boolean }) {
   const view = useViewMode();
@@ -146,13 +144,7 @@ export function VersionChooser() {
             {vs.map((v) => (
               <VersionRow key={v.id} v={v} checked={selected.has(v.id)} onChange={(c) => toggle(v.id, c)} disableUncheck={lastOne} />
             ))}
-            {isBase ? (
-              <p className="px-2 text-xs text-faint">{PLANNED_ENGLISH.join(", ")} — coming in the next update</p>
-            ) : (
-              <p className="px-2 text-xs text-faint">
-                {vs.length ? "AI translation" : "Native version and AI translation"} — coming in the next update
-              </p>
-            )}
+            {!vs.length && <p className="px-2 text-xs text-faint">Coming soon</p>}
           </section>
         );
       })}

@@ -117,3 +117,15 @@ For non-Bible texts, use the original language where it fits (Arabic Quran, Hebr
 
 - Tell me exactly what to install if anything is missing (e.g., Node.js LTS) and how to add my API key to `.env.local` (`GEMINI_API_KEY` from Google AI Studio for development; free tier).
 - Keep explanations short and practical; I'm comfortable with tech but new to app development.
+
+## Feature requests (Nov 2026, from Skylar's brother) — to schedule into Phases 3–5
+
+- **Word highlight across versions:** select a word and the matching word in every visible translation is highlighted. Approach: use Strong's-number tagging where a public-domain tagged text exists (KJV, some others) to link words to the original Hebrew/Greek lemma. Versions without tags get AI word alignment later. Show "no link available" rather than guessing.
+- **Word study / search:** double-click a word → panel with occurrences (count, list of verses), the original-language lemma and its range of meanings (concordance), and full-text search across the library.
+- **Continuous scroll** as an option next to chapter-by-chapter pages (saved setting).
+- **Verse gutter box** (left of each verse): one tap = favorite, long-press or double-tap = "Study later" folder, plus a menu with highlight colors, notes, copy and Ask in…. Must work on both touch and mouse.
+- **"Studied" checkbox** at the end of each chapter or section, storing a timestamp (MM/DD/YY HH:MM). The sidebar shows studied marks, and My Study lists them ("Psalm 119 — studied 11/03/25 9:41 PM").
+- **My Study panel:** saved notes, favorites, Study later, highlights, studied history.
+- **Quick toggles in the top menu:** light/dark (already there), highlight mode on/off.
+- **Dhammapada under Hinduism:** the Dhammapada is a Buddhist scripture (Pali canon), so it stays under Buddhism. Instead, add "Related texts" cross-links between traditions (e.g. Dhammapada ↔ Bhagavad Gita, Upanishads) with a short note on shared ideas and differences.
+- **Jewish books not in the Christian Bible?** The Tanakh and the Protestant Old Testament contain the same books, ordered and divided differently (24 vs 39). Catholic and Orthodox Bibles add deuterocanonical books that are not in the Jewish canon. Other Jewish texts (Mishnah, Talmud, Midrash) are already planned under Judaism. Show the Tanakh order and the difference in the Torah/Prophets/Writings view.

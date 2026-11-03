@@ -1,0 +1,9 @@
+{
+  "$comment": "Maps vandyck verse slots (as published by the source) onto the canonical \"eng\" grid used by kjv. Proposed by scripts/suggest-versification.ts, then reviewed by hand. Value \"book c:v\" or \"book c:v-w\" (one source verse covering several canonical verses).",
+  "reference": "kjv",
+  "map": {
+    "1ti 6:22": "1ti 6:21+",
+    "3jn 1:14": "3jn 1:14",
+    "3jn 1:15": "3jn 1:14"
+  }
+}

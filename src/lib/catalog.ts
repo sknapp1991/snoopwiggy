@@ -83,3 +83,8 @@ export function sortVersions(ids: string[]): string[] {
   const order = new Map(catalog.versions.map((v, i) => [v.id, i]));
   return [...ids].sort((a, b) => (order.get(a) ?? 0) - (order.get(b) ?? 0));
 }
+
+/** "Genesis 1", "Psalm 23" (uses the book's singular chapterName when it has one). */
+export function chapterTitle(book: CatalogItem | undefined, chapter: number, fallback = ""): string {
+  return `${book?.chapterName ?? book?.name ?? fallback} ${chapter}`;
+}

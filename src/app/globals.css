@@ -83,8 +83,25 @@ dialog.sheet[open] {
   line-height: 1.65;
 }
 .reader-text:lang(es),
-.reader-text:lang(en) {
+.reader-text:lang(en),
+.reader-text:lang(fr),
+.reader-text:lang(it),
+.reader-text:lang(pt),
+.reader-text:lang(de) {
   hyphens: auto;
+}
+.reader-text:lang(el) {
+  font-family: var(--font-greek), var(--font-serif);
+}
+.reader-text:lang(he) {
+  font-family: var(--font-hebrew), "SBL Hebrew", "Ezra SIL", serif;
+  font-size: calc(var(--reader-size) * 1.12);
+  line-height: 1.85; /* room for vowel points and cantillation marks */
+}
+.reader-text:lang(ar) {
+  font-family: var(--font-arabic), "Noto Naskh Arabic", serif;
+  font-size: calc(var(--reader-size) * 1.1);
+  line-height: 2;
 }
 
 :target .verse-flash,
