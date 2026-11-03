@@ -145,8 +145,8 @@ def main():
             mp3.with_suffix(".json").write_text(json.dumps(meta), encoding="utf8")
             done += 1
             seconds += t
-            rate = seconds / max(1e-6, time.time() - started)
-            print(f"{a.version}/{voice_dir} {book} {ch}: {t:.0f}s audio  ({rate:.0f}x realtime)", flush=True)
+            speed = seconds / max(1e-6, time.time() - started)
+            print(f"{a.version}/{voice_dir} {book} {ch}: {t:.0f}s audio  ({speed:.0f}x realtime)", flush=True)
     print(f"done: {done} chapters, {seconds / 3600:.2f} h of audio")
 
 
