@@ -18,7 +18,7 @@ import {
   play,
   setSpeech,
   speakable,
-  speechSupported,
+  useSpeechSupported,
   stop,
   useSpeech,
   useVoices,
@@ -51,6 +51,7 @@ export function useReadAlong({
   const settings = useSettings();
   const allVoices = useVoices();
   const router = useRouter();
+  const supported = useSpeechSupported();
 
   const colIndex = Math.max(0, cols.findIndex((c) => c.version.id === speech.version));
   const col = cols[colIndex];
@@ -144,7 +145,7 @@ export function useReadAlong({
 
   return {
     speech,
-    supported: speechSupported(),
+    supported,
     cols,
     colIndex,
     version,

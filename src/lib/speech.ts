@@ -51,6 +51,9 @@ export const getSpeech = () => state;
 export const setSpeech = set;
 
 export const speechSupported = () => typeof window !== "undefined" && "speechSynthesis" in window;
+const noop = () => () => {};
+/** Same answer on the server and during hydration (false), then the real one. */
+export const useSpeechSupported = () => useSyncExternalStore(noop, speechSupported, () => false);
 
 /* ---------- voices ---------- */
 
