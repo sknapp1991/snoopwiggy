@@ -13,7 +13,7 @@ npm run dev:lan    # also reachable from your phone on the same Wi-Fi: http://<y
 
 ## Scripture data
 
-Texts are static JSON in `data/texts/<work>/<version>/<book>/<chapter>.json`, produced only by the import scripts.
+Texts are static JSON in `public/texts/<work>/<version>/<book>/<chapter>.json`, produced only by the import scripts.
 Nobody edits them by hand, and AI never generates them.
 
 ```bash

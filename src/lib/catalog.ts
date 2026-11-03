@@ -1,6 +1,6 @@
 /**
  * Catalog access (safe for client and server). The catalog is small static JSON;
- * scripture text itself is fetched per chapter from /api/text/...
+ * scripture text itself is fetched per chapter as static files from /texts/...
  */
 import raw from "../../data/catalog.json";
 import type { Catalog, CatalogItem, Collection, Religion, Version } from "./schema";

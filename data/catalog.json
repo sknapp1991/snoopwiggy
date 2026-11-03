@@ -1,5 +1,5 @@
 {
-  "$comment": "Library tree + version metadata. Hand-maintained. Scripture text lives in data/texts/<work>/<version>/<book>/<chapter>.json and is produced only by scripts/import-*.ts.",
+  "$comment": "Library tree + version metadata. Hand-maintained. Scripture text lives in public/texts/<work>/<version>/<book>/<chapter>.json and is produced only by scripts/import-*.ts.",
   "works": [
     { "id": "bible", "name": "Holy Bible", "versification": "eng" }
   ],

@@ -30,7 +30,7 @@ export function loadChapter(key: string, { retry = false } = {}) {
   if (existing && !(retry && existing.status === "error")) return;
   cache.set(key, { status: "loading" });
   emit();
-  fetch(`/api/text/${key}`)
+  fetch(`/texts/${key}.json`)
     .then(async (res) => {
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string } | null;

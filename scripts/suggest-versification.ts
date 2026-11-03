@@ -66,7 +66,7 @@ const MOVES: [number, number, number][] = [
 async function loadBook(work: string, version: string, book: string, chapters: number): Promise<V[]> {
   const out: V[] = [];
   for (let ch = 1; ch <= chapters; ch++) {
-    const p = path.join(ROOT, "data", "texts", work, version, book, `${ch}.json`);
+    const p = path.join(ROOT, "public", "texts", work, version, book, `${ch}.json`);
     const c = chapterSchema.parse(JSON.parse(await readFile(p, "utf8")));
     for (const x of c.verses) out.push({ ref: `${ch}:${x.v}`, ch, v: x.v, t: x.t });
   }

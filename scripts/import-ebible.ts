@@ -1,5 +1,5 @@
 /**
- * Import a Bible from eBible.org (VPL format) into data/texts/bible/<version>/<book>/<chapter>.json
+ * Import a Bible from eBible.org (VPL format) into public/texts/bible/<version>/<book>/<chapter>.json
  *
  *   npx tsx scripts/import-ebible.ts <versionId> [--force]
  *
@@ -14,7 +14,8 @@ import { catalogSchema, chapterSchema, type Chapter } from "../src/lib/schema";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW_DIR = path.join(ROOT, "data", "raw");
-const TEXT_DIR = path.join(ROOT, "data", "texts");
+// Served as static files: /texts/<work>/<version>/<book>/<chapter>.json
+const TEXT_DIR = path.join(ROOT, "public", "texts");
 
 /** eBible VPL book codes that differ from our (USFM, lowercase) book ids. */
 const VPL_TO_BOOK: Record<string, string> = {
