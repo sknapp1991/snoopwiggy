@@ -34,6 +34,11 @@ const VOICES: Record<string, string> = {
   im_nicola: "Nicola · Italian (male)",
   pf_dora: "Dora · Brazilian Portuguese (female)",
   pm_alex: "Alex · Brazilian Portuguese (male)",
+  rapunzelina: "Rapunzelina · Greek (female)",
+};
+/** Voices made with Piper instead of Kokoro (licence noted per voice). */
+const PIPER: Record<string, string> = {
+  rapunzelina: "Generated with Piper (GPL-3.0 tool), voice el_GR-rapunzelina trained from scratch on a CC0 dataset",
 };
 
 const dirs = async (p: string) => (await readdir(p, { withFileTypes: true }).catch(() => [])).filter((d) => d.isDirectory()).map((d) => d.name);
@@ -42,7 +47,7 @@ async function main() {
   const local = process.argv.includes("--local");
   const recs: Recording[] = [];
   for (const version of await dirs(SRC)) {
-    if (version === "hf") continue;
+    if (version === "hf" || version === "piper") continue;
     for (const voice of await dirs(path.join(SRC, version))) {
       const chapters: Record<string, number[]> = {};
       let total = 0;
@@ -60,8 +65,8 @@ async function main() {
         version,
         voice,
         label: VOICES[voice] ?? voice,
-        engine: "Kokoro-82M",
-        license: "Generated with Kokoro-82M (Apache-2.0)",
+        engine: PIPER[voice] ? "Piper" : "Kokoro-82M",
+        license: PIPER[voice] ?? "Generated with Kokoro-82M (Apache-2.0)",
         ...(all ? {} : { chapters }),
       });
       console.log(`  ${version}/${voice}: ${total} chapters${all ? " (complete)" : ""}`);
