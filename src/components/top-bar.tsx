@@ -6,7 +6,7 @@ import { BookIcon, CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, 
 import { HighlightModeToggle } from "./highlight-mode";
 import { togglePanel, useUi } from "@/lib/ui-store";
 import { openSearch } from "./search-panel";
-import { FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
+import { ChapterSwipeControl, FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
 
@@ -119,6 +119,7 @@ export function TopBar({
             <HighlightModeToggle full />
             <WidthControl />
             <LanguageColors />
+            <ChapterSwipeControl />
             <div className="space-y-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Versions &amp; languages</h3>
               <VersionChooser />
@@ -207,6 +208,7 @@ function DisplayPopover() {
         <div role="dialog" aria-label="Display options" className="absolute right-0 top-full z-30 mt-2 w-80 space-y-4 rounded-xl border border-line bg-panel p-4 shadow-xl">
           <WidthControl />
           <LanguageColors />
+          <ChapterSwipeControl />
         </div>
       )}
     </div>

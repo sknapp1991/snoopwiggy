@@ -26,6 +26,8 @@ export type Settings = {
   langColors: boolean;
   /** Per-language colour overrides, e.g. { es: "#dc2626" }. */
   palette: Record<string, string>;
+  /** Per-version colours, e.g. { kjv: "#2563eb", web: "#059669" } — win over the language colour. */
+  versionColors: Record<string, string>;
   /** Open reading tabs ("bible/mat/5") and the active one. */
   tabs: string[];
   /** Read-along: speech rate (0.5–2), chosen voice per language (voiceURI), keep going into the next chapter. */
@@ -37,6 +39,10 @@ export type Settings = {
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
   highlightColor: string;
+  /** Swipe sideways to change chapter: one finger, two fingers, or off. */
+  chapterSwipe: "one" | "two" | "off";
+  /** Floating ‹ › chapter buttons (fade while scrolling). */
+  floatingNav: boolean;
 };
 
 export const FONT_MIN = 10;
@@ -71,6 +77,7 @@ const DEFAULTS: Settings = {
   stackWidth: null,
   langColors: false,
   palette: {},
+  versionColors: {},
   tabs: [],
   ttsRate: 1,
   ttsVoices: {},
@@ -78,6 +85,8 @@ const DEFAULTS: Settings = {
   ttsKeepAwake: true,
   highlightMode: false,
   highlightColor: "yellow",
+  chapterSwipe: "one",
+  floatingNav: true,
 };
 
 const num = (v: unknown, lo: number, hi: number) =>
@@ -102,6 +111,7 @@ function read(): Settings {
       stackWidth: num(p.stackWidth, STACK_MIN, STACK_MAX),
       langColors: p.langColors === true,
       palette: p.palette && typeof p.palette === "object" ? p.palette : {},
+      versionColors: p.versionColors && typeof p.versionColors === "object" ? p.versionColors : {},
       tabs: Array.isArray(p.tabs) ? p.tabs.filter((t): t is string => typeof t === "string").slice(0, MAX_TABS) : [],
       ttsRate: num(p.ttsRate, TTS_RATE_MIN, TTS_RATE_MAX) ?? 1,
       ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
@@ -109,6 +119,8 @@ function read(): Settings {
       ttsKeepAwake: p.ttsKeepAwake !== false,
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
+      chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
+      floatingNav: p.floatingNav !== false,
     };
   } catch {
     return DEFAULTS;
@@ -183,6 +195,12 @@ export const PHONE_LANDSCAPE_QUERY = "(orientation: landscape) and (max-height: 
 export function languageColor(settings: Settings, lang: string): string | undefined {
   if (!settings.langColors) return undefined;
   return (settings.palette[lang] ?? DEFAULT_PALETTE[lang]) || undefined;
+}
+
+/** Text colour of a version: its own colour if set, else its language's (only while colours are on). */
+export function versionColor(settings: Settings, v: { id: string; language: string }): string | undefined {
+  if (!settings.langColors) return undefined;
+  return settings.versionColors[v.id] || languageColor(settings, v.language);
 }
 
 /** Effective view: the saved choice, or automatic by screen width. */

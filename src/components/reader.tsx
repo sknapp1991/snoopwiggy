@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, type CSSProperties, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
 import { adjacentChapters, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
@@ -10,7 +10,7 @@ import type { Verse, Version } from "@/lib/schema";
 import {
   FONT_MAX,
   FONT_MIN,
-  languageColor,
+  versionColor,
   PHONE_LANDSCAPE_QUERY,
   updateSettings,
   useMediaQuery,
@@ -29,6 +29,7 @@ import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } fr
 import { openVerseMenu, toast } from "@/lib/ui-store";
 import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
+import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./use-chapter-swipe";
 
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 
@@ -54,6 +55,23 @@ export function ReaderView() {
   const rows = useMemo(() => alignVerses(entries.map((e) => (e.status === "ok" ? e.data : undefined))), [entries]);
   const { prev, next } = valid ? adjacentChapters(ref) : {};
   const allLoaded = entries.length > 0 && entries.every((e) => e.status === "ok");
+  const content = useRef<HTMLDivElement>(null);
+  const [hint, setHint] = useState<SwipeHint>(null);
+  const [idle, setIdle] = useState(true);
+  useScrollIdle(scroller, setIdle);
+  useChapterSwipe({
+    scroller,
+    content,
+    mode: settings.chapterSwipe,
+    column: view === "column",
+    canPrev: !!prev,
+    canNext: !!next,
+    onHint: setHint,
+    onGo: (dir) => {
+      const to = dir === "prev" ? prev : next;
+      if (to) router.push(readHref(to, versions));
+    },
+  });
   const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller });
   const study = useStudy();
   const marks = useMemo(() => chapterMarks(study.items, ref.work, ref.book, ref.chapter), [study.items, ref.work, ref.book, ref.chapter]);
@@ -162,6 +180,7 @@ export function ReaderView() {
       }`}
     >
       <title>{`${title} · GlobalStudy`}</title>
+      <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
@@ -176,11 +195,63 @@ export function ReaderView() {
         <Attribution versions={cols.map((c) => c.version)} />
         <ReadAlongSpacer ra={ra} />
       </div>
+      </div>
     </div>
+    <SwipeHintView hint={hint} prev={prev} next={next} />
+    {settings.floatingNav && (
+      <FloatingNav prev={prev} next={next} versions={versions} visible={idle && !hint} raised={ra.speech.open} />
+    )}
     <ReadAlongBar ra={ra} />
     <HighlightModeBar raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
     </>
+  );
+}
+
+/** "‹ Genesis 1" / "Genesis 3 ›" while swiping; turns solid once letting go will change chapter. */
+function SwipeHintView({ hint, prev, next }: { hint: SwipeHint; prev?: BookRef; next?: BookRef }) {
+  if (!hint) return null;
+  const to = hint.dir === "prev" ? prev : next;
+  if (!to) return null;
+  const ready = hint.progress >= 1;
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg transition-colors ${
+        hint.dir === "prev" ? "left-3" : "right-3"
+      } ${ready ? "bg-accent text-accent-ink" : "border border-line bg-panel text-muted"}`}
+      style={{ opacity: 0.35 + hint.progress * 0.65 }}
+    >
+      {hint.dir === "prev" ? `‹ ${refLabel(to)}` : `${refLabel(to)} ›`}
+      <span className="block text-center text-[11px] font-normal">{ready ? "Let go to open" : "Keep swiping"}</span>
+    </div>
+  );
+}
+
+/** Small round ‹ › buttons at the bottom corners; they fade while scrolling and return when idle. */
+function FloatingNav({ prev, next, versions, visible, raised }: { prev?: BookRef; next?: BookRef; versions: string[]; visible: boolean; raised: boolean }) {
+  const cls = `pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full border border-line bg-panel/90 text-muted shadow-md backdrop-blur transition-opacity duration-300 hover:text-ink ${
+    visible ? "opacity-90" : "pointer-events-none opacity-0"
+  }`;
+  return (
+    <div
+      className={`pointer-events-none absolute inset-x-0 z-10 flex justify-between px-3 ${raised ? "bottom-24" : "bottom-4 mb-[env(safe-area-inset-bottom)]"}`}
+    >
+      {prev ? (
+        <Link href={readHref(prev, versions)} aria-label={`Previous chapter: ${refLabel(prev)}`} title={refLabel(prev)} className={cls} tabIndex={visible ? 0 : -1}>
+          <ChevronLeft />
+        </Link>
+      ) : (
+        <span />
+      )}
+      {next ? (
+        <Link href={readHref(next, versions)} aria-label={`Next chapter: ${refLabel(next)}`} title={refLabel(next)} className={cls} tabIndex={visible ? 0 : -1}>
+          <ChevronRight />
+        </Link>
+      ) : (
+        <span />
+      )}
+    </div>
   );
 }
 
@@ -254,22 +325,23 @@ function contLabel(cont: string, chapter: number) {
   return Number(c) === chapter ? `see v. ${v}` : `see ${cont}`;
 }
 
-function Cell({ verse, version, chapter }: { verse: Verse | null; version: Version; chapter: number }) {
-  const color = languageColor(useSettings(), version.language);
+function Cell({ verse, version, chapter, box }: { verse: Verse | null; version: Version; chapter: number; box?: React.ReactNode }) {
+  const color = versionColor(useSettings(), version);
   if (!verse)
     return (
       <span className="text-faint" title="Not present in this version">
-        —
+        {box}—
       </span>
     );
   if (verse.cont)
     return (
       <span className="text-sm italic text-faint" title="This verse is combined with an earlier one in this version">
-        ↑ {contLabel(verse.cont, chapter)}
+        {box}↑ {contLabel(verse.cont, chapter)}
       </span>
     );
   return (
     <VerseText v={verse.v} version={version.id} lang={version.language} dir={version.dir} color={color}>
+      {box}
       {verse.n && (
         <span className="mr-1 select-none font-sans text-[0.65em] font-semibold text-faint" title={`Numbered ${verse.n} in ${version.abbr}`}>
           ({verse.n})
@@ -325,19 +397,19 @@ function ColumnView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; ma
                     id={i === 0 ? `v${row.v}` : undefined}
                     data-v={row.v}
                     style={bg ? { background: bg } : undefined}
-                    className="verse-flash flex snap-start scroll-mt-12 items-start gap-1 border-b border-line/60 px-3 py-2.5 md:px-4"
+                    className="verse-flash snap-start scroll-mt-12 border-b border-line/60 px-3 py-2.5 md:px-4"
                   >
-                    <span className="pt-[0.2em]">
-                      <VerseBox v={row.v} label={row.v} size="sm" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      {cols[i].entry.status === "loading" ? (
-                        <SkeletonLine />
-                      ) : cols[i].entry.status === "error" ? null : (
-                        <Cell verse={verse} version={cols[i].version} chapter={chNum} />
-                      )}
-                      {i === 0 && <NoteLine v={row.v} />}
-                    </div>
+                    {cols[i].entry.status === "loading" ? (
+                      <SkeletonLine />
+                    ) : cols[i].entry.status === "error" ? null : (
+                      <Cell
+                        verse={verse}
+                        version={cols[i].version}
+                        chapter={chNum}
+                        box={<VerseBox v={row.v} label={row.v} size="sm" />}
+                      />
+                    )}
+                    {i === 0 && <NoteLine v={row.v} />}
                   </div>
                 ))}
               </div>
@@ -518,7 +590,10 @@ function usePinchToZoomText(ref: RefObject<HTMLDivElement | null>, fontSize: num
     const onMove = (e: TouchEvent) => {
       if (!start || e.touches.length !== 2) return;
       e.preventDefault(); // keep the browser from zooming the page
-      const next = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, start.size * (dist(e.touches) / start.dist))));
+      if (gestureLock.swipe) return; // a two-finger chapter swipe, not a pinch
+      const ratio = dist(e.touches) / start.dist;
+      if (Math.abs(ratio - 1) < 0.08) return; // small wobble while swiping with two fingers
+      const next = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, start.size * ratio)));
       if (next !== size.current) updateSettings({ fontSize: next });
     };
     const onEnd = (e: TouchEvent) => {

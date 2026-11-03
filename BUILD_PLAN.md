@@ -173,7 +173,7 @@ Real background playback needs audio files played by an <audio> element + Media 
 - Storage: ~1,189 chapters × ~1–3 MB each per version → Cloudflare R2 (free tier 10 GB), not Workers static assets.
 - Needs from Skylar: create an R2 bucket in the Cloudflare dashboard, and pick a voice.
 
-## Swipe between chapters (requested Nov 2026; build after Phase 3)
+## Swipe between chapters (requested Nov 2026) — *done Nov 2026 (components/use-chapter-swipe.ts)*
 
 Goal: go to the previous/next chapter without scrolling to the top or bottom, without accidental triggers.
 - **Stacked view:** one-finger horizontal swipe changes chapter only when it is clearly horizontal

@@ -15,6 +15,7 @@ import {
   useMediaQuery,
   useSettings,
   useViewMode,
+  versionColor,
 } from "@/lib/settings";
 import type { Version } from "@/lib/schema";
 import { CheckIcon, CloseIcon, ColumnsIcon, GripIcon, MoonIcon, RowsIcon, SunIcon } from "./icons";
@@ -126,6 +127,31 @@ function VersionRow({ v, checked, onChange, disableUncheck }: { v: Version; chec
   );
 }
 
+/** Colour block for one version; picking a colour turns coloured text on. */
+function VersionColorSwatch({ id, language, abbr }: { id: string; language: string; abbr: string }) {
+  const s = useSettings();
+  const own = s.versionColors[id];
+  const effective = own || (s.palette[language] ?? DEFAULT_PALETTE[language]) || "";
+  return (
+    <label
+      className="relative flex h-11 w-9 shrink-0 cursor-pointer items-center justify-center"
+      title={own ? `${abbr} colour (tap to change)` : `Pick a colour for ${abbr}`}
+    >
+      <span
+        className={`h-6 w-6 rounded-md border ${s.langColors && effective ? "border-transparent" : "border-dashed border-faint"}`}
+        style={{ background: s.langColors && effective ? effective : undefined }}
+      />
+      <input
+        type="color"
+        aria-label={`${abbr} text colour`}
+        value={effective || "#888888"}
+        onChange={(e) => updateSettings({ versionColors: { ...s.versionColors, [id]: e.target.value }, langColors: true })}
+        className="absolute inset-0 cursor-pointer opacity-0"
+      />
+    </label>
+  );
+}
+
 /**
  * The chosen versions in display order. Reorder by dragging the handle (mouse or touch) or with ▲/▼;
  * the order is saved in the URL (?v=) and on the device.
@@ -179,6 +205,7 @@ function OrderList({ versions, setVersions }: { versions: string[]; setVersions:
                 <GripIcon />
               </button>
               <span className="w-5 text-center text-xs tabular-nums text-faint">{i + 1}</span>
+              <VersionColorSwatch id={id} language={v.language} abbr={v.abbr} />
               <span className="min-w-0 flex-1 truncate text-sm">
                 <span className="font-medium">{v.abbr}</span> <span className="text-faint">{getLanguage(v.language).name}</span>
               </span>
@@ -196,6 +223,49 @@ function OrderList({ versions, setVersions }: { versions: string[]; setVersions:
         })}
       </ol>
     </section>
+  );
+}
+
+/** Swipe-to-change-chapter setting and the floating ‹ › buttons. */
+export function ChapterSwipeControl() {
+  const { chapterSwipe, floatingNav } = useSettings();
+  const opts = [
+    { id: "one" as const, label: "One finger" },
+    { id: "two" as const, label: "Two fingers" },
+    { id: "off" as const, label: "Off" },
+  ];
+  return (
+    <div className="space-y-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Swipe to change chapter</h3>
+      <div role="radiogroup" aria-label="Swipe to change chapter" className="flex rounded-lg border border-line bg-raised p-0.5">
+        {opts.map((o) => (
+          <button
+            key={o.id}
+            type="button"
+            role="radio"
+            aria-checked={chapterSwipe === o.id}
+            onClick={() => updateSettings({ chapterSwipe: o.id })}
+            className={`h-11 flex-1 rounded-md px-2 text-sm ${chapterSwipe === o.id ? "bg-accent-soft font-medium text-accent" : "text-muted hover:text-ink"}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-faint">
+        {chapterSwipe === "off"
+          ? "Use the ‹ › buttons to change chapter."
+          : `Swipe ${chapterSwipe === "two" ? "with two fingers " : ""}sideways across most of the screen and let go. In Column view, swipe past the first or last column.`}
+      </p>
+      <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3">
+        <span className="text-sm">Floating ‹ › chapter buttons</span>
+        <input
+          type="checkbox"
+          checked={floatingNav}
+          onChange={(e) => updateSettings({ floatingNav: e.target.checked })}
+          className="h-5 w-5 accent-[var(--accent)]"
+        />
+      </label>
+    </div>
   );
 }
 
@@ -238,7 +308,12 @@ export function LanguageColors() {
   return (
     <div className="space-y-2">
       <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-faint">Colour by language</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+          Coloured text
+          <span className="block font-normal normal-case tracking-normal">
+            Each version can have its own colour (colour block in “Your columns”); otherwise its language colour is used.
+          </span>
+        </span>
         <input
           type="checkbox"
           checked={s.langColors}
@@ -263,15 +338,57 @@ export function LanguageColors() {
               </label>
             );
           })}
+          <SelectedVersionColors />
           <button
             type="button"
-            onClick={() => updateSettings({ palette: {} })}
+            onClick={() => updateSettings({ palette: {}, versionColors: {} })}
             className="col-span-2 min-h-11 rounded-lg text-sm text-accent hover:bg-raised"
           >
             Reset colours
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Version colours for the columns being read (also in the order list). */
+function SelectedVersionColors() {
+  const { versions } = useReaderState();
+  const s = useSettings();
+  return (
+    <div className="col-span-2 space-y-1 border-t border-line pt-2">
+      <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-faint">Your versions</p>
+      <div className="grid grid-cols-2 gap-1">
+        {versions.map((id) => {
+          const v = getVersion(id);
+          if (!v) return null;
+          return (
+            <div key={id} className="flex min-h-11 items-center gap-1 rounded-lg px-1 text-sm hover:bg-raised">
+              <VersionColorSwatch id={id} language={v.language} abbr={v.abbr} />
+              <span className="min-w-0 flex-1 truncate" style={{ color: versionColor(s, v) }}>
+                {v.abbr}
+              </span>
+              {s.versionColors[id] && (
+                <button
+                  type="button"
+                  aria-label={`Use the language colour for ${v.abbr}`}
+                  title="Use the language colour"
+                  onClick={() => {
+                    const next = { ...s.versionColors };
+                    delete next[id];
+                    updateSettings({ versionColors: next });
+                  }}
+                  className="flex h-9 w-7 items-center justify-center text-faint hover:text-ink"
+                >
+                  <CloseIcon width={14} height={14} />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <p className="px-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-faint">Languages</p>
     </div>
   );
 }
