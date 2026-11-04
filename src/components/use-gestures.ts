@@ -1,6 +1,7 @@
 "use client";
 /** Small touch-gesture hooks (no library): pinch direction, swipe-to-dismiss, edge swipes. */
 import { useEffect, useRef, type RefObject } from "react";
+import { unlockAudio } from "@/lib/speech";
 
 /** Calls onPinch("in" | "out") once per two-finger pinch that changes the finger distance by ≥ 25%. */
 export function usePinch(ref: RefObject<HTMLElement | null>, onPinch: (dir: "in" | "out") => void) {
@@ -210,6 +211,7 @@ export function useTapGestures(handlers: {
     onPointerUp(e: React.PointerEvent) {
       const s = st.current;
       clearLong();
+      unlockAudio(); // pointerup is a user gesture: lets sound started by the (delayed) tap play on phones
       if (!s.down || s.longFired) {
         s.down = false;
         return;

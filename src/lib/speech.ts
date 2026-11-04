@@ -293,8 +293,16 @@ export function play(opts: {
     set({ wordTiming: null });
   }
   const r = run;
-  // Some browsers ignore speak() right after cancel(); a short delay avoids it.
-  setTimeout(() => speakItem(r, my), 60);
+  // Speak right away when nothing is playing: phones only allow speech that starts inside the tap,
+  // and a timer would lose that. Otherwise wait for cancel() to settle (some browsers drop the next
+  // utterance if speak() follows it too quickly).
+  const ss = window.speechSynthesis;
+  if (!ss.speaking && !ss.pending) speakItem(r, my);
+  else {
+    let tries = 0;
+    const go = () => (my !== token ? undefined : ss.speaking && tries++ < 10 ? setTimeout(go, 50) : speakItem(r, my));
+    setTimeout(go, 30);
+  }
 }
 
 /** Index of the verse being read in the current queue. */
@@ -304,6 +312,7 @@ export function currentIndex() {
 
 export function pause() {
   token++;
+  if (rec) cancelAnimationFrame(rec.raf);
   if (audio && !audio.paused) audio.pause();
   emitWord(null);
   releaseWake();
@@ -410,11 +419,23 @@ function mediaSession(title: string, artist: string) {
 
 function stopRecording() {
   if (rec) cancelAnimationFrame(rec.raf);
+  const had = !!rec;
   rec = null;
   if (audio) {
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
+  }
+  const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+  if (had && ms) {
+    for (const a of ["play", "pause", "previoustrack", "nexttrack", "seekbackward", "seekforward"] as MediaSessionAction[])
+      try {
+        ms.setActionHandler(a, null);
+      } catch {
+        /* not supported */
+      }
+    ms.metadata = null;
+    ms.playbackState = "none";
   }
 }
 
@@ -433,17 +454,23 @@ export async function playRecording(opts: {
   getNext?: () => Promise<{ url: string; timing: Timing; chapterKey: string; title: string } | null>;
   onAdvance?: (chapterKey: string) => void;
 }): Promise<boolean> {
-  token++;
+  const my = ++token;
   if (speechSupported()) window.speechSynthesis.cancel();
+  run = null;
+  current = null;
+  emitWord(null);
+  releaseWake();
   stopRecording();
   set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true });
   let timing: Timing;
   try {
     timing = await loadTiming(opts.timingUrl);
   } catch {
+    if (my !== token) return true;
     set({ status: "idle", engine: "device" });
     return false; // caller falls back to a device voice
   }
+  if (my !== token) return true; // something else started meanwhile
   audio ??= new Audio();
   audio.preload = "auto";
   audio.src = opts.url;
@@ -456,7 +483,8 @@ export async function playRecording(opts: {
     if (!r) return;
     cancelAnimationFrame(r.raf);
     const next = !r.until && r.getNext ? await r.getNext().catch(() => null) : null;
-    if (next && rec === r) {
+    if (rec !== r) return;
+    if (next) {
       // Keep the audio session alive: go straight into the next chapter, then tell the page.
       r.timing = next.timing;
       r.lastVerse = null;
@@ -527,28 +555,37 @@ export function setRecordingRate(rate: number) {
 let unlocked = false;
 const SILENT =
   "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+let speechPrimed = false;
+const UNLOCK_EVENTS = ["pointerup", "touchend", "click", "keydown"] as const;
 export function unlockAudio() {
   if (unlocked) return;
-  unlocked = true;
   try {
-    if (speechSupported()) {
-      const u = new SpeechSynthesisUtterance(" ");
+    if (speechSupported() && !speechPrimed && !window.speechSynthesis.speaking) {
+      speechPrimed = true;
+      const u = new SpeechSynthesisUtterance("a"); // iOS may drop an empty / whitespace utterance
       u.volume = 0;
       window.speechSynthesis.speak(u);
     }
     audio ??= new Audio();
     if (!audio.src) {
       audio.src = SILENT;
-      audio.play().then(() => audio?.pause()).catch(() => {});
-    }
+      audio
+        .play()
+        .then(() => {
+          audio?.pause();
+          if (audio?.src === SILENT) audio.removeAttribute("src");
+          unlocked = true;
+          UNLOCK_EVENTS.forEach((ev) => window.removeEventListener(ev, unlockAudio, true));
+        })
+        .catch(() => {
+          if (audio?.src === SILENT) audio.removeAttribute("src"); // not a gesture yet: try on the next tap
+        });
+    } else unlocked = true; // a recording is already playing
   } catch {
     /* nothing to unlock */
   }
 }
-if (typeof window !== "undefined") {
-  window.addEventListener("pointerdown", unlockAudio, { once: true, capture: true });
-  window.addEventListener("keydown", unlockAudio, { once: true, capture: true });
-}
+if (typeof window !== "undefined") UNLOCK_EVENTS.forEach((ev) => window.addEventListener(ev, unlockAudio, true));
 
 // Stop speaking when the page goes away.
 if (typeof window !== "undefined") window.addEventListener("pagehide", () => speechSupported() && window.speechSynthesis.cancel());

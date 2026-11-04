@@ -295,14 +295,17 @@ export function useReadAlong({
     bookRef,
     ready: items.length > 0,
     toggle() {
-      if (speech.status === "playing") pause();
-      else if (speech.engine === "recorded" && speech.status === "paused" && speech.chapterKey === chapterKey && resumeRecording()) return;
+      const s = getSpeech();
+      if (s.status === "playing") pause();
+      else if (s.engine === "recorded" && s.status === "paused" && s.chapterKey === chapterKey && resumeRecording()) return;
       else startAt(startIndex());
     },
     step(d: number) {
-      const i = Math.min(items.length - 1, Math.max(0, (index >= 0 ? index : startIndex()) + d));
-      if (speech.engine === "recorded" && speech.chapterKey === chapterKey && items[i] && seekRecording(items[i].v)) return;
-      if (speech.status === "playing") startAt(i);
+      const s = getSpeech();
+      const cur = s.verse ? items.findIndex((it) => it.v === s.verse) : -1;
+      const i = Math.min(items.length - 1, Math.max(0, (cur >= 0 ? cur : startIndex()) + d));
+      if (s.engine === "recorded" && s.chapterKey === chapterKey && items[i] && seekRecording(items[i].v)) return;
+      if (s.status === "playing") startAt(i);
       else setSpeech({ verse: items[i]?.v ?? null, chapterKey, status: "paused" });
     },
     restart(overrides?: { rate?: number; voice?: SpeechSynthesisVoice | null }) {
@@ -335,8 +338,9 @@ export function useReadAlong({
       const i = findStart(list, v);
       if (i < 0) return;
       // Same recording already playing in this chapter: just jump.
-      if (speech.engine === "recorded" && speech.version === tc.version.id && speech.chapterKey === chapterKey && !speech.until && seekRecording(list[i].v)) {
-        if (speech.status !== "playing") resumeRecording();
+      const s = getSpeech();
+      if (s.engine === "recorded" && s.version === tc.version.id && s.chapterKey === chapterKey && !s.until && seekRecording(list[i].v)) {
+        if (s.status !== "playing") resumeRecording();
         return;
       }
       startAt(i, { version: tc.version.id, until: null });
@@ -346,12 +350,13 @@ export function useReadAlong({
      * screen); on the version already playing it pauses / resumes.
      */
     playVersion(id: string, fromVerse?: string) {
-      const same = speech.version === id && speech.chapterKey === chapterKey;
-      if (same && !fromVerse && speech.status === "playing") return pause();
-      if (same && !fromVerse && speech.status === "paused") {
-        if (speech.engine === "recorded" && resumeRecording()) return;
+      const s = getSpeech();
+      const same = s.version === id && s.chapterKey === chapterKey;
+      if (same && !fromVerse && s.status === "playing") return pause();
+      if (same && !fromVerse && s.status === "paused") {
+        if (s.engine === "recorded" && resumeRecording()) return;
       }
-      const v = fromVerse || (speech.chapterKey === chapterKey ? speech.verse : null) || items[startIndex()]?.v || "1";
+      const v = fromVerse || (s.chapterKey === chapterKey ? s.verse : null) || items[startIndex()]?.v || "1";
       this.readFrom(v || "1", id);
     },
     /** Does this version have a recorded (screen-off) voice for this chapter? */
