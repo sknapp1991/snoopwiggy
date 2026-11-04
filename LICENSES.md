@@ -93,6 +93,13 @@ Joel 4, psalm titles as verse 1).
   verse until Wikisource's proofreading covers them (re-run the import to pick that up).
   Tanzil's translation files are non-commercial, so no text is taken from them.
 
+## Yoga Sutras of Patanjali (Yoga, added Nov 2026)
+
+- **Johnston** – "The Yoga Sutras of Patanjali: The Book of the Spiritual Man", translated by Charles
+  Johnston (1912), public domain, Project Gutenberg #2526. Four books (Samadhi, Sadhana, Vibhuti,
+  Kaivalya; 51 + 55 + 55 + 34 sutras). Only the sutras are included, not Johnston's commentary.
+  A Sanskrit text will be added once a public-domain source is confirmed.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

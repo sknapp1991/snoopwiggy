@@ -4,7 +4,8 @@
     { "id": "bible", "name": "Holy Bible", "versification": "eng" },
     { "id": "tanakh", "name": "Tanakh (Hebrew Bible)", "versification": "heb" },
     { "id": "dhammapada", "name": "Dhammapada", "versification": "dhp" },
-    { "id": "quran", "name": "The Quran", "versification": "hafs" }
+    { "id": "quran", "name": "The Quran", "versification": "hafs" },
+    { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "versification": "ys" }
   ],
   "versions": [
     {
@@ -267,6 +268,15 @@
       "attribution": "Quran text from the Tanzil Project (tanzil.net), licensed CC BY 3.0, shown verbatim.",
       "sourceUrl": "https://tanzil.net/",
       "licensed": false, "versification": "hafs"
+    },
+    {
+      "id": "johnston", "work": "yoga-sutras", "abbr": "Johnston", "name": "The Book of the Spiritual Man (Charles Johnston)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1912,
+      "translator": "Charles Johnston",
+      "license": "Public Domain", "licenseNote": "Sutra text only; Johnston's commentary is not included.",
+      "attribution": "Translated by Charles Johnston (1912), public domain, Project Gutenberg #2526.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/2526",
+      "licensed": false, "versification": "ys"
     }
   ],
   "religions": [
@@ -450,7 +460,7 @@
       "id": "yoga",
       "name": "Yoga",
       "collections": [
-        { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "items": [ { "id": "yoga-sutras", "name": "Yoga Sutras", "status": "coming-soon" } ] },
+        { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "items": [ { "id": "ys", "name": "Yoga Sutras of Patanjali", "work": "yoga-sutras", "chapters": 4, "chapterName": "Yoga Sutras, Book" } ] },
         { "id": "hyp", "name": "Hatha Yoga Pradipika", "items": [ { "id": "hyp", "name": "Hatha Yoga Pradipika", "status": "coming-soon" } ] }
       ]
     },
