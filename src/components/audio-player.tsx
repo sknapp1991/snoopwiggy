@@ -267,7 +267,10 @@ export function useReadAlong({
       else if (w.frac !== undefined) {
         // Recordings only know how far through the verse they are: pick the word at that share of the text.
         const at = w.frac * text.length;
-        m = all.findLast((x) => x.index! <= at) ?? all[0];
+        // (no Array.findLast: it needs Safari 15.4+)
+        let i = all.length - 1;
+        while (i > 0 && all[i].index! > at) i--;
+        m = all[i] ?? all[0];
       }
       if (!m) return clear();
       const range = document.createRange();

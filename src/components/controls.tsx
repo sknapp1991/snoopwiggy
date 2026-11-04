@@ -161,7 +161,9 @@ function ColorPicker({ value, onPick, label, children }: { value: string; onPick
     };
   }, [at]);
   const open = () => {
-    const r = btn.current!.getBoundingClientRect();
+    // The button is display:contents (no box of its own): measure the swatch inside it.
+    const el = (btn.current!.firstElementChild as HTMLElement | null) ?? btn.current!;
+    const r = el.getBoundingClientRect();
     const w = 228, h = 176;
     setAt({ x: Math.max(8, Math.min(window.innerWidth - w - 8, r.left)), y: r.bottom + h + 8 > window.innerHeight ? r.top - h - 4 : r.bottom + 4 });
   };

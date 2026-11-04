@@ -250,13 +250,33 @@ function speakItem(r: Run, my: number) {
       }
       emitWord({ verse: item.v, word: chunkBase + countWords(chunkText.slice(0, e.charIndex)) });
     };
-    u.onend = next;
+    // `current` stays set until this utterance really ends, so a restart can wait for it (Firefox keeps a
+    // cancelled utterance in its queue until its end event; speaking before that leaves the new one stuck).
+    u.onend = () => {
+      if (current === u) current = null;
+      next();
+    };
     u.onerror = (e) => {
+      if (current === u) current = null;
       if (my !== token || e.error === "interrupted" || e.error === "canceled") return;
       set({ status: "idle", error: e.error === "not-allowed" ? "Tap play to start reading." : `Speech stopped (${e.error}).` });
     };
+    let started = false;
+    u.onstart = () => {
+      started = true;
+    };
     current = u;
-    window.speechSynthesis.speak(u);
+    const ss = window.speechSynthesis;
+    ss.resume(); // some browsers stay "paused" after a cancel
+    ss.speak(u);
+    // Watchdog: if the browser silently dropped this utterance, queue it once more.
+    setTimeout(() => {
+      if (my !== token || started || current !== u) return;
+      ss.cancel();
+      setTimeout(() => {
+        if (my === token && current === u) ss.speak(u);
+      }, 150);
+    }, 1500);
   };
   next();
 }
@@ -300,10 +320,23 @@ export function play(opts: {
   // and a timer would lose that. Otherwise wait for cancel() to settle (some browsers drop the next
   // utterance if speak() follows it too quickly).
   const ss = window.speechSynthesis;
-  if (!ss.speaking && !ss.pending) speakItem(r, my);
+  const prev = current; // the utterance being cancelled, if any
+  if (!prev && !ss.speaking && !ss.pending) speakItem(r, my);
   else {
+    // Wait until the cancelled utterance has really ended; if it never reports, cancel again and go on.
     let tries = 0;
-    const go = () => (my !== token ? undefined : ss.speaking && tries++ < 10 ? setTimeout(go, 50) : speakItem(r, my));
+    const go = () => {
+      if (my !== token) return;
+      if ((prev && current === prev) || ss.speaking) {
+        if (tries++ < 10) {
+          setTimeout(go, 50);
+          return;
+        }
+        ss.cancel();
+        current = null;
+      }
+      speakItem(r, my);
+    };
     setTimeout(go, 30);
   }
 }
@@ -319,8 +352,7 @@ export function pause() {
   if (audio && !audio.paused) audio.pause();
   emitWord(null);
   releaseWake();
-  window.speechSynthesis?.cancel();
-  current = null;
+  window.speechSynthesis?.cancel(); // `current` clears itself when the utterance's end event arrives
   set({ status: "paused" });
 }
 
@@ -330,8 +362,7 @@ export function stop() {
   emitWord(null);
   releaseWake();
   run = null;
-  current = null;
-  if (speechSupported()) window.speechSynthesis.cancel();
+  if (speechSupported()) window.speechSynthesis.cancel(); // `current` clears on the end event
   set({ status: "idle", verse: null, continuePending: false, until: null });
 }
 
@@ -563,7 +594,8 @@ const UNLOCK_EVENTS = ["pointerup", "touchend", "click", "keydown"] as const;
 export function unlockAudio() {
   if (unlocked) return;
   try {
-    if (speechSupported() && !speechPrimed && !window.speechSynthesis.speaking) {
+    // Only phones/tablets need speech unlocked; on desktops the silent word can wedge Firefox's queue.
+    if (speechSupported() && !speechPrimed && !window.speechSynthesis.speaking && matchMedia("(pointer: coarse)").matches) {
       speechPrimed = true;
       const u = new SpeechSynthesisUtterance("a"); // iOS may drop an empty / whitespace utterance
       u.volume = 0;
