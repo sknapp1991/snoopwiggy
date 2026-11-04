@@ -15,6 +15,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   bible: ["kjv", "web", "rvr1909"],
   tanakh: ["jps1917", "mt"],
   dhammapada: ["sujato", "pli"],
+  quran: ["pickthall", "tanzil"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

@@ -78,6 +78,21 @@ Joel 4, psalm titles as verse 1).
   Both from SuttaCentral's bilara-data, dedicated to the public domain (CC0):
   https://github.com/suttacentral/bilara-data (`scripts/import-dhammapada.ts`).
 
+## The Quran (Islam, added Nov 2026)
+
+114 surahs in the standard (Hafs) verse numbering.
+- **Arabic** – Tanzil Quran Text (Uthmani), © Tanzil Project, CC BY 3.0, https://tanzil.net/ . Shown
+  verbatim as the licence requires (search ignores vowel marks internally, but the text is never changed).
+- **Pickthall** – "The Meaning of the Glorious Koran", Marmaduke Pickthall (Alfred A. Knopf, 1930);
+  public domain in the US since 1 January 2026 (published 1930). Text from Wikisource's proofread
+  transcription of the 1930 edition (79 surahs) and, for the rest, the Internet Archive scan's text layer
+  (MN40248ucmf_9), cleaned of page headers and footnotes (`scripts/import-quran.ts`).
+  Pickthall's 1930 numbering differs from the standard in places (e.g. Surah 6 has 166 verses); verses are
+  matched to the standard numbering by content (lengths against the Arabic) and his own number is shown.
+  A few verse numbers are unreadable in the scan: those verses show as a gap or as part of the previous
+  verse until Wikisource's proofreading covers them (re-run the import to pick that up).
+  Tanzil's translation files are non-commercial, so no text is taken from them.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

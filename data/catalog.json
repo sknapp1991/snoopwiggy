@@ -3,7 +3,8 @@
   "works": [
     { "id": "bible", "name": "Holy Bible", "versification": "eng" },
     { "id": "tanakh", "name": "Tanakh (Hebrew Bible)", "versification": "heb" },
-    { "id": "dhammapada", "name": "Dhammapada", "versification": "dhp" }
+    { "id": "dhammapada", "name": "Dhammapada", "versification": "dhp" },
+    { "id": "quran", "name": "The Quran", "versification": "hafs" }
   ],
   "versions": [
     {
@@ -248,6 +249,24 @@
       "attribution": "Pāli text (Mahāsaṅgīti edition) via SuttaCentral, CC0.",
       "sourceUrl": "https://suttacentral.net/dhp1-20/pli/ms",
       "licensed": false, "versification": "dhp"
+    },
+    {
+      "id": "pickthall", "work": "quran", "abbr": "Pickthall", "name": "The Meaning of the Glorious Koran (Pickthall)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1930,
+      "translator": "Marmaduke Pickthall",
+      "license": "Public Domain (US)", "licenseNote": "Published 1930 (Knopf); public domain in the US since 1 January 2026. Text from Wikisource's proofread transcription of the 1930 edition, otherwise the Internet Archive scan; about 2% of verses are still unreadable in the scan and show as gaps.",
+      "attribution": "Translated by Marmaduke Pickthall (1930), public domain in the US; transcription from Wikisource and the Internet Archive.",
+      "sourceUrl": "https://en.wikisource.org/wiki/Index:The_Meaning_of_the_Glorious_Koran_(1930).pdf",
+      "licensed": false, "versification": "hafs"
+    },
+    {
+      "id": "tanzil", "work": "quran", "abbr": "Arabic", "name": "The Quran (Arabic, Uthmani script)",
+      "language": "ar", "kind": "native", "dir": "rtl", "year": 2007, "yearNote": "Tanzil Quran Text (Uthmani), verified edition",
+      "translator": "Arabic text, Tanzil Project",
+      "license": "CC BY 3.0", "licenseNote": "Shown verbatim, as the Tanzil terms require (no changes).",
+      "attribution": "Quran text from the Tanzil Project (tanzil.net), licensed CC BY 3.0, shown verbatim.",
+      "sourceUrl": "https://tanzil.net/",
+      "licensed": false, "versification": "hafs"
     }
   ],
   "religions": [
@@ -412,7 +431,7 @@
       "id": "islam",
       "name": "Islam",
       "collections": [
-        { "id": "quran", "name": "Quran", "items": [ { "id": "quran", "name": "The Quran", "status": "coming-soon" } ] },
+        { "id": "quran", "name": "Quran", "items": [ { "id": "quran", "name": "The Quran", "work": "quran", "chapters": 114, "chapterName": "Surah" } ] },
         { "id": "hadith", "name": "Hadith", "items": [ { "id": "hadith", "name": "Hadith", "status": "coming-soon" } ] }
       ]
     },
