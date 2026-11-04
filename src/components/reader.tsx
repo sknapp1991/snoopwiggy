@@ -18,7 +18,8 @@ import {
   useViewMode,
   WIDE_QUERY,
 } from "@/lib/settings";
-import { ChevronLeft, ChevronRight, PauseIcon, PlayIcon } from "./icons";
+import { ChevronLeft, ChevronRight, GripIcon, PauseIcon, PlayIcon } from "./icons";
+import { useColumnDrag } from "./use-column-drag";
 import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
@@ -37,7 +38,7 @@ import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./u
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 
 export function ReaderView() {
-  const { ref, entry: book, versions: userVersions } = useReaderState();
+  const { ref, entry: book, versions: userVersions, setVersions } = useReaderState();
   // While listening, the version being read can be shown first (the saved order is unchanged).
   const speechState = useSpeech();
   const listenFirstOn = useSettings().ttsMoveFirst;
@@ -229,7 +230,21 @@ export function ReaderView() {
 
       <ListenCtx.Provider value={ra}>
       <VerseCtx.Provider value={actions}>
-        {column ? <ColumnView cols={cols} rows={rows} marks={marks} /> : <StackedView cols={cols} rows={rows} marks={marks} />}
+        {column ? (
+          <ColumnView
+            cols={cols}
+            rows={rows}
+            marks={marks}
+            onReorder={(from, to) => {
+              const next = [...versions];
+              const [x] = next.splice(from, 1);
+              next.splice(to, 0, x);
+              setVersions(next);
+            }}
+          />
+        ) : (
+          <StackedView cols={cols} rows={rows} marks={marks} />
+        )}
       </VerseCtx.Provider>
       </ListenCtx.Provider>
 
@@ -432,7 +447,18 @@ function Cell({ verse, version, chapter, box }: { verse: Verse | null; version: 
   );
 }
 
-function ColumnView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; marks: Map<string, Marks> }) {
+function ColumnView({
+  cols,
+  rows,
+  marks,
+  onReorder,
+}: {
+  cols: Col[];
+  rows: AlignedRow[];
+  marks: Map<string, Marks>;
+  onReorder: (from: number, to: number) => void;
+}) {
+  const { drag, handlers } = useColumnDrag(onReorder);
   const n = cols.length;
   const loading = rows.length === 0 && cols.some((c) => c.entry.status === "loading");
   const chapter = cols.find((c) => c.entry.status === "ok")?.entry;
@@ -445,13 +471,18 @@ function ColumnView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; ma
       style={{ gridTemplateColumns: `repeat(${n}, minmax(var(--colmin), 1fr))` }}
     >
       <div role="row" className="contents">
-        {cols.map((c) => (
+        {cols.map((c, i) => (
           <div
             role="columnheader"
             key={c.version.id}
-            className="sticky top-0 z-10 snap-start border-b border-line bg-paper/95 px-4 py-2 text-sm backdrop-blur md:px-5"
+            {...(cols.length > 1 ? handlers(i) : {})}
+            title={cols.length > 1 ? "Drag to move this column (touch: press and hold, then drag)" : undefined}
+            className={`sticky top-0 z-10 snap-start select-none border-b border-line bg-paper/95 px-4 py-2 text-sm backdrop-blur md:px-5 ${
+              cols.length > 1 ? "cursor-grab active:cursor-grabbing" : ""
+            } ${drag?.from === i ? "opacity-50" : ""} ${drag && drag.over === i && drag.from !== i ? "outline-2 -outline-offset-2 outline-dashed outline-accent" : ""}`}
           >
             <span className="flex items-center">
+              {cols.length > 1 && <GripIcon width={14} height={14} className="mr-1 shrink-0 text-faint" aria-hidden />}
               <VersionLabel version={c.version} />
               <VersionPlay id={c.version.id} label={c.version.abbr} />
             </span>

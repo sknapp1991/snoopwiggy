@@ -13,6 +13,9 @@ const OFFICIAL = "versesacross.com";
 const OLD_HOSTS = /^(www\.)?snoopwiggy\.com$|^www\.versesacross\.com$/;
 const KEYS = ["gs:settings:v1", "gs:pos:v1", "gs:tips:v1"];
 const MARK = "#vamove=";
+/** On the old address: its data has been sent once already. On versesacross.com: data was received. */
+const MOVED = "gs:moved:v1";
+const RECEIVED = "gs:received:v1";
 
 type Bundle = { local: Record<string, string>; study: unknown[] };
 
@@ -85,7 +88,10 @@ async function forward() {
   const study = await readStudy();
   const { pathname, search, hash } = window.location;
   let fragment = hash;
-  if (Object.keys(local).length || study.length) {
+  // Send the saved data only once: later visits must not overwrite newer data on versesacross.com.
+  const alreadyMoved = localStorage.getItem(MOVED) === "1";
+  if (!alreadyMoved && (Object.keys(local).length || study.length)) {
+    localStorage.setItem(MOVED, "1");
     try {
       fragment = MARK + toB64(await gzip(JSON.stringify({ local, study } satisfies Bundle)));
     } catch {
@@ -98,9 +104,22 @@ async function forward() {
 async function receive(encoded: string) {
   try {
     const data = JSON.parse(await gunzip(fromB64(encoded))) as Bundle;
-    // The page may already have saved defaults before this ran; the moved data is the real one.
-    for (const [k, v] of Object.entries(data.local ?? {})) if (KEYS.includes(k)) localStorage.setItem(k, v);
-    await writeStudy(Array.isArray(data.study) ? data.study : []);
+    const first = localStorage.getItem(RECEIVED) !== "1";
+    for (const [k, v] of Object.entries(data.local ?? {})) {
+      if (!KEYS.includes(k)) continue;
+      const mine = localStorage.getItem(k);
+      if (k === "gs:settings:v1" && mine) {
+        // Settings: on the first move the old address's settings win (this page may only have saved
+        // defaults so far); afterwards keep this page's. Saved setups from both are always kept.
+        const a = JSON.parse(mine), b = JSON.parse(v);
+        const merged = first ? { ...a, ...b } : a;
+        const setups = [...(a.setups ?? []), ...(b.setups ?? [])];
+        merged.setups = setups.filter((x: { id: string }, i: number) => setups.findIndex((y: { id: string }) => y.id === x.id) === i);
+        localStorage.setItem(k, JSON.stringify(merged));
+      } else if (first || !mine) localStorage.setItem(k, v);
+    }
+    localStorage.setItem(RECEIVED, "1");
+    await writeStudy(Array.isArray(data.study) ? data.study : []); // newer copy of each item wins
   } catch {
     /* damaged link: start fresh rather than fail */
   }

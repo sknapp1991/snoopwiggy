@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useState } from "react";
-import { getVersion, versionsForWork } from "@/lib/catalog";
+import { useEffect, useRef, useState } from "react";
+import { DEFAULT_VERSIONS, getVersion, versionsForWork } from "@/lib/catalog";
 import { getLanguage, LANGUAGES } from "@/lib/languages";
 import {
   COL_MAX,
@@ -8,6 +8,7 @@ import {
   DEFAULT_PALETTE,
   FONT_MAX,
   FONT_MIN,
+  getSettings,
   PHONE_LANDSCAPE_QUERY,
   STACK_MAX,
   STACK_MIN,
@@ -131,28 +132,95 @@ function VersionRow({ v, checked, onChange, disableUncheck }: { v: Version; chec
   );
 }
 
+/** Readable on both light and dark backgrounds. */
+const SWATCHES = [
+  "#d55e00", "#e69f00", "#b45309", "#a16207", "#4d7c0f", "#009e73",
+  "#0e7490", "#0072b2", "#2563eb", "#4f46e5", "#7c3aed", "#be185d",
+  "#dc2626", "#9f1239", "#6b7280", "#78716c", "#5b8a72", "#c2410c",
+];
+
+/**
+ * Colour button with an in-app palette (saves on tap, closes on tap elsewhere) — no OS colour window
+ * to confirm or close. "More…" still opens the full system picker.
+ */
+function ColorPicker({ value, onPick, label, children }: { value: string; onPick: (c: string) => void; label: string; children: React.ReactNode }) {
+  const [at, setAt] = useState<{ x: number; y: number } | null>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!at) return;
+    const away = (e: PointerEvent) => {
+      if (!pop.current?.contains(e.target as Node) && !btn.current?.contains(e.target as Node)) setAt(null);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setAt(null);
+    document.addEventListener("pointerdown", away, true);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", away, true);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [at]);
+  const open = () => {
+    const r = btn.current!.getBoundingClientRect();
+    const w = 228, h = 176;
+    setAt({ x: Math.max(8, Math.min(window.innerWidth - w - 8, r.left)), y: r.bottom + h + 8 > window.innerHeight ? r.top - h - 4 : r.bottom + 4 });
+  };
+  return (
+    <>
+      <button ref={btn} type="button" aria-label={label} aria-expanded={!!at} onClick={() => (at ? setAt(null) : open())} className="contents">
+        {children}
+      </button>
+      {at && (
+        <div
+          ref={pop}
+          role="dialog"
+          aria-label={label}
+          className="fixed z-[60] w-[228px] rounded-xl border border-line bg-panel p-2 shadow-xl"
+          style={{ left: at.x, top: at.y }}
+        >
+          <div className="grid grid-cols-6 gap-1.5">
+            {SWATCHES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                aria-label={c}
+                onClick={() => {
+                  onPick(c);
+                  setAt(null);
+                }}
+                className={`h-8 w-8 rounded-md border-2 ${value.toLowerCase() === c ? "border-ink" : "border-transparent"}`}
+                style={{ background: c }}
+              />
+            ))}
+          </div>
+          <label className="mt-2 flex min-h-9 cursor-pointer items-center justify-center gap-2 rounded-lg text-xs text-muted hover:bg-raised">
+            <input type="color" value={value || "#888888"} onChange={(e) => onPick(e.target.value)} className="h-5 w-5 cursor-pointer border-0 bg-transparent p-0" />
+            More colours…
+          </label>
+        </div>
+      )}
+    </>
+  );
+}
+
 /** Colour block for one version; picking a colour turns coloured text on. */
 function VersionColorSwatch({ id, language, abbr }: { id: string; language: string; abbr: string }) {
   const s = useSettings();
   const own = s.versionColors[id];
   const effective = own || (s.palette[language] ?? DEFAULT_PALETTE[language]) || "";
   return (
-    <label
-      className="relative flex h-11 w-9 shrink-0 cursor-pointer items-center justify-center"
-      title={own ? `${abbr} colour (tap to change)` : `Pick a colour for ${abbr}`}
+    <ColorPicker
+      value={effective}
+      label={`${abbr} text colour`}
+      onPick={(c) => updateSettings({ versionColors: { ...getSettings().versionColors, [id]: c }, langColors: true })}
     >
-      <span
-        className={`h-6 w-6 rounded-md border ${s.langColors && effective ? "border-transparent" : "border-dashed border-faint"}`}
-        style={{ background: s.langColors && effective ? effective : undefined }}
-      />
-      <input
-        type="color"
-        aria-label={`${abbr} text colour`}
-        value={effective || "#888888"}
-        onChange={(e) => updateSettings({ versionColors: { ...s.versionColors, [id]: e.target.value }, langColors: true })}
-        className="absolute inset-0 cursor-pointer opacity-0"
-      />
-    </label>
+      <span className="flex h-11 w-9 shrink-0 cursor-pointer items-center justify-center" title={own ? `${abbr} colour (tap to change)` : `Pick a colour for ${abbr}`}>
+        <span
+          className={`h-6 w-6 rounded-md border ${s.langColors && effective ? "border-transparent" : "border-dashed border-faint"}`}
+          style={{ background: s.langColors && effective ? effective : undefined }}
+        />
+      </span>
+    </ColorPicker>
   );
 }
 
@@ -238,32 +306,57 @@ export function SavedSetups() {
   const [naming, setNaming] = useState(false);
   const suggested = versions.map((id) => getVersion(id)?.abbr ?? id).join(" / ");
   const mine = s.setups.filter((x) => x.work === ref.work);
-  const isCurrent = (x: (typeof mine)[number]) =>
-    x.versions.join() === versions.join() && x.fontSize === s.fontSize && x.langColors === s.langColors && x.view === s.view;
+  /** What a setup stores, taken from the current view. */
+  const snapshot = () => ({
+    work: ref.work,
+    versions,
+    view: s.view,
+    fontSize: s.fontSize,
+    langColors: s.langColors,
+    palette: s.palette,
+    versionColors: s.versionColors,
+    colWidth: s.colWidth,
+    colWidthLandscape: s.colWidthLandscape,
+    stackWidth: s.stackWidth,
+  });
+  // Compare field by field (key order differs between a saved setup and a fresh snapshot).
+  const same = (x: (typeof mine)[number]) => {
+    const now = snapshot();
+    return (Object.keys(now) as (keyof typeof now)[]).every((k) => JSON.stringify(x[k]) === JSON.stringify(now[k]));
+  };
+  const active = mine.find((x) => x.id === s.activeSetup);
+  const changed = !!active && !same(active);
   const save = () => {
-    const setup = {
-      id: `${Date.now()}`,
-      name: name.trim() || suggested,
-      work: ref.work,
-      versions,
-      view: s.view,
-      fontSize: s.fontSize,
-      langColors: s.langColors,
-      palette: s.palette,
-      versionColors: s.versionColors,
-      colWidth: s.colWidth,
-      colWidthLandscape: s.colWidthLandscape,
-      stackWidth: s.stackWidth,
-    };
-    updateSettings({ setups: [...s.setups, setup] });
+    const setup = { id: `${Date.now()}`, name: name.trim() || suggested, ...snapshot() };
+    updateSettings({ setups: [...s.setups, setup], activeSetup: setup.id });
     setName("");
     setNaming(false);
   };
+  /** Overwrite the setup in use with the current look (keeps its name). */
+  const update = () => {
+    if (!active) return;
+    updateSettings({ setups: s.setups.map((x) => (x.id === active.id ? { ...x, ...snapshot() } : x)) });
+  };
   const apply = (x: (typeof mine)[number]) => {
     const { view, fontSize, langColors, palette, versionColors, colWidth, colWidthLandscape, stackWidth } = x;
-    updateSettings({ view, fontSize, langColors, palette, versionColors, colWidth, colWidthLandscape, stackWidth });
+    updateSettings({ view, fontSize, langColors, palette, versionColors, colWidth, colWidthLandscape, stackWidth, activeSetup: x.id });
     const valid = x.versions.filter((id) => getVersion(id));
     if (valid.length) setVersions(valid);
+  };
+  /** Back to the app's default look (keeps saved setups, highlights, notes). */
+  const reset = () => {
+    updateSettings({
+      view: null,
+      fontSize: 18,
+      langColors: false,
+      palette: {},
+      versionColors: {},
+      colWidth: null,
+      colWidthLandscape: null,
+      stackWidth: null,
+      activeSetup: null,
+    });
+    setVersions(DEFAULT_VERSIONS[ref.work] ?? versionsForWork(ref.work).slice(0, 1).map((v) => v.id));
   };
   return (
     <div className="space-y-2">
@@ -273,7 +366,7 @@ export function SavedSetups() {
           {mine.map((x) => (
             <span
               key={x.id}
-              className={`flex min-h-10 items-center rounded-full border text-sm ${isCurrent(x) ? "border-accent bg-accent-soft text-accent" : "border-line bg-raised"}`}
+              className={`flex min-h-10 items-center rounded-full border text-sm ${x.id === s.activeSetup ? "border-accent bg-accent-soft text-accent" : "border-line bg-raised"}`}
             >
               <button type="button" onClick={() => apply(x)} className="flex min-h-10 items-center gap-1.5 pl-3 pr-1" title={`Switch to ${x.name}`}>
                 <span className="flex">
@@ -323,9 +416,29 @@ export function SavedSetups() {
           onClick={() => setNaming(true)}
           className="min-h-11 w-full rounded-lg border border-dashed border-line text-sm text-muted hover:border-faint hover:text-ink"
         >
-          + Save current setup ({suggested}, {s.fontSize}px{s.langColors ? ", colours" : ""})
+          + Save as a new setup ({suggested}, {s.fontSize}px{s.langColors ? ", colours" : ""})
         </button>
       )}
+      <div className="flex flex-wrap gap-2">
+        {changed && (
+          <button
+            type="button"
+            onClick={update}
+            className="min-h-10 flex-1 rounded-lg bg-accent px-3 text-sm font-medium text-accent-ink"
+            title={`Save the current look into “${active!.name}”`}
+          >
+            Save changes to “{active!.name}”
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={reset}
+          className="min-h-10 flex-1 rounded-lg border border-line px-3 text-sm text-muted hover:border-faint hover:text-ink"
+          title="Default versions, text size, view, widths and colours (your setups, highlights and notes stay)"
+        >
+          Reset to default
+        </button>
+      </div>
     </div>
   );
 }
@@ -444,16 +557,16 @@ export function LanguageColors() {
           {LANGUAGES.map((l) => {
             const color = s.palette[l.code] ?? DEFAULT_PALETTE[l.code] ?? "";
             return (
-              <label key={l.code} className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm hover:bg-raised">
-                <input
-                  type="color"
-                  value={color || "#888888"}
-                  onChange={(e) => updateSettings({ palette: { ...s.palette, [l.code]: e.target.value } })}
-                  className="h-7 w-7 shrink-0 cursor-pointer rounded border border-line bg-transparent p-0"
-                  aria-label={`${l.name} colour`}
-                />
+              <div key={l.code} className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm hover:bg-raised">
+                <ColorPicker
+                  value={color}
+                  label={`${l.name} colour`}
+                  onPick={(c) => updateSettings({ palette: { ...getSettings().palette, [l.code]: c } })}
+                >
+                  <span className="h-7 w-7 shrink-0 cursor-pointer rounded border border-line" style={{ background: color || undefined }} />
+                </ColorPicker>
                 <span style={{ color: color || undefined }}>{l.name}</span>
-              </label>
+              </div>
             );
           })}
           <SelectedVersionColors />

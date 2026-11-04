@@ -29,6 +29,8 @@ export type SpeechState = {
   wordTiming: boolean | null;
   /** "device" = browser text-to-speech; "recorded" = a pre-made recording (keeps playing with the screen off). */
   engine: "device" | "recorded";
+  /** The player was just opened and is waiting for the user to choose where to start. */
+  ready: boolean;
   error: string | null;
 };
 
@@ -42,6 +44,7 @@ const IDLE: SpeechState = {
   until: null,
   wordTiming: null,
   engine: "device",
+  ready: false,
   error: null,
 };
 let state: SpeechState = IDLE;
@@ -287,7 +290,7 @@ export function play(opts: {
   };
   if (opts.keepAwake) acquireWake();
   stopRecording();
-  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device" });
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device", ready: false });
   if (opts.voice?.voiceURI !== lastVoice) {
     lastVoice = opts.voice?.voiceURI;
     set({ wordTiming: null });
@@ -461,7 +464,7 @@ export async function playRecording(opts: {
   emitWord(null);
   releaseWake();
   stopRecording();
-  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true });
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true, ready: false });
   let timing: Timing;
   try {
     timing = await loadTiming(opts.timingUrl);

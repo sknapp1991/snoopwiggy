@@ -67,6 +67,8 @@ export type Settings = {
   floatingNav: boolean;
   /** Saved setups, in the order they were made. */
   setups: Setup[];
+  /** The saved setup last switched to (so changes can be saved back into it). */
+  activeSetup: string | null;
 };
 
 export const FONT_MIN = 10;
@@ -116,6 +118,7 @@ const DEFAULTS: Settings = {
   chapterSwipe: "one",
   floatingNav: true,
   setups: [],
+  activeSetup: null,
 };
 
 const num = (v: unknown, lo: number, hi: number) =>
@@ -156,6 +159,7 @@ function read(): Settings {
       setups: Array.isArray(p.setups)
         ? p.setups.filter((x): x is Setup => !!x && typeof x.name === "string" && Array.isArray(x.versions)).slice(0, 30)
         : [],
+      activeSetup: typeof p.activeSetup === "string" ? p.activeSetup : null,
     };
   } catch {
     return DEFAULTS;

@@ -368,9 +368,18 @@ export function useReadAlong({
       const i = findStart(items, from);
       if (i >= 0) startAt(i, { until: to });
     },
+    /** Open the player without playing: ready at the first verse on screen; ▶, a verse tap or ▾ starts it. */
     open() {
-      setSpeech({ open: true, version: speech.version ?? cols[0]?.version.id ?? null });
-      startAt(startIndex());
+      setSpeech({
+        open: true,
+        version: speech.version ?? cols[0]?.version.id ?? null,
+        status: "paused",
+        engine: "device",
+        verse: items[startIndex()]?.v ?? null,
+        chapterKey,
+        ready: true,
+        error: null,
+      });
     },
     startAt,
   };
@@ -470,6 +479,12 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         </button>
       </div>
 
+      {speech.ready && (
+        <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted" role="status">
+          Ready at verse {verse ?? speech.verse}. Press ▶ to start here, tap any verse to start there, or choose a verse or
+          range with ▾.
+        </p>
+      )}
       {ra.cols.length > 1 && (
         <div className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-1.5 [scrollbar-width:none]" role="group" aria-label="Version to listen to">
           {ra.cols.map((c) => {
