@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
-import { adjacentChapters, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
+import { adjacentChapters, catalog, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
 import type { Verse, Version } from "@/lib/schema";
@@ -29,6 +29,7 @@ import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
 import { openVerseMenu, toast } from "@/lib/ui-store";
 import { useSpeech } from "@/lib/speech";
+import { setReadingContext } from "@/lib/ai-chat";
 import { getPosition, savePosition } from "@/lib/reading-position";
 import { FirstTips } from "./first-tips";
 import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
@@ -150,6 +151,26 @@ export function ReaderView() {
     const t = setTimeout(() => versions.forEach((v) => loadChapter(chapterKey(next.work, v, next.book, next.chapter))), 400);
     return () => clearTimeout(t);
   }, [allLoaded, next, versions]);
+
+  // Tell the AI companion what is on screen (it reads this when a question is sent).
+  useEffect(() => {
+    if (!allLoaded || !book) return;
+    const vers = versions.map((id) => getVersion(id)!);
+    setReadingContext({
+      reference: chapterTitle(book, ref.chapter),
+      work: catalog.works.find((w) => w.id === ref.work)?.name ?? ref.work,
+      versions: vers.map((v) => ({ abbr: v.abbr, name: v.name, language: getLanguage(v.language).name })),
+      passage: () =>
+        rows
+          .map((r) => {
+            const parts = r.cells.flatMap((c, i) => (c && !c.cont && c.t ? [`${vers[i].abbr}: ${c.t}`] : []));
+            return parts.length ? `${r.v}. ${parts.join(" | ")}` : "";
+          })
+          .filter(Boolean)
+          .join("\n"),
+    });
+  }, [allLoaded, rows, book, ref.work, ref.chapter, versions]);
+  useEffect(() => () => setReadingContext(null), []);
 
   // Jump to #v16 once every column's text is there (so later columns don't push the verse away).
   // Remembered per chapter + hash, so following a search result to another chapter jumps again.

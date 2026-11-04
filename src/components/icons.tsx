@@ -110,3 +110,15 @@ export const LibraryIcon = (p: P) => (
 export const CheckSquareIcon = (p: P) => (
   <svg {...base(p)}><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 12.5l3 3 5-6" /></svg>
 );
+export const MinusIcon = (p: P) => (
+  <svg {...base(p)}><path d="M5 12h14" /></svg>
+);
+export const SendIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 12l16-8-6 16-2.5-6.5z" /><path d="M11.5 13.5L20 4" /></svg>
+);
+export const StopIcon = (p: P) => (
+  <svg {...base(p)}><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+);
+export const TrashIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
+);

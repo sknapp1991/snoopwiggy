@@ -9,7 +9,8 @@ import { ASK_SERVICES, askUrl, buildAskPrompt, type AskTranslation } from "@/lib
 import { catalog, chapterTitle, findBook, readHref } from "@/lib/catalog";
 import { features } from "@/lib/features";
 import { getItem, HIGHLIGHTS, saveNote, setHighlight, toggle, useStudy, type StudyRef } from "@/lib/study";
-import { closeVerseMenu, openAsk, toast, useUi } from "@/lib/ui-store";
+import { closeVerseMenu, toast, useUi } from "@/lib/ui-store";
+import { askAboutVerse, sendAi, useAiChat } from "@/lib/ai-chat";
 import { CloseIcon, ClockIcon, CopyIcon, HeadphonesIcon, LinkIcon, SparkIcon, StarIcon } from "./icons";
 import { Modal } from "./modal";
 
@@ -67,6 +68,7 @@ function MenuBody({
   onReadFrom?: (verse: string, version?: string) => void;
 }) {
   useStudy(); // re-render on changes
+  const ai = useAiChat();
   const highlight = getItem("highlight", r)?.color;
   const fav = !!getItem("favorite", r);
   const later = !!getItem("later", r);
@@ -218,7 +220,7 @@ function MenuBody({
 
         {features.askInExternal && (
           <div className="space-y-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Ask in…</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">{ai.ready ? "Ask AI" : "Ask in…"}</span>
             <input
               type="text"
               value={question}
@@ -227,13 +229,27 @@ function MenuBody({
               placeholder="Your question (optional)"
               className="block h-11 w-full rounded-lg border border-line bg-raised px-3 text-base outline-none focus:ring-2 focus:ring-accent/50 md:text-sm"
             />
+            {ai.ready && (
+              <button
+                type="button"
+                onClick={() => {
+                  askAboutVerse({ reference, texts: texts.map(({ abbr, name, language, text }) => ({ abbr, name, language, text })) });
+                  closeVerseMenu();
+                  if (question.trim()) void sendAi(question);
+                }}
+                className={`${pill} w-full border-accent bg-accent font-medium text-accent-ink`}
+              >
+                <SparkIcon width={18} height={18} /> Ask AI here
+              </button>
+            )}
+            {ai.ready && <span className="block pt-1 text-xs text-faint">or open in…</span>}
             <div className="flex gap-2">
               {ASK_SERVICES.map((s, i) => (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => ask(s.id)}
-                  className={`${pill} flex-col gap-0 font-medium leading-tight ${i === 0 ? "border-accent bg-accent text-accent-ink" : "border-line"}`}
+                  className={`${pill} flex-col gap-0 font-medium leading-tight ${i === 0 && !ai.ready ? "border-accent bg-accent text-accent-ink" : "border-line"}`}
                 >
                   {s.name}
                   {!s.url("x") && <span className="text-[10px] font-normal opacity-70">copy &amp; paste</span>}
@@ -257,11 +273,6 @@ function MenuBody({
               fill it in for you). The prompt is always copied too.
             </p>
           </div>
-        )}
-        {features.askAiPanel && (
-          <button type="button" onClick={() => openAsk({ work: r.work, book: r.book, chapter: r.chapter, verse: r.verse, texts })} className={`${pill} w-full border-accent text-accent`}>
-            <SparkIcon width={18} height={18} /> Ask AI here
-          </button>
         )}
       </div>
     </div>

@@ -9,6 +9,7 @@ import { openSearch } from "./search-panel";
 import { ChapterSwipeControl, SavedSetups, FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
+import { AiButton } from "./ai-window";
 
 export function TopBar({
   onOpenLibrary,
@@ -74,6 +75,8 @@ export function TopBar({
       >
         <LibraryIcon />
       </button>
+
+      <AiButton />
 
       {/* Desktop controls */}
       <div className="hidden items-center gap-2 desk:flex">

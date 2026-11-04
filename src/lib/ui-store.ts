@@ -3,13 +3,12 @@
 import { useSyncExternalStore } from "react";
 import type { StudyRef } from "./storage";
 
-export type Panel = "search" | "study" | "ask" | null;
+export type Panel = "search" | "study" | null;
 /** `version`: the column that was tapped (read aloud uses it). */
 export type VerseMenuState = (StudyRef & { verse: string; focus?: "note" | "ask"; version?: string }) | null;
-export type AskContext = StudyRef & { verse: string; texts: { abbr: string; language: string; text: string; dir: "ltr" | "rtl"; lang: string; name: string }[] };
-type Ui = { panel: Panel; menu: VerseMenuState; toast: { id: number; text: string } | null; ask: AskContext | null };
+type Ui = { panel: Panel; menu: VerseMenuState; toast: { id: number; text: string } | null };
 
-let ui: Ui = { panel: null, menu: null, toast: null, ask: null };
+let ui: Ui = { panel: null, menu: null, toast: null };
 const SERVER: Ui = ui;
 const subs = new Set<() => void>();
 const set = (patch: Partial<Ui>) => {
@@ -35,8 +34,6 @@ export const togglePanel = (panel: Exclude<Panel, null>) => set({ panel: ui.pane
 export const openVerseMenu = (menu: NonNullable<VerseMenuState>) => set({ menu });
 export const closeVerseMenu = () => set({ menu: null });
 
-/** Built-in Ask AI panel (feature-flagged) for one verse. */
-export const openAsk = (ctx: AskContext) => set({ ask: ctx, panel: "ask", menu: null });
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
 export function toast(text: string, ms = 2600) {

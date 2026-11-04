@@ -9,7 +9,7 @@ import { TabBar, useTabsSync } from "./tabs";
 import { useEdgeSwipes } from "./use-gestures";
 import { openSearch, SearchPanel } from "./search-panel";
 import { StudyPanel } from "./study-panel";
-import { AskPanel } from "./ask-panel";
+import { AiWindow } from "./ai-window";
 import { closePanel, useUi, type Panel } from "@/lib/ui-store";
 
 /** Keeps the <html> dark class in sync with the saved theme (and the OS when "system"). */
@@ -69,6 +69,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="h-[80dvh]">{panel && <PanelBody panel={panel} onNavigate={closePanel} />}</div>
       </Modal>
 
+      <AiWindow />
+
       {toast && <Toast key={toast.id} text={toast.text} />}
 
       <Modal open={drawerOpen} onClose={() => setDrawerOpen(false)} variant="drawer" label="Library">
@@ -117,12 +119,11 @@ function Toast({ text }: { text: string }) {
   );
 }
 
-const PANEL_LABEL: Record<Exclude<Panel, null>, string> = { search: "Search", study: "My Study", ask: "Ask AI" };
+const PANEL_LABEL: Record<Exclude<Panel, null>, string> = { search: "Search", study: "My Study" };
 
 function PanelBody({ panel, onNavigate }: { panel: Exclude<Panel, null>; onNavigate?: () => void }) {
   if (panel === "search") return <SearchPanel onNavigate={onNavigate} />;
-  if (panel === "study") return <StudyPanel onNavigate={onNavigate} />;
-  return <AskPanel />;
+  return <StudyPanel onNavigate={onNavigate} />;
 }
 
 export function ShellFallback() {
