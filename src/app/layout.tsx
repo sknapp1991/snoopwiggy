@@ -12,8 +12,24 @@ const hebrew = Noto_Serif_Hebrew({ variable: "--font-hebrew", subsets: ["hebrew"
 const arabic = Noto_Naskh_Arabic({ variable: "--font-arabic", subsets: ["arabic"], preload: false });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://versesacross.com"),
   title: { default: "VersesAcross", template: "%s · VersesAcross" },
   description: "Study the world's scriptures side by side, in many languages.",
+  applicationName: "VersesAcross",
+  // Link previews (texts, chats, social): the image comes from app/opengraph-image.png.
+  openGraph: {
+    type: "website",
+    siteName: "VersesAcross",
+    title: "VersesAcross",
+    description: "Study the world's scriptures side by side, in many languages: 17 Bibles in 11 languages, listen along, free.",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VersesAcross",
+    description: "Study the world's scriptures side by side, in many languages.",
+  },
+  appleWebApp: { title: "VersesAcross", capable: true, statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
-import { BookIcon, CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
+import { CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
 import { HighlightModeToggle } from "./highlight-mode";
 import { togglePanel, useUi } from "@/lib/ui-store";
 import { openSearch } from "./search-panel";
@@ -34,7 +34,8 @@ export function TopBar({
       </button>
 
       <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="VersesAcross home">
-        <BookIcon className="text-accent" />
+        {/* eslint-disable-next-line @next/next/no-img-element -- tiny static SVG logo */}
+        <img src="/icon.svg" alt="" width={28} height={28} className="rounded-md" />
         <span className="font-serif text-lg font-semibold tracking-tight">VersesAcross</span>
       </Link>
 

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e08a12"/>
+      <stop offset="1" stop-color="#8a3a0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- open book -->
+  <path d="M256 146c-42-30-100-40-156-35v250c56-5 114 5 156 35 42-30 100-40 156-35V111c-56-5-114 5-156 35z" fill="#fff8ee"/>
+  <path d="M256 146v250" stroke="#c2620b" stroke-width="9" stroke-linecap="round"/>
+  <!-- verse lines, one translation per page, lined up across the spine -->
+  <g stroke-width="15" stroke-linecap="round">
+    <path d="M134 196h92M134 236h92M134 276h92M134 316h64" stroke="#5b3a1a"/>
+    <path d="M286 196h92M286 236h92M286 276h92M286 316h64" stroke="#0e7490"/>
+  </g>
+</svg>
