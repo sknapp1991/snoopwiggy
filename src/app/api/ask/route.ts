@@ -93,19 +93,31 @@ export async function POST(request: Request) {
   }
   if (turns[0].role !== "user") turns.shift();
 
-  const model = env().GEMINI_MODEL ?? process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
-  const upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: sys.join("\n") }] },
-      contents: turns,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
-    }),
-  }).catch(() => null);
-  if (!upstream?.ok || !upstream.body) {
-    const status = upstream?.status ?? 0;
-    console.error("gemini failed", status, upstream ? (await upstream.text()).slice(0, 300) : "network");
+  // Free-tier models are sometimes "busy" (503) or out of quota (429): retry once, then fall back to
+  // Google's rolling aliases. A model that doesn't exist for this key (404) is skipped too.
+  const primary = env().GEMINI_MODEL ?? process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
+  const models = [primary, primary, "gemini-flash-latest", "gemini-flash-lite-latest"];
+  const payload = JSON.stringify({
+    systemInstruction: { parts: [{ text: sys.join("\n") }] },
+    contents: turns,
+    generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
+  });
+  let upstream: Response | null = null;
+  let status = 0;
+  for (const [i, model] of models.entries()) {
+    upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: payload,
+    }).catch(() => null);
+    if (upstream?.ok && upstream.body) break;
+    status = upstream?.status ?? 0;
+    console.error("gemini failed", model, status, upstream ? (await upstream.text()).slice(0, 300) : "network");
+    upstream = null;
+    if (![0, 404, 429, 500, 503].includes(status)) break; // bad request etc.: another model won't help
+    if (i === 0) await new Promise((r) => setTimeout(r, 800));
+  }
+  if (!upstream?.body) {
     return Response.json(
       { error: status === 429 ? "The free AI has reached its limit for now — please try again later." : "The AI service is unavailable right now." },
       { status: status === 429 ? 429 : 502 },
