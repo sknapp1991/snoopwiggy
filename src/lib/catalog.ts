@@ -13,6 +13,7 @@ export type BookEntry = CatalogItem & { religion: Religion; collection: Collecti
 /** Versions shown when the user has not chosen any yet. */
 export const DEFAULT_VERSIONS: Record<string, string[]> = {
   bible: ["kjv", "web", "rvr1909"],
+  tanakh: ["jps1917", "mt"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

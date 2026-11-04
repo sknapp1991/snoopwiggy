@@ -59,6 +59,18 @@ Vulgate), 1–2 Maccabees, 1 Esdras, Susanna and Bel and the Dragon, plus 3–4 
   rather than being forced into line. The Greek additions to Esther, 1 Enoch (R.H. Charles 1917) and
   the Gospel of Thomas follow later.
 
+## Tanakh (Judaism, added Nov 2026)
+
+Torah, Nevi'im and Ketuvim in Jewish book order and Hebrew verse numbering (e.g. Malachi 3:19–24,
+Joel 4, psalm titles as verse 1).
+- **JPS 1917** – The Holy Scriptures according to the Masoretic Text, Jewish Publication Society of
+  America, 1917; public domain in the US (published before 1931). Source: eBible.org (engjps). eBible
+  stores it in English numbering with the Hebrew reference marked; `scripts/import-tanakh.ts` restores
+  the Hebrew numbering from those markers.
+- **MT** – Westminster Leningrad Codex (eBible.org hebwlc), public domain.
+- The Ten Commandments (Exodus 20, Deuteronomy 5), Psalm 70 and Nehemiah 7 are divided into verses
+  differently in the two editions; those verses show as gaps rather than being forced into line.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

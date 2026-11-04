@@ -1,7 +1,8 @@
 {
   "$comment": "Library tree + version metadata. Hand-maintained. Scripture text lives in public/texts/<work>/<version>/<book>/<chapter>.json and is produced only by scripts/import-*.ts.",
   "works": [
-    { "id": "bible", "name": "Holy Bible", "versification": "eng" }
+    { "id": "bible", "name": "Holy Bible", "versification": "eng" },
+    { "id": "tanakh", "name": "Tanakh (Hebrew Bible)", "versification": "heb" }
   ],
   "versions": [
     {
@@ -210,6 +211,24 @@
       "sourceUrl": "https://ebible.org/Scriptures/details.php?id=hebwlc",
       "licensed": false, "versification": "eng",
       "import": { "provider": "ebible", "parts": [ { "id": "hebwlc", "collection": "ot" }, { "id": "hebsg", "collection": "nt" } ] }
+    },
+    {
+      "id": "jps1917", "work": "tanakh", "abbr": "JPS 1917", "name": "JPS Tanakh (1917)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1917,
+      "translator": "Jewish Publication Society of America",
+      "license": "Public Domain", "licenseNote": "Published 1917; public domain in the US. Hebrew verse numbering restored from the markers in eBible.org's edition.",
+      "attribution": "JPS Tanakh 1917, public domain, courtesy of eBible.org.",
+      "sourceUrl": "https://ebible.org/bible/details.php?id=engjps",
+      "licensed": false, "versification": "heb"
+    },
+    {
+      "id": "mt", "work": "tanakh", "abbr": "MT", "name": "Masoretic Text (Westminster Leningrad Codex)",
+      "language": "he", "kind": "native", "dir": "rtl", "year": 1008, "yearNote": "Leningrad Codex (c. 1008); WLC electronic edition",
+      "translator": "Masoretic Hebrew text",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Westminster Leningrad Codex, public domain, eBible.org.",
+      "sourceUrl": "https://ebible.org/Scriptures/details.php?id=hebwlc",
+      "licensed": false, "versification": "heb"
     }
   ],
   "religions": [
@@ -321,9 +340,51 @@
       "id": "judaism",
       "name": "Judaism",
       "collections": [
-        { "id": "torah", "name": "Torah (Pentateuch)", "items": [ { "id": "torah", "name": "Torah — JPS 1917 & Hebrew", "status": "coming-soon" } ] },
-        { "id": "neviim", "name": "Prophets (Nevi'im)", "items": [ { "id": "neviim", "name": "Nevi'im", "status": "coming-soon" } ] },
-        { "id": "ketuvim", "name": "Writings (Ketuvim)", "items": [ { "id": "ketuvim", "name": "Ketuvim", "status": "coming-soon" } ] },
+        { "id": "torah", "name": "Torah (Pentateuch)", "items": [
+            { "id": "gen", "name": "Genesis · Bereshit", "work": "tanakh", "chapters": 50, "chapterName": "Genesis" },
+            { "id": "exo", "name": "Exodus · Shemot", "work": "tanakh", "chapters": 40, "chapterName": "Exodus" },
+            { "id": "lev", "name": "Leviticus · Vayikra", "work": "tanakh", "chapters": 27, "chapterName": "Leviticus" },
+            { "id": "num", "name": "Numbers · Bamidbar", "work": "tanakh", "chapters": 36, "chapterName": "Numbers" },
+            { "id": "deu", "name": "Deuteronomy · Devarim", "work": "tanakh", "chapters": 34, "chapterName": "Deuteronomy" }
+          ] },
+        { "id": "neviim", "name": "Prophets (Nevi'im)", "items": [
+            { "id": "jos", "name": "Joshua · Yehoshua", "work": "tanakh", "chapters": 24, "chapterName": "Joshua" },
+            { "id": "jdg", "name": "Judges · Shoftim", "work": "tanakh", "chapters": 21, "chapterName": "Judges" },
+            { "id": "1sa", "name": "1 Samuel · Shmuel I", "work": "tanakh", "chapters": 31, "chapterName": "1 Samuel" },
+            { "id": "2sa", "name": "2 Samuel · Shmuel II", "work": "tanakh", "chapters": 24, "chapterName": "2 Samuel" },
+            { "id": "1ki", "name": "1 Kings · Melachim I", "work": "tanakh", "chapters": 22, "chapterName": "1 Kings" },
+            { "id": "2ki", "name": "2 Kings · Melachim II", "work": "tanakh", "chapters": 25, "chapterName": "2 Kings" },
+            { "id": "isa", "name": "Isaiah · Yeshayahu", "work": "tanakh", "chapters": 66, "chapterName": "Isaiah" },
+            { "id": "jer", "name": "Jeremiah · Yirmeyahu", "work": "tanakh", "chapters": 52, "chapterName": "Jeremiah" },
+            { "id": "ezk", "name": "Ezekiel · Yechezkel", "work": "tanakh", "chapters": 48, "chapterName": "Ezekiel" },
+            { "id": "hos", "name": "Hosea · Hoshea", "work": "tanakh", "chapters": 14, "chapterName": "Hosea" },
+            { "id": "jol", "name": "Joel · Yoel", "work": "tanakh", "chapters": 4, "chapterName": "Joel" },
+            { "id": "amo", "name": "Amos", "work": "tanakh", "chapters": 9 },
+            { "id": "oba", "name": "Obadiah · Ovadiah", "work": "tanakh", "chapters": 1, "chapterName": "Obadiah" },
+            { "id": "jon", "name": "Jonah · Yonah", "work": "tanakh", "chapters": 4, "chapterName": "Jonah" },
+            { "id": "mic", "name": "Micah · Michah", "work": "tanakh", "chapters": 7, "chapterName": "Micah" },
+            { "id": "nam", "name": "Nahum · Nachum", "work": "tanakh", "chapters": 3, "chapterName": "Nahum" },
+            { "id": "hab", "name": "Habakkuk · Chavakuk", "work": "tanakh", "chapters": 3, "chapterName": "Habakkuk" },
+            { "id": "zep", "name": "Zephaniah · Tzefaniah", "work": "tanakh", "chapters": 3, "chapterName": "Zephaniah" },
+            { "id": "hag", "name": "Haggai · Chaggai", "work": "tanakh", "chapters": 2, "chapterName": "Haggai" },
+            { "id": "zec", "name": "Zechariah", "work": "tanakh", "chapters": 14 },
+            { "id": "mal", "name": "Malachi", "work": "tanakh", "chapters": 3 }
+          ] },
+        { "id": "ketuvim", "name": "Writings (Ketuvim)", "items": [
+            { "id": "psa", "name": "Psalms · Tehillim", "work": "tanakh", "chapters": 150, "chapterName": "Psalm" },
+            { "id": "pro", "name": "Proverbs · Mishlei", "work": "tanakh", "chapters": 31, "chapterName": "Proverbs" },
+            { "id": "job", "name": "Job · Iyov", "work": "tanakh", "chapters": 42, "chapterName": "Job" },
+            { "id": "sng", "name": "Song of Songs · Shir HaShirim", "work": "tanakh", "chapters": 8, "chapterName": "Song of Songs" },
+            { "id": "rut", "name": "Ruth · Rut", "work": "tanakh", "chapters": 4, "chapterName": "Ruth" },
+            { "id": "lam", "name": "Lamentations · Eichah", "work": "tanakh", "chapters": 5, "chapterName": "Lamentations" },
+            { "id": "ecc", "name": "Ecclesiastes · Kohelet", "work": "tanakh", "chapters": 12, "chapterName": "Ecclesiastes" },
+            { "id": "est", "name": "Esther", "work": "tanakh", "chapters": 10 },
+            { "id": "dan", "name": "Daniel", "work": "tanakh", "chapters": 12 },
+            { "id": "ezr", "name": "Ezra", "work": "tanakh", "chapters": 10 },
+            { "id": "neh", "name": "Nehemiah · Nechemiah", "work": "tanakh", "chapters": 13, "chapterName": "Nehemiah" },
+            { "id": "1ch", "name": "1 Chronicles · Divrei HaYamim I", "work": "tanakh", "chapters": 29, "chapterName": "1 Chronicles" },
+            { "id": "2ch", "name": "2 Chronicles · Divrei HaYamim II", "work": "tanakh", "chapters": 36, "chapterName": "2 Chronicles" }
+          ] },
         { "id": "mishnah", "name": "Mishnah", "items": [ { "id": "mishnah", "name": "Mishnah", "status": "coming-soon" } ] },
         { "id": "talmud", "name": "Talmud", "items": [ { "id": "talmud", "name": "Talmud", "status": "coming-soon" } ] }
       ]
