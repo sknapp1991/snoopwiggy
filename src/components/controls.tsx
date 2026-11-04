@@ -63,7 +63,11 @@ export function FontSizeControl() {
       >
         A−
       </button>
-      <span className="w-8 text-center text-xs tabular-nums text-faint" aria-live="polite">
+      <span
+        className="w-8 text-center text-xs tabular-nums text-faint"
+        aria-live="polite"
+        title={fontSize <= FONT_MIN ? "Smallest text size" : fontSize >= FONT_MAX ? "Largest text size" : undefined}
+      >
         {fontSize}
       </span>
       <button

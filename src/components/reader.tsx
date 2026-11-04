@@ -56,7 +56,14 @@ export function ReaderView() {
   const landscape = useMediaQuery(PHONE_LANDSCAPE_QUERY, false);
   const router = useRouter();
   const scroller = useRef<HTMLDivElement>(null);
-  usePinchToZoomText(scroller, fontSize);
+  // Size readout while pinching: "Text 18", "Text 10 · smallest".
+  const [pinchSize, setPinchSize] = useState<number | null>(null);
+  const pinchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  usePinchToZoomText(scroller, fontSize, (n) => {
+    setPinchSize(n);
+    clearTimeout(pinchTimer.current);
+    pinchTimer.current = setTimeout(() => setPinchSize(null), 1200);
+  });
 
   const valid = !!book && Number.isInteger(ref.chapter) && ref.chapter >= 1 && ref.chapter <= (book.chapters ?? 0);
   const keys = valid ? versions.map((v) => chapterKey(ref.work, v, ref.book, ref.chapter)) : [];
@@ -235,6 +242,16 @@ export function ReaderView() {
       </div>
     </div>
     <SwipeHintView hint={hint} prev={prev} next={next} />
+    {pinchSize !== null && (
+      <div
+        role="status"
+        aria-live="polite"
+        className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 rounded-full bg-ink px-4 py-1.5 text-sm font-medium tabular-nums text-paper shadow-lg"
+      >
+        Text {pinchSize}
+        {pinchSize <= FONT_MIN ? " · smallest" : pinchSize >= FONT_MAX ? " · largest" : ""}
+      </div>
+    )}
     {settings.floatingNav && (
       <FloatingNav prev={prev} next={next} versions={versions} visible={idle && !hint} raised={ra.speech.open} />
     )}
@@ -647,8 +664,12 @@ export function ReaderFallback() {
  * Two-finger pinch on the reading area changes the text size (instead of zooming the whole page).
  * The new size is saved like the A−/A+ buttons.
  */
-function usePinchToZoomText(ref: RefObject<HTMLDivElement | null>, fontSize: number) {
+function usePinchToZoomText(ref: RefObject<HTMLDivElement | null>, fontSize: number, onPinch?: (size: number) => void) {
   const size = useRef(fontSize);
+  const cb = useRef(onPinch);
+  useEffect(() => {
+    cb.current = onPinch;
+  });
   useEffect(() => {
     size.current = fontSize;
   }, [fontSize]);
@@ -668,6 +689,7 @@ function usePinchToZoomText(ref: RefObject<HTMLDivElement | null>, fontSize: num
       if (Math.abs(ratio - 1) < 0.08) return; // small wobble while swiping with two fingers
       const next = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, start.size * ratio)));
       if (next !== size.current) updateSettings({ fontSize: next });
+      cb.current?.(next); // shows the size readout (also when already at the smallest/largest)
     };
     const onEnd = (e: TouchEvent) => {
       if (e.touches.length < 2) start = null;
