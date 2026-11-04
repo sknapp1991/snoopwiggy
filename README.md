@@ -1,4 +1,4 @@
-# VersesAcross
+# Verses Across
 
 Multi-religion scripture study: read texts side by side in many languages. See `BUILD_PLAN.md` for the full spec.
 Phase 5 will expand this README.

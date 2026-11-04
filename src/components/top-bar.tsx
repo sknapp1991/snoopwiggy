@@ -33,10 +33,12 @@ export function TopBar({
         <MenuIcon />
       </button>
 
-      <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="VersesAcross home">
+      <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="Verses Across home">
         {/* eslint-disable-next-line @next/next/no-img-element -- tiny static SVG logo */}
         <img src="/icon.svg" alt="" width={28} height={28} className="rounded-md" />
-        <span className="font-serif text-lg font-semibold tracking-tight">VersesAcross</span>
+        <span className="font-serif text-lg font-semibold tracking-tight">
+          <span className="text-[#b8935f]">Verses</span> <span className="text-[#5f8fc4]">Across</span>
+        </span>
       </Link>
 
       {/* Phone: current location as the title; tap opens the library */}
@@ -45,7 +47,7 @@ export function TopBar({
         onClick={onOpenLibrary}
         className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold desk:hidden"
       >
-        {entry ? chapterTitle(entry, ref.chapter) : "VersesAcross"}
+        {entry ? chapterTitle(entry, ref.chapter) : "Verses Across"}
       </button>
 
       <div className="hidden flex-1 desk:block" />

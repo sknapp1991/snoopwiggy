@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1f3a5f"/>
+  <!-- PHONE: dark frame, light screen, notch, home bar -->
+  <rect x="40" y="132" width="126" height="244" rx="26" fill="#2a2520"/>
+  <rect x="49" y="141" width="108" height="226" rx="18" fill="#fbfaf7"/>
+  <rect x="85" y="149" width="36" height="10" rx="5" fill="#2a2520"/>
+  <rect x="83" y="354" width="40" height="5" rx="2.5" fill="#2a2520" opacity="0.5"/>
+  <rect x="62" y="186" width="80" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <rect x="62" y="304" width="66" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <!-- BOOK: page stack underneath, two pages, spine, ribbon -->
+  <path d="M256 196 C232 180 206 176 182 180 L182 338 C206 334 232 338 256 356 Z" fill="#e3cfae"/>
+  <path d="M256 196 C280 180 306 176 330 180 L330 338 C306 334 280 338 256 356 Z" fill="#e3cfae"/>
+  <path d="M256 188 C232 172 208 168 186 172 L186 328 C208 324 232 328 256 346 Z" fill="#fbfaf7"/>
+  <path d="M256 188 C280 172 304 168 326 172 L326 328 C304 324 280 328 256 346 Z" fill="#fbfaf7"/>
+  <rect x="254.5" y="190" width="3" height="154" fill="#2a2520" opacity="0.18"/>
+  <path d="M262 340 L262 384 L270 374 L278 384 L278 344 Z" fill="#7c2d12"/>
+  <rect x="200" y="206" width="42" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <rect x="270" y="206" width="42" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <rect x="200" y="296" width="38" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <rect x="270" y="296" width="38" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <!-- SCROLL: paper between two wooden rods with knobs, curled ends -->
+  <rect x="364" y="164" width="96" height="184" fill="#fbfaf7"/>
+  <rect x="358" y="150" width="108" height="24" rx="12" fill="#e3cfae"/>
+  <rect x="358" y="338" width="108" height="24" rx="12" fill="#e3cfae"/>
+  <rect x="350" y="157" width="124" height="10" rx="5" fill="#6b3a1a"/>
+  <rect x="350" y="345" width="124" height="10" rx="5" fill="#6b3a1a"/>
+  <circle cx="349" cy="162" r="9" fill="#6b3a1a"/><circle cx="475" cy="162" r="9" fill="#6b3a1a"/>
+  <circle cx="349" cy="350" r="9" fill="#6b3a1a"/><circle cx="475" cy="350" r="9" fill="#6b3a1a"/>
+  <rect x="378" y="194" width="68" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <rect x="378" y="304" width="56" height="11" rx="5.5" fill="#b45309" opacity="0.35"/>
+  <!-- the one verse that runs across all three -->
+  <rect x="56" y="246" width="404" height="20" rx="10" fill="#b45309"/>
+</svg>

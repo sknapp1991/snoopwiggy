@@ -18,5 +18,7 @@
   // Recorded audio (audio v2), served by src/app/api/audio
   "r2_buckets": [{ "binding": "AUDIO", "bucket_name": "snoopwiggy-audio" }],
   "observability": { "enabled": true }
-  // Custom domain (snoopwiggy.com) is attached in the Cloudflare dashboard after the first deploy.
+  // Worker name stays "snoopwiggy" (renaming re-creates the Worker). Custom domains attached in the dashboard:
+  // versesacross.com + www (official, Verses Across) and snoopwiggy.com + www, which the app forwards to
+  // versesacross.com together with the visitor's saved data (src/components/domain-move.tsx).
 }

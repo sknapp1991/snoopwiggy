@@ -220,7 +220,7 @@ export function ReaderView() {
         column ? "snap-x snap-mandatory desk:snap-none" : ""
       }`}
     >
-      <title>{`${title} · VersesAcross`}</title>
+      <title>{`${title} · Verses Across`}</title>
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <FirstTips />
