@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
 import { adjacentChapters, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
@@ -18,7 +18,7 @@ import {
   useViewMode,
   WIDE_QUERY,
 } from "@/lib/settings";
-import { ChevronLeft, ChevronRight } from "./icons";
+import { ChevronLeft, ChevronRight, PauseIcon, PlayIcon } from "./icons";
 import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
@@ -220,9 +220,11 @@ export function ReaderView() {
         <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
 
+      <ListenCtx.Provider value={ra}>
       <VerseCtx.Provider value={actions}>
         {column ? <ColumnView cols={cols} rows={rows} marks={marks} /> : <StackedView cols={cols} rows={rows} marks={marks} />}
       </VerseCtx.Provider>
+      </ListenCtx.Provider>
 
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         {allLoaded && <StudiedBox bookRef={ref} title={title} />}
@@ -342,6 +344,32 @@ function NavIcon({ to, versions, label, icon }: { to?: BookRef; versions: string
   );
 }
 
+/** ▶ next to a version name: listen to that version (⏸ while it is the one playing). */
+const ListenCtx = createContext<ReadAlong | null>(null);
+function VersionPlay({ id, verse, label }: { id: string; verse?: string; label: string }) {
+  const ra = useContext(ListenCtx);
+  if (!ra?.supported) return null;
+  const s = ra.speech;
+  const active = s.open && s.version === id && s.status === "playing" && (!verse || s.verse === verse);
+  return (
+    <button
+      type="button"
+      data-no-swipe
+      onClick={(e) => {
+        e.stopPropagation();
+        ra.playVersion(id, active ? undefined : verse);
+      }}
+      aria-label={active ? `Pause ${label}` : `Listen to ${label}${verse ? ` from verse ${verse}` : ""}`}
+      title={ra.hasRecording(id) ? `Listen to ${label} (recorded voice)` : `Listen to ${label}`}
+      className={`relative ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full align-middle after:absolute after:-inset-2 after:content-[''] ${
+        active ? "bg-accent text-accent-ink" : "text-accent hover:bg-accent-soft"
+      }`}
+    >
+      {active ? <PauseIcon width={11} height={11} /> : <PlayIcon width={11} height={11} />}
+    </button>
+  );
+}
+
 function VersionLabel({ version, compact = false }: { version: Version; compact?: boolean }) {
   const lang = getLanguage(version.language);
   return (
@@ -406,7 +434,10 @@ function ColumnView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; ma
             key={c.version.id}
             className="sticky top-0 z-10 snap-start border-b border-line bg-paper/95 px-4 py-2 text-sm backdrop-blur md:px-5"
           >
-            <VersionLabel version={c.version} />
+            <span className="flex items-center">
+              <VersionLabel version={c.version} />
+              <VersionPlay id={c.version.id} label={c.version.abbr} />
+            </span>
             {c.entry.status === "error" && <ColumnError col={c} />}
             {c.entry.status === "ok" && c.entry.data.note && (
               <p className="mt-1 text-xs font-normal leading-snug text-faint">{c.entry.data.note}</p>
@@ -496,8 +527,9 @@ function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; m
                     return (
                       <div key={c.version.id} className={i > 0 ? "text-ink/85" : ""}>
                         {multi && (
-                          <div className="mb-0.5 text-[11px] uppercase tracking-wide">
+                          <div className="mb-0.5 flex items-center text-[11px] uppercase tracking-wide">
                             <VersionLabel version={c.version} compact />
+                            {verse && !verse.cont && <VersionPlay id={c.version.id} verse={row.v} label={c.version.abbr} />}
                           </div>
                         )}
                         {c.entry.status === "loading" ? (

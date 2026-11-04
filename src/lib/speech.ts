@@ -519,6 +519,37 @@ export function setRecordingRate(rate: number) {
   if (audio) audio.playbackRate = rate;
 }
 
+/**
+ * iPhones (and some Android browsers) only allow sound that starts inside a tap. A single tap on a verse
+ * waits briefly to rule out a double tap, so later playback can fall outside the tap. Unlock both the
+ * speech engine and the audio element on the first touch/click of each page visit.
+ */
+let unlocked = false;
+const SILENT =
+  "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+export function unlockAudio() {
+  if (unlocked) return;
+  unlocked = true;
+  try {
+    if (speechSupported()) {
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    }
+    audio ??= new Audio();
+    if (!audio.src) {
+      audio.src = SILENT;
+      audio.play().then(() => audio?.pause()).catch(() => {});
+    }
+  } catch {
+    /* nothing to unlock */
+  }
+}
+if (typeof window !== "undefined") {
+  window.addEventListener("pointerdown", unlockAudio, { once: true, capture: true });
+  window.addEventListener("keydown", unlockAudio, { once: true, capture: true });
+}
+
 // Stop speaking when the page goes away.
 if (typeof window !== "undefined") window.addEventListener("pagehide", () => speechSupported() && window.speechSynthesis.cancel());
 void current;

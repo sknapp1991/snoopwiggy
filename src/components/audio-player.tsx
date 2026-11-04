@@ -341,6 +341,23 @@ export function useReadAlong({
       }
       startAt(i, { version: tc.version.id, until: null });
     },
+    /**
+     * The ▶ next to a version: play that version (from the verse being read, else the first verse on
+     * screen); on the version already playing it pauses / resumes.
+     */
+    playVersion(id: string, fromVerse?: string) {
+      const same = speech.version === id && speech.chapterKey === chapterKey;
+      if (same && !fromVerse && speech.status === "playing") return pause();
+      if (same && !fromVerse && speech.status === "paused") {
+        if (speech.engine === "recorded" && resumeRecording()) return;
+      }
+      const v = fromVerse || (speech.chapterKey === chapterKey ? speech.verse : null) || items[startIndex()]?.v || "1";
+      this.readFrom(v || "1", id);
+    },
+    /** Does this version have a recorded (screen-off) voice for this chapter? */
+    hasRecording(id: string) {
+      return allRecordings.some((r) => r.version === id && hasChapter(r, bookRef.book, bookRef.chapter));
+    },
     /** Play verses from–to (inclusive), then stop. */
     playRange(from: string, to: string) {
       const i = findStart(items, from);
@@ -447,6 +464,30 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           <CloseIcon />
         </button>
       </div>
+
+      {ra.cols.length > 1 && (
+        <div className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-1.5 [scrollbar-width:none]" role="group" aria-label="Version to listen to">
+          {ra.cols.map((c) => {
+            const on = c.version.id === version.id;
+            return (
+              <button
+                key={c.version.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() => ra.playVersion(c.version.id)}
+                title={ra.hasRecording(c.version.id) ? "Recorded voice (keeps playing with the screen off)" : "Device voice"}
+                className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs font-medium ${
+                  on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
+                }`}
+              >
+                {on && playing ? <PauseIcon width={12} height={12} /> : <PlayIcon width={12} height={12} />}
+                {c.version.abbr}
+                {ra.hasRecording(c.version.id) && <span aria-label="recorded voice" className={`h-1.5 w-1.5 rounded-full ${on ? "bg-accent-ink" : "bg-accent"}`} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {picker && ra.items.length > 0 && (
         <div className="mx-auto max-w-3xl space-y-2 px-4 pb-3 pt-1">
