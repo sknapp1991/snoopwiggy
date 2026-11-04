@@ -5,7 +5,7 @@
  * Spanish, listen in Spanish), speed and voice; optionally keep going into the next chapter.
  */
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import type { AlignedRow } from "@/lib/align";
 import { chapterTitle, findBook, readHref, type BookRef } from "@/lib/catalog";
 import type { ChapterEntry } from "@/lib/chapter-store";
@@ -84,9 +84,32 @@ export function useReadAlong({
   const loaded = col?.entry.status === "ok";
   const chapterKey = `${bookRef.work}/${bookRef.book}/${bookRef.chapter}`;
 
-  const items: SpeechItem[] = useMemo(() => (loaded ? buildItems(rows, colIndex, lang) : []), [rows, colIndex, lang, loaded]);
+  const single: SpeechItem[] = useMemo(() => (loaded ? buildItems(rows, colIndex, lang) : []), [rows, colIndex, lang, loaded]);
 
   const voice = useMemo(() => pickVoice(allVoices, lang, settings.ttsVoices[lang]), [allVoices, lang, settings.ttsVoices]);
+
+  // Several versions in turn (e.g. WEB then RVR): every verse in each chosen version, or each whole
+  // chapter in turn. Device voices only (a recording is one file per chapter).
+  const mixIds = cols.filter((c) => settings.ttsMix.includes(c.version.id)).map((c) => c.version.id);
+  const mixed = mixIds.length >= 2;
+  const mixReady = mixed && mixIds.every((id) => cols.find((c) => c.version.id === id)?.entry.status === "ok");
+  const mixKey = mixIds.join(",");
+  const mixItems: SpeechItem[] = useMemo(() => {
+    if (!mixReady) return [];
+    const per = mixKey.split(",").map((id) => {
+      const ci = cols.findIndex((c) => c.version.id === id);
+      const l = cols[ci].version.language;
+      const vo = pickVoice(allVoices, l, settings.ttsVoices[l]);
+      return buildItems(rows, ci, l).map((it) => ({ ...it, lang: l, voice: vo, version: id }));
+    });
+    if (settings.ttsMixOrder === "chapter") return per.flat();
+    const byVerse = new Map<string, SpeechItem[]>();
+    for (const list of per) for (const it of list) byVerse.set(it.v, [...(byVerse.get(it.v) ?? []), it]);
+    return rows.flatMap((r) => byVerse.get(r.v) ?? []);
+    // cols is rebuilt every render; mixKey + mixReady + rows cover what matters
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mixReady, mixKey, rows, allVoices, settings.ttsVoices, settings.ttsMixOrder]);
+  const items = mixed ? mixItems : single;
 
   const onDone = () => {
     const s = getSettings();
@@ -112,7 +135,8 @@ export function useReadAlong({
   /** Items limited to the chosen verse range (if any). */
   const ranged = (list: SpeechItem[], until: string | null) => {
     if (!until) return list;
-    const end = list.findIndex((it) => it.v === until);
+    let end = list.length - 1; // last item of that verse (several versions can read it)
+    while (end >= 0 && list[end].v !== until) end--;
     return end >= 0 ? list.slice(0, end + 1) : list;
   };
 
@@ -120,6 +144,24 @@ export function useReadAlong({
     index: number,
     overrides?: { rate?: number; voice?: SpeechSynthesisVoice | null; version?: string; until?: string | null },
   ) => {
+    // Several versions in turn: one queue with each item's own language and voice.
+    if (mixed && (!overrides?.version || mixIds.includes(overrides.version))) {
+      if (!mixItems.length || !version) return;
+      const until = overrides && "until" in overrides ? overrides.until! : getSpeech().until;
+      setSpeech({ until });
+      play({
+        items: ranged(mixItems, until),
+        start: index,
+        lang,
+        voice: null,
+        rate: overrides?.rate ?? getSettings().ttsRate,
+        version: version.id,
+        chapterKey,
+        onDone,
+        keepAwake: getSettings().ttsKeepAwake,
+      });
+      return;
+    }
     // Optionally read another column (e.g. the Spanish verse that was tapped).
     const targetId = overrides?.version ?? version?.id;
     const ci = cols.findIndex((c) => c.version.id === targetId);
@@ -184,6 +226,22 @@ export function useReadAlong({
     playDevice();
   };
 
+  // Changing which versions are read in turn while playing: carry on from the same verse once the
+  // new queue is built (next render).
+  const restartRef = useRef<string | null>(null);
+  const restartSoon = () => {
+    restartRef.current = getSpeech().verse;
+  };
+  useEffect(() => {
+    const v = restartRef.current;
+    if (!v || !items.length) return;
+    restartRef.current = null;
+    const i = findStart(items, v);
+    startAt(i >= 0 ? i : 0, { until: null });
+    // startAt is recreated every render; only a new queue should trigger this
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
+
   /** Where to start: the paused verse, else the first verse on screen, else the top. */
   const startIndex = () => {
     if (speech.chapterKey === chapterKey && speech.verse) {
@@ -246,7 +304,7 @@ export function useReadAlong({
 
   // Word-by-word: highlight the word being spoken in the column being read (CSS Custom Highlight API,
   // so no re-rendering). Only voices that report word boundaries drive this; others keep verse highlighting.
-  const readingVersion = version?.id;
+  const readingVersion = speech.speaking ?? version?.id;
   useEffect(() => {
     const css = CSS as unknown as { highlights?: Map<string, unknown> };
     const HighlightCtor = (window as unknown as { Highlight?: new (...r: Range[]) => unknown }).Highlight;
@@ -297,6 +355,27 @@ export function useReadAlong({
     index,
     bookRef,
     ready: items.length > 0,
+    /** One entry per verse (for the verse picker), whatever is being read. */
+    verseList: single,
+    mixMode: settings.ttsMix.length > 0,
+    mixed,
+    mixIds,
+    /** Turn "several versions" on (starting with the one being read) or off. */
+    setMixMode(on: boolean) {
+      updateSettings({ ttsMix: on && version ? [version.id] : [] });
+      if (getSpeech().status === "playing") restartSoon();
+    },
+    /** Add / remove a version from those read in turn. */
+    toggleMix(id: string) {
+      const cur = getSettings().ttsMix.filter((x) => cols.some((c) => c.version.id === x));
+      const nextMix = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
+      updateSettings({ ttsMix: nextMix.length ? nextMix : [id] });
+      if (getSpeech().status === "playing") restartSoon();
+    },
+    setMixOrder(order: "verse" | "chapter") {
+      updateSettings({ ttsMixOrder: order });
+      if (getSpeech().status === "playing") restartSoon();
+    },
     toggle() {
       const s = getSpeech();
       if (s.status === "playing") pause();
@@ -306,7 +385,14 @@ export function useReadAlong({
     step(d: number) {
       const s = getSpeech();
       const cur = s.verse ? items.findIndex((it) => it.v === s.verse) : -1;
-      const i = Math.min(items.length - 1, Math.max(0, (cur >= 0 ? cur : startIndex()) + d));
+      let i = Math.min(items.length - 1, Math.max(0, (cur >= 0 ? cur : startIndex()) + d));
+      if (mixed && cur >= 0) {
+        // Step by verse, not by version: the first item of the next / previous verse.
+        const verses = single.map((it) => it.v);
+        const vi = verses.indexOf(items[cur].v);
+        const target = verses[Math.min(verses.length - 1, Math.max(0, vi + d))];
+        i = Math.max(0, items.findIndex((it) => it.v === target));
+      }
       if (s.engine === "recorded" && s.chapterKey === chapterKey && items[i] && seekRecording(items[i].v)) return;
       if (s.status === "playing") startAt(i);
       else setSpeech({ verse: items[i]?.v ?? null, chapterKey, status: "paused" });
@@ -334,6 +420,13 @@ export function useReadAlong({
     },
     /** Start reading at this verse (or the next one the column has), in `versionId`'s column if given. */
     readFrom(v: string, versionId?: string) {
+      if (mixed && (!versionId || mixIds.includes(versionId))) {
+        // Start at this verse, in the tapped version if it is one of those being read in turn.
+        let i = mixItems.findIndex((it) => it.v === v && (!versionId || it.version === versionId));
+        if (i < 0) i = findStart(mixItems, v);
+        if (i >= 0) startAt(i, { until: null });
+        return;
+      }
       const ci = versionId ? cols.findIndex((c) => c.version.id === versionId) : colIndex;
       const tc = cols[ci];
       if (!tc || tc.entry.status !== "ok") return;
@@ -464,7 +557,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             {speech.until ? `–${speech.until}` : ""} <span className="text-faint">▾</span>
           </p>
           <p className="truncate text-xs text-faint">
-            {speech.continuePending ? "Next chapter…" : ra.ready ? `${version.abbr} · ${langName}` : "Loading…"}
+            {speech.continuePending ? "Next chapter…" : ra.ready ? (ra.mixed ? `${ra.mixIds.map((id) => ra.cols.find((c) => c.version.id === id)?.version.abbr).join(" + ")}${speech.speaking ? ` · now ${ra.cols.find((c) => c.version.id === speech.speaking)?.version.abbr}` : ""}` : `${version.abbr} · ${langName}`) : "Loading…"}
             {settings.ttsRate !== 1 ? ` · ${settings.ttsRate}×` : ""}
           </p>
         </button>
@@ -488,7 +581,52 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           range with ▾.
         </p>
       )}
-      {ra.cols.length > 1 && (
+      {ra.cols.length > 1 && ra.mixMode && (
+        <div className="mx-auto max-w-3xl space-y-1 px-3 pb-1.5">
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Versions read in turn">
+            {ra.cols.map((c) => {
+              const on = ra.mixIds.includes(c.version.id) || (!ra.mixed && settings.ttsMix.includes(c.version.id));
+              const n = ra.mixIds.indexOf(c.version.id);
+              return (
+                <button
+                  key={c.version.id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => ra.toggleMix(c.version.id)}
+                  title={on ? "Tap to leave this version out" : "Tap to add this version"}
+                  className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs font-medium ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
+                  }`}
+                >
+                  {on ? (ra.mixed ? <span className="tabular-nums">{n + 1}.</span> : "✓") : "+"} {c.version.abbr}
+                </button>
+              );
+            })}
+            <button type="button" onClick={() => ra.setMixMode(false)} className="ml-auto shrink-0 rounded-full px-2 text-xs text-muted underline-offset-2 hover:text-ink hover:underline">
+              Just one
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted">
+            {ra.mixed ? (
+              <>
+                <select
+                  aria-label="Order"
+                  value={settings.ttsMixOrder}
+                  onChange={(e) => ra.setMixOrder(e.target.value as "verse" | "chapter")}
+                  className="h-8 rounded-lg border border-line bg-raised px-1.5 text-xs text-ink"
+                >
+                  <option value="verse">Each verse in every version</option>
+                  <option value="chapter">Whole chapter in each, one after another</option>
+                </select>
+                <span className="truncate">Device voices</span>
+              </>
+            ) : (
+              <span>Tap the versions to hear, in this order.</span>
+            )}
+          </div>
+        </div>
+      )}
+      {ra.cols.length > 1 && !ra.mixMode && (
         <div className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-1.5 [scrollbar-width:none]" role="group" aria-label="Version to listen to">
           {ra.cols.map((c) => {
             const on = c.version.id === version.id;
@@ -509,14 +647,22 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               </button>
             );
           })}
+          <button
+            type="button"
+            onClick={() => ra.setMixMode(true)}
+            title="Hear several versions in turn, e.g. WEB then RVR"
+            className="flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-dashed border-line px-3 text-xs text-muted hover:text-ink"
+          >
+            + Several
+          </button>
         </div>
       )}
 
-      {picker && ra.items.length > 0 && (
+      {picker && ra.verseList.length > 0 && (
         <div className="mx-auto max-w-3xl space-y-2 px-4 pb-3 pt-1">
           <p className="text-xs font-semibold uppercase tracking-wide text-faint">Play from verse</p>
           <div className="grid max-h-36 grid-cols-8 gap-1 overflow-y-auto sm:grid-cols-12">
-            {ra.items.map((it) => (
+            {ra.verseList.map((it) => (
               <button
                 key={it.v}
                 type="button"
@@ -534,11 +680,11 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">Range</span>
             <select
               aria-label="From verse"
-              value={range?.from ?? ra.items[0].v}
-              onChange={(e) => setRange({ from: e.target.value, to: range?.to ?? ra.items[ra.items.length - 1].v })}
+              value={range?.from ?? ra.verseList[0].v}
+              onChange={(e) => setRange({ from: e.target.value, to: range?.to ?? ra.verseList[ra.verseList.length - 1].v })}
               className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
             >
-              {ra.items.map((it) => (
+              {ra.verseList.map((it) => (
                 <option key={it.v} value={it.v}>
                   {it.v}
                 </option>
@@ -547,11 +693,11 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             <span className="text-faint">to</span>
             <select
               aria-label="To verse"
-              value={range?.to ?? ra.items[ra.items.length - 1].v}
-              onChange={(e) => setRange({ from: range?.from ?? ra.items[0].v, to: e.target.value })}
+              value={range?.to ?? ra.verseList[ra.verseList.length - 1].v}
+              onChange={(e) => setRange({ from: range?.from ?? ra.verseList[0].v, to: e.target.value })}
               className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
             >
-              {ra.items.map((it) => (
+              {ra.verseList.map((it) => (
                 <option key={it.v} value={it.v}>
                   {it.v}
                 </option>
@@ -560,8 +706,8 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             <button
               type="button"
               onClick={() => {
-                const from = range?.from ?? ra.items[0].v;
-                const to = range?.to ?? ra.items[ra.items.length - 1].v;
+                const from = range?.from ?? ra.verseList[0].v;
+                const to = range?.to ?? ra.verseList[ra.verseList.length - 1].v;
                 const [a, b] = parseInt(from, 10) <= parseInt(to, 10) ? [from, to] : [to, from];
                 ra.playRange(a, b);
                 setPicker(false);
@@ -573,7 +719,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             <button
               type="button"
               onClick={() => {
-                ra.readFrom(ra.items[0].v, version.id);
+                ra.readFrom(ra.verseList[0].v, version.id);
                 setPicker(false);
               }}
               className="h-10 rounded-lg border border-line px-3 hover:border-faint"

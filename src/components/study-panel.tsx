@@ -4,8 +4,8 @@
  * each a link back to the verse. Backup / restore as a JSON file, since data lives on this device.
  */
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { chapterTitle, findBook, readHref } from "@/lib/catalog";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { catalog, chapterTitle, DEFAULT_VERSIONS, findBook, readHref } from "@/lib/catalog";
 import { fetchBook } from "@/lib/chapter-store";
 import { exportJson, formatStamp, highlightBg, HIGHLIGHTS, importJson, removeItem, useStudy, type StudyItem, type StudyKind } from "@/lib/study";
 import { closePanel, toast } from "@/lib/ui-store";
@@ -21,28 +21,67 @@ const TABS: { kind: StudyKind; label: string; Icon: typeof StarIcon; empty: stri
 ];
 
 let lastTab: StudyKind = "favorite";
+type Sort = "new" | "old" | "book";
+let lastView: { religion: string | null; book: string | null; sort: Sort } = { religion: null, book: null, sort: "new" };
+
+/** Reading order across the whole library (religion → collection → book), for "Book order". */
+const ORDER = new Map<string, number>();
+for (const rel of catalog.religions)
+  for (const col of rel.collections) for (const it of col.items) if (!ORDER.has(`${it.work}/${it.id}`)) ORDER.set(`${it.work}/${it.id}`, ORDER.size);
+const bookKey = (i: StudyItem) => `${i.work}/${i.book}`;
+const religionOf = (i: StudyItem) => findBook(i.work, i.book)?.religion.name ?? "Other";
+const bookName = (i: StudyItem) => findBook(i.work, i.book)?.name ?? i.book;
 
 export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
   const { items, ready } = useStudy();
   const [tab, setTab] = useState<StudyKind>(lastTab);
   const [color, setColor] = useState<string | null>(null);
+  const [religion, setReligion] = useState<string | null>(lastView.religion);
+  const [bookF, setBookF] = useState<string | null>(lastView.book);
+  const [sort, setSort] = useState<Sort>(lastView.sort);
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     lastTab = tab;
-  }, [tab]);
+    lastView = { religion, book: bookF, sort };
+  }, [tab, religion, bookF, sort]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
     for (const it of items.values()) c[it.kind] = (c[it.kind] ?? 0) + 1;
     return c;
   }, [items]);
-  const list = useMemo(
-    () =>
-      [...items.values()]
-        .filter((i) => i.kind === tab && (tab !== "highlight" || !color || i.color === color))
-        .sort((a, b) => b.updatedAt - a.updatedAt),
+  const inTab = useMemo(
+    () => [...items.values()].filter((i) => i.kind === tab && (tab !== "highlight" || !color || i.color === color)),
     [items, tab, color],
   );
+  // Religions and books present in this tab (for the filters), in library order.
+  const religions = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const i of inTab) m.set(religionOf(i), (m.get(religionOf(i)) ?? 0) + 1);
+    return [...m];
+  }, [inTab]);
+  const rel = religion && religions.some(([r]) => r === religion) ? religion : null;
+  const books = useMemo(() => {
+    const m = new Map<string, { name: string; n: number }>();
+    for (const i of inTab)
+      if (!rel || religionOf(i) === rel) {
+        const k = bookKey(i);
+        m.set(k, { name: bookName(i), n: (m.get(k)?.n ?? 0) + 1 });
+      }
+    return [...m].sort((a, b) => (ORDER.get(a[0]) ?? 1e9) - (ORDER.get(b[0]) ?? 1e9));
+  }, [inTab, rel]);
+  const bk = bookF && books.some(([k]) => k === bookF) ? bookF : null;
+  const list = useMemo(() => {
+    const l = inTab.filter((i) => (!rel || religionOf(i) === rel) && (!bk || bookKey(i) === bk));
+    if (sort === "book")
+      return l.sort(
+        (a, b) =>
+          (ORDER.get(bookKey(a)) ?? 1e9) - (ORDER.get(bookKey(b)) ?? 1e9) ||
+          a.chapter - b.chapter ||
+          (parseInt(a.verse ?? "0") || 0) - (parseInt(b.verse ?? "0") || 0),
+      );
+    return l.sort((a, b) => (sort === "old" ? a.updatedAt - b.updatedAt : b.updatedAt - a.updatedAt));
+  }, [inTab, rel, bk, sort]);
 
   const download = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -107,14 +146,70 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       )}
 
+      {inTab.length > 1 && (
+        <div className="space-y-2 border-b border-line/70 px-3 py-2">
+          {religions.length > 1 && (
+            <div className="flex gap-1 overflow-x-auto" aria-label="Filter by tradition">
+              <button type="button" onClick={() => setReligion(null)} className={`min-h-9 shrink-0 rounded-full px-3 text-xs ${!rel ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised"}`}>
+                All
+              </button>
+              {religions.map(([r, n]) => (
+                <button
+                  key={r}
+                  type="button"
+                  aria-pressed={rel === r}
+                  onClick={() => {
+                    setReligion(rel === r ? null : r);
+                    setBookF(null);
+                  }}
+                  className={`min-h-9 shrink-0 rounded-full px-3 text-xs ${rel === r ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised"}`}
+                >
+                  {r} <span className="tabular-nums opacity-70">{n}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <select
+              value={bk ?? ""}
+              onChange={(e) => setBookF(e.target.value || null)}
+              aria-label="Filter by book"
+              className="h-9 min-w-0 flex-1 rounded-lg border border-line bg-raised px-2 text-sm"
+            >
+              <option value="">All books</option>
+              {books.map(([k, b]) => (
+                <option key={k} value={k}>
+                  {b.name} ({b.n})
+                </option>
+              ))}
+            </select>
+            <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort" className="h-9 rounded-lg border border-line bg-raised px-2 text-sm">
+              <option value="new">Newest first</option>
+              <option value="old">Oldest first</option>
+              <option value="book">Book order</option>
+            </select>
+          </div>
+        </div>
+      )}
+
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-2">
         {!ready ? null : list.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-faint">{TABS.find((t) => t.kind === tab)!.empty}</p>
+          <p className="px-4 py-8 text-center text-sm text-faint">{inTab.length ? "Nothing matches these filters." : TABS.find((t) => t.kind === tab)!.empty}</p>
         ) : (
           <ul className="divide-y divide-line/70">
-            {list.map((it) => (
-              <Row key={it.id} item={it} onNavigate={onNavigate} />
-            ))}
+            {list.map((it, i) => {
+              const head = sort === "book" && (i === 0 || bookKey(list[i - 1]) !== bookKey(it));
+              return (
+                <Fragment key={it.id}>
+                  {head && (
+                    <li className="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-faint">
+                      {religionOf(it)} · {bookName(it)}
+                    </li>
+                  )}
+                  <Row item={it} onNavigate={onNavigate} />
+                </Fragment>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -149,7 +244,7 @@ function Row({ item, onNavigate }: { item: StudyItem; onNavigate?: () => void })
   const { versions, ref } = useReaderState();
   const book = findBook(item.work, item.book);
   const title = `${chapterTitle(book, item.chapter, item.book)}${item.verse ? `:${item.verse}` : ""}`;
-  const vs = item.work === ref.work ? versions : [];
+  const vs = item.work === ref.work ? versions : (DEFAULT_VERSIONS[item.work] ?? []);
   const text = useVerseText(item, vs[0]);
   const bg = item.kind === "highlight" ? highlightBg(item.color) : undefined;
   return (

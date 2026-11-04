@@ -4,14 +4,14 @@
  * copy, share link, and "Ask in…" (Gemini / ChatGPT / Claude). Bottom sheet on phones,
  * a centred card on desktop.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ASK_SERVICES, askUrl, buildAskPrompt, type AskTranslation } from "@/lib/ask-in";
 import { catalog, chapterTitle, findBook, readHref } from "@/lib/catalog";
 import { features } from "@/lib/features";
 import { getItem, HIGHLIGHTS, saveNote, setHighlight, toggle, useStudy, type StudyRef } from "@/lib/study";
 import { closeVerseMenu, toast, useUi } from "@/lib/ui-store";
 import { askAboutVerse, sendAi, useAiChat } from "@/lib/ai-chat";
-import { CloseIcon, ClockIcon, CopyIcon, HeadphonesIcon, LinkIcon, SparkIcon, StarIcon } from "./icons";
+import { CloseIcon, ClockIcon, CopyIcon, HeadphonesIcon, LinkIcon, MailIcon, SparkIcon, StarIcon } from "./icons";
 import { Modal } from "./modal";
 
 export type VerseText = AskTranslation & { dir: "ltr" | "rtl"; lang: string };
@@ -81,22 +81,38 @@ function MenuBody({
   const workName = catalog.works.find((w) => w.id === r.work)?.name ?? r.work;
   const link = () => `${window.location.origin}${readHref(r, versions, r.verse)}`;
 
+  // "Christianity · New Testament · John 3:16" / "Islam · Quran · Surah 2:255"
+  const bookEntry = findBook(r.work, r.book);
+  const heading = [bookEntry?.religion.name, bookEntry?.collection.name ?? workName, reference].filter(Boolean).join(" · ");
+  const shareBody = () =>
+    [
+      heading,
+      "",
+      ...texts.map((t) => (texts.length > 1 ? `${t.abbr} (${t.language}): “${t.text}”` : `“${t.text}” — ${t.abbr}`)),
+      "",
+      `Read it side by side: ${link()}`,
+      "Shared from Verses Across · versesacross.com",
+    ].join("\n");
+  const subject = `${heading} — shared from Verses Across`;
+
   const copy = async () => {
-    const body = texts.map((t) => (texts.length > 1 ? `${t.abbr}: ${t.text}` : t.text)).join("\n");
-    const ok = await copyText(`${reference}\n${body}\n${link()}`);
+    const ok = await copyText(shareBody());
     toast(ok ? "Verse copied" : "Couldn’t copy");
   };
   const share = async () => {
-    const url = link();
     if (navigator.share) {
       try {
-        await navigator.share({ title: reference, text: texts[0]?.text, url });
+        // title = the email subject in most share targets; the text already ends with the link.
+        await navigator.share({ title: subject, text: shareBody() });
         return;
-      } catch {
-        /* cancelled: fall through to copy */
+      } catch (e) {
+        if ((e as Error).name === "AbortError") return; // cancelled
       }
     }
-    toast((await copyText(url)) ? "Link copied" : "Couldn’t copy");
+    toast((await copyText(shareBody())) ? "Verse and link copied" : "Couldn’t copy");
+  };
+  const email = () => {
+    window.location.assign(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareBody())}`);
   };
   const ask = async (id: string) => {
     const service = ASK_SERVICES.find((s) => s.id === id)!;
@@ -118,6 +134,18 @@ function MenuBody({
     const t = setTimeout(() => saveNote(r, note), 600);
     return () => clearTimeout(t);
   }, [note, dirty, r]);
+  // …and when the menu closes before that timer (Esc, tapping outside): save what was typed.
+  const latest = useRef({ note, savedNote, r });
+  useEffect(() => {
+    latest.current = { note, savedNote, r };
+  });
+  useEffect(
+    () => () => {
+      const l = latest.current;
+      if (l.note.trim() !== l.savedNote) saveNote(l.r, l.note);
+    },
+    [],
+  );
 
   const pill = "flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 text-sm";
   return (
@@ -199,6 +227,9 @@ function MenuBody({
           </button>
           <button type="button" onClick={share} className={`${pill} border-line`}>
             <LinkIcon width={18} height={18} /> Share
+          </button>
+          <button type="button" onClick={email} className={`${pill} border-line`}>
+            <MailIcon width={18} height={18} /> Email
           </button>
         </div>
 

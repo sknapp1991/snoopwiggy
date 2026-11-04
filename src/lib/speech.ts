@@ -10,7 +10,8 @@
 import { useSyncExternalStore } from "react";
 import { RAW_WORD } from "./search-text";
 
-export type SpeechItem = { v: string; text: string };
+/** One verse to speak. lang/voice/version are set when several versions are read in turn. */
+export type SpeechItem = { v: string; text: string; lang?: string; voice?: SpeechSynthesisVoice | null; version?: string };
 
 export type SpeechState = {
   /** Player bar visible. */
@@ -21,6 +22,8 @@ export type SpeechState = {
   chapterKey: string | null;
   /** Verse being read (canonical id). */
   verse: string | null;
+  /** Version whose text is being spoken right now (differs from `version` when several are read in turn). */
+  speaking: string | null;
   /** Set when a chapter finished and the next one should start once it has loaded. */
   continuePending: boolean;
   /** Playing a verse range: stop after this verse (no continuing into the next chapter). */
@@ -40,6 +43,7 @@ const IDLE: SpeechState = {
   version: null,
   chapterKey: null,
   verse: null,
+  speaking: null,
   continuePending: false,
   until: null,
   wordTiming: null,
@@ -220,7 +224,7 @@ function speakItem(r: Run, my: number) {
     r.onDone();
     return;
   }
-  set({ verse: item.v, status: "playing", error: null });
+  set({ verse: item.v, speaking: item.version ?? null, status: "playing", error: null });
   emitWord(null);
   const parts = chunks(item.text);
   let p = 0;
@@ -237,8 +241,9 @@ function speakItem(r: Run, my: number) {
       return;
     }
     const u = new SpeechSynthesisUtterance(parts[p++]);
-    u.lang = r.voice?.lang ?? r.lang;
-    if (r.voice) u.voice = r.voice;
+    const voice = item.voice !== undefined ? item.voice : r.voice;
+    u.lang = voice?.lang ?? item.lang ?? r.lang;
+    if (voice) u.voice = voice;
     u.rate = r.rate;
     const chunkText = parts[p - 1];
     const chunkBase = base;
@@ -310,7 +315,7 @@ export function play(opts: {
   };
   if (opts.keepAwake) acquireWake();
   stopRecording();
-  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device", ready: false });
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device", ready: false, speaking: null });
   if (opts.voice?.voiceURI !== lastVoice) {
     lastVoice = opts.voice?.voiceURI;
     set({ wordTiming: null });
@@ -495,7 +500,7 @@ export async function playRecording(opts: {
   emitWord(null);
   releaseWake();
   stopRecording();
-  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true, ready: false });
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true, ready: false, speaking: null });
   let timing: Timing;
   try {
     timing = await loadTiming(opts.timingUrl);
