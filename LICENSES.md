@@ -1,6 +1,6 @@
 # Text licences
 
-Every text in GlobalStudy is public domain or carries a licence that allows commercial use. Nothing
+Every text in VersesAcross is public domain or carries a licence that allows commercial use. Nothing
 non-commercial (CC-BY-NC) or copyrighted is included. Each version also lives in `data/catalog.json`
 (name, year, translator, licence, source URL), and its attribution is shown under the text in the reader.
 Licences were checked on the eBible.org details page and catalog on 2026-11-03.

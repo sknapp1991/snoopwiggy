@@ -78,7 +78,7 @@ export function CompareView() {
     <div className="h-dvh overflow-auto">
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">
         <Link href="/" className="text-sm text-accent underline-offset-2 hover:underline">
-          ← GlobalStudy
+          ← VersesAcross
         </Link>
         <h1 className="mt-2 font-serif text-3xl font-semibold">AI translation comparison</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted">

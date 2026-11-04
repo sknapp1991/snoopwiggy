@@ -213,7 +213,7 @@ export function ReaderView() {
         column ? "snap-x snap-mandatory desk:snap-none" : ""
       }`}
     >
-      <title>{`${title} · GlobalStudy`}</title>
+      <title>{`${title} · VersesAcross`}</title>
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <FirstTips />
@@ -460,8 +460,9 @@ function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; m
   const loading = rows.length === 0 && cols.some((c) => c.entry.status === "loading");
   const first = cols.find((c) => c.entry.status === "ok")?.entry;
   const chNum = first?.status === "ok" ? first.data.chapter : 0;
+  const firstOk = Math.max(0, cols.findIndex((c) => c.entry.status !== "error"));
   return (
-    <div className="mx-auto max-w-[var(--stackw)] px-2 md:px-6">
+    <div className="mx-auto max-w-[var(--stackw)] px-3 md:px-6">
       {errors.map((c) => (
         <div key={c.version.id} className="mb-3 rounded-lg border border-line bg-raised px-3 py-2 text-sm">
           <VersionLabel version={c.version} compact /> <ColumnError col={c} inline />
@@ -486,10 +487,9 @@ function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; m
                 id={`v${row.v}`}
                 data-v={row.v}
                 style={bg ? { background: bg } : undefined}
-                className="verse-flash flex scroll-mt-4 gap-2 rounded-sm px-1 py-3"
+                className="verse-flash scroll-mt-4 rounded-sm px-1 py-3"
               >
-                <VerseBox v={row.v} label={row.v} />
-                <div className="min-w-0 flex-1 space-y-2 pt-0.5">
+                <div className="min-w-0 space-y-2">
                   {row.cells.map((verse, i) => {
                     const c = cols[i];
                     if (c.entry.status === "error") return null;
@@ -503,7 +503,13 @@ function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; m
                         {c.entry.status === "loading" ? (
                           <SkeletonLine />
                         ) : (
-                          <Cell verse={verse} version={c.version} chapter={chNum} />
+                          <Cell
+                            verse={verse}
+                            version={c.version}
+                            chapter={chNum}
+                            // Small verse number inline at the start of the first text (more room for words).
+                            box={i === firstOk ? <VerseBox v={row.v} label={row.v} size="sm" /> : undefined}
+                          />
                         )}
                       </div>
                     );

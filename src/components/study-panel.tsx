@@ -48,7 +48,7 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
     const blob = new Blob([exportJson()], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `globalstudy-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `versesacross-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };

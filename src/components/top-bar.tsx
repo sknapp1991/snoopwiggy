@@ -33,9 +33,9 @@ export function TopBar({
         <MenuIcon />
       </button>
 
-      <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="GlobalStudy home">
+      <Link href="/" className="hidden items-center gap-2 pr-2 desk:flex" aria-label="VersesAcross home">
         <BookIcon className="text-accent" />
-        <span className="font-serif text-lg font-semibold tracking-tight">GlobalStudy</span>
+        <span className="font-serif text-lg font-semibold tracking-tight">VersesAcross</span>
       </Link>
 
       {/* Phone: current location as the title; tap opens the library */}
@@ -44,7 +44,7 @@ export function TopBar({
         onClick={onOpenLibrary}
         className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold desk:hidden"
       >
-        {entry ? chapterTitle(entry, ref.chapter) : "GlobalStudy"}
+        {entry ? chapterTitle(entry, ref.chapter) : "VersesAcross"}
       </button>
 
       <div className="hidden flex-1 desk:block" />

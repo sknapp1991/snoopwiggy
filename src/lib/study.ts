@@ -24,7 +24,7 @@ export const itemId = (kind: StudyKind, r: StudyRef) => `${kind}:${refKey(r)}`;
 
 /* ---------- IndexedDB backend (in-memory fallback, e.g. private browsing) ---------- */
 
-const DB = "globalstudy";
+const DB = "globalstudy"; // internal name from before the rename to VersesAcross; kept so saved data stays
 const STORE = "study";
 
 function idbBackend(): StudyBackend {
@@ -184,7 +184,7 @@ export function formatStamp(ms: number) {
 /* ---------- backup ---------- */
 
 export function exportJson(): string {
-  return JSON.stringify({ app: "GlobalStudy", version: 1, exportedAt: new Date().toISOString(), items: [...snap.items.values()] }, null, 1);
+  return JSON.stringify({ app: "VersesAcross", version: 1, exportedAt: new Date().toISOString(), items: [...snap.items.values()] }, null, 1);
 }
 
 const KINDS: StudyKind[] = ["highlight", "favorite", "later", "note", "studied"];
@@ -192,7 +192,7 @@ const KINDS: StudyKind[] = ["highlight", "favorite", "later", "note", "studied"]
 /** Merge a backup file: newer entries win. Returns how many were added or updated. */
 export async function importJson(text: string): Promise<number> {
   const data = JSON.parse(text) as { items?: unknown[] };
-  if (!Array.isArray(data.items)) throw new Error("Not a GlobalStudy backup file");
+  if (!Array.isArray(data.items)) throw new Error("Not a VersesAcross backup file");
   await load();
   let n = 0;
   for (const raw of data.items) {

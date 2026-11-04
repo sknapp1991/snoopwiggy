@@ -388,7 +388,7 @@ function tick() {
 function mediaSession(title: string, artist: string) {
   const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
   if (!ms) return;
-  ms.metadata = new MediaMetadata({ title, artist, album: "GlobalStudy" });
+  ms.metadata = new MediaMetadata({ title, artist, album: "VersesAcross" });
   const step = (d: number) => () => {
     if (!audio || !rec) return;
     const vs = rec.timing.verses;

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Naskh_Arabic, Noto_Serif, Noto_Serif_Hebrew, Source_Serif_4 } from "next/font/google";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
+import { DomainMove } from "@/components/domain-move";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"] });
@@ -11,7 +12,7 @@ const hebrew = Noto_Serif_Hebrew({ variable: "--font-hebrew", subsets: ["hebrew"
 const arabic = Noto_Naskh_Arabic({ variable: "--font-arabic", subsets: ["arabic"], preload: false });
 
 export const metadata: Metadata = {
-  title: { default: "GlobalStudy", template: "%s · GlobalStudy" },
+  title: { default: "VersesAcross", template: "%s · VersesAcross" },
   description: "Study the world's scriptures side by side, in many languages.",
 };
 
@@ -31,7 +32,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="overflow-hidden">{children}</body>
+      <body className="overflow-hidden">
+        <DomainMove />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,4 +1,4 @@
-# GlobalStudy — Build Plan
+# VersesAcross — Build Plan
 
 You are building a commercial, multi-religion scripture study web app in this folder. It must work well on desktop AND phone. This file is the spec. `Bible Idea.txt` in this folder is an earlier Gemini prototype (single-file React). Use it only as a reference for UI ideas (sidebar library, parallel columns, thesaurus popup, CEFR vocab levels). Do NOT copy its approach of having AI generate scripture text, and do not reuse its client-side API calls.
 
