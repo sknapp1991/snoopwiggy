@@ -130,7 +130,7 @@ export class OllamaProvider implements AIProvider {
 export class GeminiProvider implements AIProvider {
   readonly label: string;
   constructor(
-    readonly model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    readonly model = process.env.GEMINI_MODEL ?? "gemini-3.8-flash",
     private readonly apiKey = process.env.GEMINI_API_KEY,
   ) {
     this.label = model;

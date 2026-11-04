@@ -93,14 +93,14 @@ export async function POST(request: Request) {
   }
   if (turns[0].role !== "user") turns.shift();
 
-  const model = env().GEMINI_MODEL ?? process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const model = env().GEMINI_MODEL ?? process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
   const upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: sys.join("\n") }] },
       contents: turns,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } },
+      generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
     }),
   }).catch(() => null);
   if (!upstream?.ok || !upstream.body) {
