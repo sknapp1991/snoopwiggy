@@ -20,6 +20,7 @@ export const LANGUAGES: Language[] = [
   { code: "el", name: "Greek", native: "Ελληνικά", dir: "ltr" },
   { code: "ar", name: "Arabic", native: "العربية", dir: "rtl" },
   { code: "he", name: "Hebrew", native: "עברית", dir: "rtl" },
+  { code: "pi", name: "Pali", native: "Pāli", dir: "ltr" },
 ];
 
 export function getLanguage(code: string): Language {

@@ -14,6 +14,7 @@ export type BookEntry = CatalogItem & { religion: Religion; collection: Collecti
 export const DEFAULT_VERSIONS: Record<string, string[]> = {
   bible: ["kjv", "web", "rvr1909"],
   tanakh: ["jps1917", "mt"],
+  dhammapada: ["sujato", "pli"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

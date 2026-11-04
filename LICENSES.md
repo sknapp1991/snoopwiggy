@@ -71,6 +71,13 @@ Joel 4, psalm titles as verse 1).
 - The Ten Commandments (Exodus 20, Deuteronomy 5), Psalm 70 and Nehemiah 7 are divided into verses
   differently in the two editions; those verses show as gaps rather than being forced into line.
 
+## Dhammapada (Buddhism, added Nov 2026)
+
+26 chapters (vaggas), traditional verse numbers 1–423.
+- **Sujato** – "Sayings of the Dhamma", translated by Bhikkhu Sujato; **Pāli** – Mahāsaṅgīti edition.
+  Both from SuttaCentral's bilara-data, dedicated to the public domain (CC0):
+  https://github.com/suttacentral/bilara-data (`scripts/import-dhammapada.ts`).
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

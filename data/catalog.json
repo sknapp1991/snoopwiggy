@@ -2,7 +2,8 @@
   "$comment": "Library tree + version metadata. Hand-maintained. Scripture text lives in public/texts/<work>/<version>/<book>/<chapter>.json and is produced only by scripts/import-*.ts.",
   "works": [
     { "id": "bible", "name": "Holy Bible", "versification": "eng" },
-    { "id": "tanakh", "name": "Tanakh (Hebrew Bible)", "versification": "heb" }
+    { "id": "tanakh", "name": "Tanakh (Hebrew Bible)", "versification": "heb" },
+    { "id": "dhammapada", "name": "Dhammapada", "versification": "dhp" }
   ],
   "versions": [
     {
@@ -229,6 +230,24 @@
       "attribution": "Westminster Leningrad Codex, public domain, eBible.org.",
       "sourceUrl": "https://ebible.org/Scriptures/details.php?id=hebwlc",
       "licensed": false, "versification": "heb"
+    },
+    {
+      "id": "sujato", "work": "dhammapada", "abbr": "Sujato", "name": "Sayings of the Dhamma (Bhikkhu Sujato)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 2021,
+      "translator": "Bhikkhu Sujato",
+      "license": "CC0 (public domain dedication)", "licenseNote": "",
+      "attribution": "Translated by Bhikkhu Sujato, dedicated to the public domain (CC0), SuttaCentral.",
+      "sourceUrl": "https://suttacentral.net/dhp1-20/en/sujato",
+      "licensed": false, "versification": "dhp"
+    },
+    {
+      "id": "pli", "work": "dhammapada", "abbr": "Pāli", "name": "Dhammapada (Pāli, Mahāsaṅgīti edition)",
+      "language": "pi", "kind": "native", "dir": "ltr", "year": 2010, "yearNote": "Pāli canon; Mahāsaṅgīti Tipiṭaka edition",
+      "translator": "Pāli root text",
+      "license": "CC0 (public domain dedication)", "licenseNote": "",
+      "attribution": "Pāli text (Mahāsaṅgīti edition) via SuttaCentral, CC0.",
+      "sourceUrl": "https://suttacentral.net/dhp1-20/pli/ms",
+      "licensed": false, "versification": "dhp"
     }
   ],
   "religions": [
@@ -420,7 +439,7 @@
       "id": "buddhism",
       "name": "Buddhism",
       "collections": [
-        { "id": "dhammapada", "name": "Dhammapada", "items": [ { "id": "dhammapada", "name": "Dhammapada", "status": "coming-soon" } ] },
+        { "id": "dhammapada", "name": "Dhammapada", "items": [ { "id": "dhp", "name": "Dhammapada", "work": "dhammapada", "chapters": 26 } ] },
         { "id": "sutta", "name": "Sutta Pitaka", "items": [ { "id": "sutta", "name": "Sutta Pitaka", "status": "coming-soon" } ] },
         { "id": "vinaya", "name": "Vinaya Pitaka", "items": [ { "id": "vinaya", "name": "Vinaya Pitaka", "status": "coming-soon" } ] },
         { "id": "abhidhamma", "name": "Abhidhamma Pitaka", "items": [ { "id": "abhidhamma", "name": "Abhidhamma Pitaka", "status": "coming-soon" } ] }
