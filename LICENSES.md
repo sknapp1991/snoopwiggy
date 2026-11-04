@@ -46,6 +46,19 @@ Licences were checked on the eBible.org details page and catalog on 2026-11-03.
 - **Not included:** no public-domain Almeida (Portuguese) or Delitzsch Hebrew NT is available on
   eBible.org, so Bíblia Livre (CC BY 4.0) and Salkinson–Ginsburg are used instead.
 
+## Apocrypha & Deuterocanon (added Nov 2026)
+
+Tobit, Judith, Wisdom, Sirach, Baruch (with the Letter of Jeremiah as chapter 6 in the KJV and
+Vulgate), 1–2 Maccabees, 1 Esdras, Susanna and Bel and the Dragon, plus 3–4 Maccabees (Greek only).
+- **KJV** – the 1611 Apocrypha in eBible.org's KJV (eng-kjv), public domain (UK caveat above).
+- **WEB** – Old and New Testaments unchanged (engwebp); the deuterocanonical books come from the
+  World English Bible edition that includes them (eng-web), public domain.
+- **Greek** – Septuagint (grcbrent), public domain. **Latin** – Clementine Vulgate, public domain.
+- Books a version doesn't have show "This Bible doesn't include this book". Where traditions number
+  verses differently (e.g. the Vulgate's Tobit and Sirach follow another text), verses show as gaps
+  rather than being forced into line. The Greek additions to Esther, 1 Enoch (R.H. Charles 1917) and
+  the Gospel of Thomas follow later.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

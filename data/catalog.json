@@ -40,7 +40,7 @@
       "sourceUrl": "https://ebible.org/Scriptures/details.php?id=engwebp",
       "licensed": false,
       "versification": "eng",
-      "import": { "provider": "ebible", "id": "engwebp", "stripBrackets": false }
+      "import": { "provider": "ebible", "parts": [ { "id": "engwebp", "collection": "ot" }, { "id": "engwebp", "collection": "nt" }, { "id": "eng-web", "collection": "apocrypha" } ], "stripBrackets": false }
     },
     {
       "id": "asv", "work": "bible", "abbr": "ASV", "name": "American Standard Version",
@@ -181,7 +181,7 @@
       "attribution": "Septuagint (Brenton edition) and Textus Receptus, public domain, eBible.org.",
       "sourceUrl": "https://ebible.org/Scriptures/details.php?id=grcbrent",
       "licensed": false, "versification": "eng",
-      "import": { "provider": "ebible", "parts": [ { "id": "grcbrent", "collection": "ot" }, { "id": "grctr", "collection": "nt" } ],
+      "import": { "provider": "ebible", "parts": [ { "id": "grcbrent", "collection": "ot" }, { "id": "grctr", "collection": "nt" }, { "id": "grcbrent", "collection": "apocrypha" } ],
         "bookAliases": { "DNG": "dan", "ESG": "est" },
         "chapterMoves": [ { "book": "ezr", "fromChapter": 11, "toBook": "neh", "offset": -10 } ],
         "skipChapters": [
@@ -299,13 +299,18 @@
           "id": "apocrypha",
           "name": "Apocrypha & Deuterocanon",
           "items": [
-            { "id": "tob", "name": "Tobit", "status": "coming-soon" },
-            { "id": "jdt", "name": "Judith", "status": "coming-soon" },
-            { "id": "wis", "name": "Wisdom of Solomon", "status": "coming-soon" },
-            { "id": "sir", "name": "Sirach", "status": "coming-soon" },
-            { "id": "bar", "name": "Baruch", "status": "coming-soon" },
-            { "id": "1ma", "name": "1 Maccabees", "status": "coming-soon" },
-            { "id": "2ma", "name": "2 Maccabees", "status": "coming-soon" },
+            { "id": "tob", "name": "Tobit", "work": "bible", "chapters": 14 },
+            { "id": "jdt", "name": "Judith", "work": "bible", "chapters": 16 },
+            { "id": "wis", "name": "Wisdom of Solomon", "work": "bible", "chapters": 19 },
+            { "id": "sir", "name": "Sirach", "work": "bible", "chapters": 51 },
+            { "id": "bar", "name": "Baruch", "work": "bible", "chapters": 6 },
+            { "id": "1ma", "name": "1 Maccabees", "work": "bible", "chapters": 16 },
+            { "id": "2ma", "name": "2 Maccabees", "work": "bible", "chapters": 15 },
+            { "id": "1es", "name": "1 Esdras", "work": "bible", "chapters": 9 },
+            { "id": "sus", "name": "Susanna", "work": "bible", "chapters": 1 },
+            { "id": "bel", "name": "Bel and the Dragon", "work": "bible", "chapters": 1 },
+            { "id": "3ma", "name": "3 Maccabees", "work": "bible", "chapters": 7 },
+            { "id": "4ma", "name": "4 Maccabees", "work": "bible", "chapters": 18 },
             { "id": "1en", "name": "1 Enoch", "status": "coming-soon" },
             { "id": "gth", "name": "Gospel of Thomas", "status": "coming-soon" }
           ]

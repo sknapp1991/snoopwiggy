@@ -576,6 +576,13 @@ function StackedView({ cols, rows, marks }: { cols: Col[]; rows: AlignedRow[]; m
 
 function ColumnError({ col, inline = false }: { col: Col; inline?: boolean }) {
   if (col.entry.status !== "error") return null;
+  // Not an error: this version simply doesn't contain the book (e.g. Tobit in a Protestant Bible).
+  if (/not available in this version/i.test(col.entry.message))
+    return (
+      <span className={`${inline ? "" : "mt-1 block"} text-xs font-normal normal-case tracking-normal text-faint`}>
+        This Bible doesn{"’"}t include this book
+      </span>
+    );
   return (
     <span className={`${inline ? "" : "mt-1 flex"} items-center gap-2 text-xs text-red-700 dark:text-red-400`} role="alert">
       Couldn’t load ({col.entry.message}).{" "}

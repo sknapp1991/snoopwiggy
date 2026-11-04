@@ -24,6 +24,8 @@ async function main() {
   }
 
   const books = new Map<string, Map<string, number>>(); // work -> book -> chapters
+  // Books only some versions have (Apocrypha / Deuterocanon): a version may lack them, or some chapters.
+  const optional = new Set<string>();
   for (const r of catalog.religions)
     for (const c of r.collections)
       for (const it of c.items) {
@@ -35,6 +37,7 @@ async function main() {
         const m = books.get(it.work) ?? new Map();
         if (m.has(it.id)) errors.push(`duplicate book id ${it.work}/${it.id}`);
         m.set(it.id, it.chapters);
+        if (c.id === "apocrypha") optional.add(`${it.work}/${it.id}`);
         books.set(it.work, m);
       }
 
@@ -51,12 +54,15 @@ async function main() {
       try {
         files = (await readdir(path.join(dir, book))).filter((f) => f.endsWith(".json"));
       } catch {
-        errors.push(`${v.id}: missing book ${book} (run the import script)`);
+        if (!optional.has(`${v.work}/${book}`)) errors.push(`${v.id}: missing book ${book} (run the import script)`);
         continue;
       }
-      if (files.length !== n) errors.push(`${v.id}/${book}: ${files.length} chapter files, catalog says ${n}`);
+      const isOptional = optional.has(`${v.work}/${book}`);
+      if (files.length !== n && !(isOptional && files.length < n))
+        errors.push(`${v.id}/${book}: ${files.length} chapter files, catalog says ${n}`);
       for (let ch = 1; ch <= n; ch++) {
         let parsed;
+        if (isOptional && !files.includes(`${ch}.json`)) continue; // e.g. LXX Baruch has 5 chapters, KJV 6
         try {
           parsed = chapterSchema.parse(JSON.parse(await readFile(path.join(dir, book, `${ch}.json`), "utf8")));
         } catch (e) {
