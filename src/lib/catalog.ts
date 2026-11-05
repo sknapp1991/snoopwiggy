@@ -19,6 +19,8 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   abhidhamma: ["abh-pli"],
   gita: ["besant", "sanskrit"],
   hyp: ["sinh"],
+  enoch: ["charles"],
+  thomas: ["mattison"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

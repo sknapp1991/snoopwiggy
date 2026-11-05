@@ -124,6 +124,13 @@ each verse in Sanskrit and English (`scripts/import-gita.ts`):
 transcription (`scripts/import-hyp.ts`). English only: the site's Sanskrit is an experimental
 conversion its editor says doesn't line up with the book.
 
+## 1 Enoch and the Gospel of Thomas (Christianity, added Nov 2026)
+
+- **1 Enoch** – R. H. Charles' translation (1917, public domain), 108 chapters, from the Internet Sacred
+  Text Archive (`scripts/import-enoch.ts`). His editorial brackets and footnotes are left out.
+- **Gospel of Thomas** – Mark M. Mattison's translation from the Coptic, which he committed to the
+  public domain (gospels.net/thomas), 114 sayings (`scripts/import-thomas.ts`).
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

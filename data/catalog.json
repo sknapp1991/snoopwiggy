@@ -9,7 +9,9 @@
     { "id": "quran", "name": "The Quran", "versification": "hafs" },
     { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "versification": "ys" },
     { "id": "gita", "name": "Bhagavad Gita", "versification": "gita" },
-    { "id": "hyp", "name": "Hatha Yoga Pradipika", "versification": "hyp" }
+    { "id": "hyp", "name": "Hatha Yoga Pradipika", "versification": "hyp" },
+    { "id": "enoch", "name": "1 Enoch", "versification": "enoch" },
+    { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" }
   ],
   "versions": [
     {
@@ -335,6 +337,24 @@
       "attribution": "Translated by Pancham Sinh (1914), public domain; transcription from the Internet Sacred Text Archive.",
       "sourceUrl": "https://sacred-texts.com/hin/hyp/index.htm",
       "licensed": false, "versification": "hyp"
+    },
+    {
+      "id": "charles", "work": "enoch", "abbr": "Charles", "name": "The Book of Enoch (R. H. Charles)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1917,
+      "translator": "R. H. Charles",
+      "license": "Public Domain", "licenseNote": "Charles' editorial brackets and footnotes are not included.",
+      "attribution": "Translated by R. H. Charles (1917), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/bib/boe/index.htm",
+      "licensed": false, "versification": "enoch"
+    },
+    {
+      "id": "mattison", "work": "thomas", "abbr": "Mattison", "name": "The Gospel of Thomas (Mark M. Mattison)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 2015,
+      "translator": "Mark M. Mattison, from the Coptic (Nag Hammadi Codex II)",
+      "license": "Public Domain", "licenseNote": "Committed to the public domain by the translator; the 114 sayings, numbered as usual.",
+      "attribution": "Translated by Mark M. Mattison, public domain (gospels.net).",
+      "sourceUrl": "https://www.gospels.net/thomas",
+      "licensed": false, "versification": "thomas"
     }
   ],
   "religions": [
@@ -436,8 +456,8 @@
             { "id": "bel", "name": "Bel and the Dragon", "work": "bible", "chapters": 1 },
             { "id": "3ma", "name": "3 Maccabees", "work": "bible", "chapters": 7 },
             { "id": "4ma", "name": "4 Maccabees", "work": "bible", "chapters": 18 },
-            { "id": "1en", "name": "1 Enoch", "status": "coming-soon" },
-            { "id": "gth", "name": "Gospel of Thomas", "status": "coming-soon" }
+            { "id": "1en", "name": "1 Enoch", "work": "enoch", "chapters": 108 },
+            { "id": "gth", "name": "Gospel of Thomas", "work": "thomas", "chapters": 1, "chapterName": "Gospel of Thomas" }
           ]
         }
       ]
