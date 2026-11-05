@@ -90,9 +90,11 @@ def align(book: str, chapters: range, words):
     hyp = [norm(w) for w, _, _ in words]
     sm = difflib.SequenceMatcher(a=[r[0] for r in ref], b=hyp, autojunk=False)
     ref_time = [None] * len(ref)
+    last_end = 0.0  # end of the last word of the text heard (what follows is "End of section…")
     for blk in sm.get_matching_blocks():
         for k in range(blk.size):
             ref_time[blk.a + k] = words[blk.b + k][1]
+            last_end = max(last_end, words[blk.b + k][2])
     # First matched word of each verse; keep the order (times must increase).
     starts = {}
     order = []
@@ -130,7 +132,7 @@ def align(book: str, chapters: range, words):
             else:
                 times[i] = max(0.0, times[nxt] - 0.4 * (pos[nxt] - pos[i]))
     matched = sum(1 for t in ref_time if t is not None) / max(1, len(ref))
-    return [(k, t) for (k, _), t in zip(order, times)], matched
+    return [(k, t) for (k, _), t in zip(order, times)], matched, last_end
 
 
 def main():
@@ -161,8 +163,8 @@ def main():
             print("missing", name)
             continue
         words = transcribe(mp3)
-        verses, matched = align(book, chapters, words)
-        total = duration(mp3)
+        verses, matched, last_end = align(book, chapters, words)
+        total = min(duration(mp3), last_end + 1.2)
         # Chapter spans: from 2.5 s before verse 1 (the "Chapter N" announcement) to the next chapter.
         ch_start = {}
         for (ch, v), t in verses:
