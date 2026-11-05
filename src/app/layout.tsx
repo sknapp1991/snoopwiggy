@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Naskh_Arabic, Noto_Serif, Noto_Serif_Hebrew, Source_Serif_4 } from "next/font/google";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { DomainMove } from "@/components/domain-move";
+import { OfflineSupport } from "@/components/offline";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"] });
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="overflow-hidden">
         <DomainMove />
+        <OfflineSupport />
         {children}
       </body>
     </html>

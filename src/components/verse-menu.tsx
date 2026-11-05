@@ -11,10 +11,12 @@ import { features } from "@/lib/features";
 import { getItem, HIGHLIGHTS, saveNote, setHighlight, toggle, useStudy, type StudyRef } from "@/lib/study";
 import { closeVerseMenu, toast, useUi } from "@/lib/ui-store";
 import { askAboutVerse, sendAi, useAiChat } from "@/lib/ai-chat";
-import { CloseIcon, ClockIcon, CopyIcon, HeadphonesIcon, LinkIcon, MailIcon, SparkIcon, StarIcon } from "./icons";
+import { useSettings, versionColor } from "@/lib/settings";
+import { renderVerseImage, shareVerseImage } from "@/lib/verse-image";
+import { CloseIcon, ClockIcon, CopyIcon, HeadphonesIcon, ImageIcon, LinkIcon, MailIcon, SparkIcon, StarIcon } from "./icons";
 import { Modal } from "./modal";
 
-export type VerseText = AskTranslation & { dir: "ltr" | "rtl"; lang: string };
+export type VerseText = AskTranslation & { dir: "ltr" | "rtl"; lang: string; id?: string };
 
 export function verseReference(r: StudyRef & { verse: string }) {
   return `${chapterTitle(findBook(r.work, r.book), r.chapter, r.book)}:${r.verse}`;
@@ -69,6 +71,7 @@ function MenuBody({
 }) {
   useStudy(); // re-render on changes
   const ai = useAiChat();
+  const settings = useSettings();
   const highlight = getItem("highlight", r)?.color;
   const fav = !!getItem("favorite", r);
   const later = !!getItem("later", r);
@@ -113,6 +116,31 @@ function MenuBody({
   };
   const email = () => {
     window.location.assign(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareBody())}`);
+  };
+  const [drawing, setDrawing] = useState(false);
+  const image = async () => {
+    setDrawing(true);
+    try {
+      const blob = await renderVerseImage({
+        heading: [bookEntry?.religion.name, bookEntry?.collection.name].filter(Boolean).join(" · "),
+        reference,
+        dark: document.documentElement.classList.contains("dark"),
+        verses: texts.map((t) => ({
+          abbr: t.abbr,
+          language: t.language,
+          text: t.text,
+          dir: t.dir,
+          lang: t.lang,
+          color: t.id ? versionColor(settings, { id: t.id, language: t.lang }) : undefined,
+        })),
+      });
+      const how = await shareVerseImage(blob, reference.replace(/[^\w\d]+/g, "-"), subject);
+      if (how === "downloaded") toast("Picture saved to your downloads");
+    } catch {
+      toast("Couldn’t make the picture");
+    } finally {
+      setDrawing(false);
+    }
   };
   const ask = async (id: string) => {
     const service = ASK_SERVICES.find((s) => s.id === id)!;
@@ -231,6 +259,9 @@ function MenuBody({
           <button type="button" onClick={email} className={`${pill} border-line`}>
             <MailIcon width={18} height={18} /> Email
           </button>
+          <button type="button" onClick={image} disabled={drawing} className={`${pill} border-line disabled:opacity-60`}>
+            <ImageIcon width={18} height={18} /> {drawing ? "Drawing…" : "Picture"}
+          </button>
         </div>
 
         <label className="block space-y-1">
@@ -264,7 +295,7 @@ function MenuBody({
               <button
                 type="button"
                 onClick={() => {
-                  askAboutVerse({ reference, texts: texts.map(({ abbr, name, language, text }) => ({ abbr, name, language, text })) });
+                  askAboutVerse({ reference, at: { work: r.work, book: r.book, chapter: r.chapter, verse: r.verse }, texts: texts.map(({ abbr, name, language, text }) => ({ abbr, name, language, text })) });
                   closeVerseMenu();
                   if (question.trim()) void sendAi(question);
                 }}

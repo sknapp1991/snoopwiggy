@@ -7,10 +7,14 @@
  * - Conversation, window position/size and minimized state are kept on this device.
  */
 import { useSyncExternalStore } from "react";
+import type { StudyRef } from "./storage";
 
-export type ChatMsg = { role: "user" | "model"; text: string; ref?: string; error?: boolean };
-export type AttachedVerse = { reference: string; texts: { abbr: string; name: string; language: string; text: string }[] };
+/** `at`: the verse (or chapter) the question was about — where "Save as note" puts the answer. */
+export type ChatMsg = { role: "user" | "model"; text: string; ref?: string; error?: boolean; at?: StudyRef };
+export type AttachedVerse = { reference: string; at?: StudyRef; texts: { abbr: string; name: string; language: string; text: string }[] };
 export type ReadingContext = {
+  /** Where the reader is (for links and notes). */
+  at: StudyRef;
   reference: string; // "John 3"
   work: string; // "Bible"
   versions: { abbr: string; name: string; language: string }[];
@@ -109,9 +113,10 @@ export async function sendAi(question: string) {
   if (chat.busy || (!q && !chat.attached)) return;
   const ctx = readingCtx;
   const attached = chat.attached;
-  const userMsg: ChatMsg = { role: "user", text: q || "Please explain this verse.", ref: attached?.reference };
+  const at = attached?.at ?? ctx?.at;
+  const userMsg: ChatMsg = { role: "user", text: q || "Please explain this verse.", ref: attached?.reference, at };
   const history = [...chat.messages, userMsg];
-  set({ messages: [...history, { role: "model", text: "" }], busy: true, attached: null });
+  set({ messages: [...history, { role: "model", text: "", at }], busy: true, attached: null });
 
   controller = new AbortController();
   let text = "";

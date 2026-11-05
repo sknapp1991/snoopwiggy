@@ -9,7 +9,8 @@ import { catalog, chapterTitle, DEFAULT_VERSIONS, findBook, readHref } from "@/l
 import { fetchBook } from "@/lib/chapter-store";
 import { exportJson, formatStamp, highlightBg, HIGHLIGHTS, importJson, removeItem, useStudy, type StudyItem, type StudyKind } from "@/lib/study";
 import { closePanel, toast } from "@/lib/ui-store";
-import { CloseIcon, ClockIcon, NoteIcon, StarIcon, MarkerIcon, CheckSquareIcon } from "./icons";
+import { CalendarIcon, CloseIcon, ClockIcon, NoteIcon, StarIcon, MarkerIcon, CheckSquareIcon } from "./icons";
+import { PlansPanel } from "./plans-panel";
 import { useReaderState } from "./use-reader-state";
 
 const TABS: { kind: StudyKind; label: string; Icon: typeof StarIcon; empty: string }[] = [
@@ -21,6 +22,7 @@ const TABS: { kind: StudyKind; label: string; Icon: typeof StarIcon; empty: stri
 ];
 
 let lastTab: StudyKind = "favorite";
+let lastPlans = false;
 type Sort = "new" | "old" | "book";
 let lastView: { religion: string | null; book: string | null; sort: Sort } = { religion: null, book: null, sort: "new" };
 
@@ -35,6 +37,7 @@ const bookName = (i: StudyItem) => findBook(i.work, i.book)?.name ?? i.book;
 export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
   const { items, ready } = useStudy();
   const [tab, setTab] = useState<StudyKind>(lastTab);
+  const [plans, setPlans] = useState(lastPlans);
   const [color, setColor] = useState<string | null>(null);
   const [religion, setReligion] = useState<string | null>(lastView.religion);
   const [bookF, setBookF] = useState<string | null>(lastView.book);
@@ -42,8 +45,9 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     lastTab = tab;
+    lastPlans = plans;
     lastView = { religion, book: bookF, sort };
-  }, [tab, religion, bookF, sort]);
+  }, [tab, plans, religion, bookF, sort]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
@@ -114,10 +118,13 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
             key={kind}
             role="tab"
             type="button"
-            aria-selected={tab === kind}
-            onClick={() => setTab(kind)}
+            aria-selected={!plans && tab === kind}
+            onClick={() => {
+              setTab(kind);
+              setPlans(false);
+            }}
             className={`flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm ${
-              tab === kind ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised"
+              !plans && tab === kind ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised"
             }`}
           >
             <Icon width={16} height={16} />
@@ -125,8 +132,18 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
             {counts[kind] ? <span className="text-xs tabular-nums opacity-75">{counts[kind]}</span> : null}
           </button>
         ))}
+        <button
+          role="tab"
+          type="button"
+          aria-selected={plans}
+          onClick={() => setPlans(true)}
+          className={`flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm ${plans ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised"}`}
+        >
+          <CalendarIcon width={16} height={16} />
+          Plans
+        </button>
       </div>
-      {tab === "highlight" && (counts.highlight ?? 0) > 0 && (
+      {!plans && tab === "highlight" && (counts.highlight ?? 0) > 0 && (
         <div className="flex items-center gap-1 px-3 pt-2" aria-label="Filter by colour">
           <button type="button" onClick={() => setColor(null)} className={`min-h-9 rounded-full px-3 text-xs ${!color ? "bg-raised font-medium" : "text-muted"}`}>
             All
@@ -146,7 +163,7 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       )}
 
-      {inTab.length > 1 && (
+      {!plans && inTab.length > 1 && (
         <div className="space-y-2 border-b border-line/70 px-3 py-2">
           {religions.length > 1 && (
             <div className="flex gap-1 overflow-x-auto" aria-label="Filter by tradition">
@@ -193,7 +210,9 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
       )}
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-2">
-        {!ready ? null : list.length === 0 ? (
+        {plans ? (
+          <PlansPanel onNavigate={onNavigate} />
+        ) : !ready ? null : list.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-faint">{inTab.length ? "Nothing matches these filters." : TABS.find((t) => t.kind === tab)!.empty}</p>
         ) : (
           <ul className="divide-y divide-line/70">

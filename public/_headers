@@ -1,2 +1,5 @@
 /texts/*
   Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /

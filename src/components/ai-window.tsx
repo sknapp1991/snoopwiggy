@@ -21,7 +21,11 @@ import {
 } from "@/lib/ai-chat";
 import { useMediaQuery, WIDE_QUERY } from "@/lib/settings";
 import { toast } from "@/lib/ui-store";
-import { CloseIcon, CopyIcon, MinusIcon, SendIcon, SparkIcon, StopIcon, TrashIcon } from "./icons";
+import Link from "next/link";
+import { DEFAULT_VERSIONS, readHref } from "@/lib/catalog";
+import { findRefs } from "@/lib/refs";
+import { getItem, saveNote, type StudyRef } from "@/lib/study";
+import { CloseIcon, CopyIcon, MinusIcon, NoteIcon, SendIcon, SparkIcon, StopIcon, TrashIcon } from "./icons";
 
 const SUGGESTIONS = [
   "Summarize this chapter",
@@ -191,15 +195,26 @@ export function AiWindow() {
             </div>
           ) : (
             <div key={i} className={`group relative mr-4 leading-relaxed ${m.error ? "text-red-700 dark:text-red-400" : ""}`}>
-              {m.text ? <Rich text={m.text} /> : <span className="animate-pulse text-muted">Thinking…</span>}
+              {m.text ? <Rich text={m.text} preferWork={m.at?.work ?? ctx?.at.work} /> : <span className="animate-pulse text-muted">Thinking…</span>}
               {m.text && !m.error && !(chat.busy && i === chat.messages.length - 1) && (
-                <button
-                  type="button"
-                  onClick={() => navigator.clipboard?.writeText(m.text).then(() => toast("Answer copied"), () => toast("Couldn’t copy"))}
-                  className="mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
-                >
-                  <CopyIcon width={13} height={13} /> Copy
-                </button>
+                <span className="mt-1 flex flex-wrap gap-1">
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard?.writeText(m.text).then(() => toast("Answer copied"), () => toast("Couldn’t copy"))}
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
+                  >
+                    <CopyIcon width={13} height={13} /> Copy
+                  </button>
+                  {m.at && (
+                    <button
+                      type="button"
+                      onClick={() => saveAnswer(m.at!, chat.messages[i - 1]?.text, m.text)}
+                      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
+                    >
+                      <NoteIcon width={13} height={13} /> Save as note
+                    </button>
+                  )}
+                </span>
               )}
             </div>
           ),
@@ -268,7 +283,8 @@ export function AiWindow() {
 }
 
 /** Light formatting for answers: paragraphs, "-"/"*"/"1." lists, ### headings and **bold**. */
-function Rich({ text }: { text: string }) {
+function Rich({ text, preferWork }: { text: string; preferWork?: string }) {
+  const inline = (t: string) => inlineRich(t, preferWork);
   const blocks: ReactNode[] = [];
   let list: { ordered: boolean; items: string[] } | null = null;
   const flush = () => {
@@ -311,12 +327,45 @@ function Rich({ text }: { text: string }) {
   return <div className="space-y-2">{blocks}</div>;
 }
 
-function inline(s: string): ReactNode {
+/** **bold**, stray *emphasis* markers dropped, and scripture references as links. */
+function inlineRich(s: string, preferWork?: string): ReactNode {
   return s.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
-      <strong key={i}>{part.slice(2, -2)}</strong>
+      <strong key={i}>{linked(part.slice(2, -2), preferWork)}</strong>
     ) : (
-      <Fragment key={i}>{part.replace(/(^|\s)\*([^*\s][^*]*)\*(?=\s|$|[.,;:!?])/g, "$1$2")}</Fragment>
+      <Fragment key={i}>{linked(part.replace(/(^|\s)\*([^*\s][^*]*)\*(?=\s|$|[.,;:!?])/g, "$1$2"), preferWork)}</Fragment>
     ),
   );
+}
+
+function linked(s: string, preferWork?: string): ReactNode {
+  const refs = findRefs(s, preferWork);
+  if (!refs.length) return s;
+  const out: ReactNode[] = [];
+  let at = 0;
+  refs.forEach((r, k) => {
+    out.push(s.slice(at, r.start));
+    out.push(
+      <Link
+        key={k}
+        href={readHref(r.ref, DEFAULT_VERSIONS[r.ref.work] && r.ref.work !== preferWork ? DEFAULT_VERSIONS[r.ref.work] : undefined, r.verse)}
+        className="font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
+        title="Open in the reader"
+      >
+        {r.label}
+      </Link>,
+    );
+    at = r.end;
+  });
+  out.push(s.slice(at));
+  return out;
+}
+
+/** Add the answer (with its question) to the note on that verse / chapter, keeping what's there. */
+function saveAnswer(at: StudyRef, question: string | undefined, answer: string) {
+  const prev = getItem("note", at)?.text ?? "";
+  const q = question ? `Q: ${question.replace(/^\[About [^\]]*\]\s*/, "")}\n` : "";
+  const add = `${q}AI: ${answer.trim()}`;
+  saveNote(at, prev ? `${prev}\n\n${add}` : add);
+  toast(at.verse ? "Saved to the note on this verse (My Study → Notes)" : "Saved as a chapter note (My Study → Notes)", 3500);
 }

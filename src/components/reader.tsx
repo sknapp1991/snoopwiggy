@@ -141,7 +141,7 @@ export function ReaderView() {
     return row.cells.flatMap((cell, i) => {
       const ver = cols[i]?.version;
       if (!cell || cell.cont || !cell.t || !ver) return [];
-      return [{ abbr: ver.abbr, name: ver.name, language: getLanguage(ver.language).name, text: cell.t, dir: ver.dir, lang: ver.language }];
+      return [{ id: ver.id, abbr: ver.abbr, name: ver.name, language: getLanguage(ver.language).name, text: cell.t, dir: ver.dir, lang: ver.language }];
     });
   };
 
@@ -157,6 +157,7 @@ export function ReaderView() {
     if (!allLoaded || !book) return;
     const vers = versions.map((id) => getVersion(id)!);
     setReadingContext({
+      at: { work: ref.work, book: ref.book, chapter: ref.chapter },
       reference: chapterTitle(book, ref.chapter),
       work: catalog.works.find((w) => w.id === ref.work)?.name ?? ref.work,
       versions: vers.map((v) => ({ abbr: v.abbr, name: v.name, language: getLanguage(v.language).name })),
@@ -169,7 +170,7 @@ export function ReaderView() {
           .filter(Boolean)
           .join("\n"),
     });
-  }, [allLoaded, rows, book, ref.work, ref.chapter, versions]);
+  }, [allLoaded, rows, book, ref.work, ref.book, ref.chapter, versions]);
   useEffect(() => () => setReadingContext(null), []);
 
   // Jump to #v16 once every column's text is there (so later columns don't push the verse away).

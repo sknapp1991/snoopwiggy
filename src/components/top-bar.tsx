@@ -10,6 +10,7 @@ import { ChapterSwipeControl, SavedSetups, FontSizeControl, LanguageColors, Them
 import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
 import { AiButton } from "./ai-window";
+import { SaveOffline } from "./offline";
 
 export function TopBar({
   onOpenLibrary,
@@ -127,6 +128,7 @@ export function TopBar({
             <WidthControl />
             <LanguageColors />
             <ChapterSwipeControl />
+            <SaveOffline />
             <div className="space-y-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Versions &amp; languages</h3>
               <VersionChooser />
@@ -218,6 +220,7 @@ function DisplayPopover() {
           <WidthControl />
           <LanguageColors />
           <ChapterSwipeControl />
+          <SaveOffline />
         </div>
       )}
     </div>

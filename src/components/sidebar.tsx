@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { catalog, readHref, type BookRef } from "@/lib/catalog";
+import { catalog, chapterTitle, DEFAULT_VERSIONS, readHref, type BookRef } from "@/lib/catalog";
+import { findRefs } from "@/lib/refs";
+import { DailyVerse } from "./daily-verse";
 import type { CatalogItem, Collection, Religion } from "@/lib/schema";
 import { ChevronDown, ChevronRight, CollapseIcon, ExpandIcon, SearchIcon } from "./icons";
 import { usePinch } from "./use-gestures";
@@ -34,6 +36,14 @@ function parseJump(q: string): { hit: Hit; chapter: number; verse?: string } | n
   const chapter = Number(m[2]);
   if (chapter < 1 || chapter > (hit.item.chapters ?? 0)) return null;
   return { hit, chapter, verse: m[3] };
+}
+
+/** "MN 10", "SN 12.2", "Surah 2:255", "Gita 2.47"… (the reference finder used for AI answers). */
+function refJump(q: string, preferWork: string): { hit: Hit; chapter: number; verse?: string } | null {
+  const r = findRefs(q.trim(), preferWork)[0];
+  if (!r || r.start > 0 || r.end < q.trim().length) return null;
+  const hit = ALL.find((h) => h.item.work === r.ref.work && h.item.id === r.ref.book);
+  return hit ? { hit, chapter: r.ref.chapter, verse: r.verse } : null;
 }
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -79,7 +89,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   }, []);
 
   const q = norm(query);
-  const jump = q ? parseJump(query) : null;
+  const jump = q ? (parseJump(query) ?? refJump(query, ref.work)) : null;
   const hits = q ? ALL.filter((h) => norm(h.item.name).includes(q) || norm(h.collection.name).includes(q)) : [];
 
   const href = (r: BookRef, verse?: string) => readHref(r, versions, verse);
@@ -100,6 +110,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </label>
       </div>
 
+      {!q && <DailyVerse versionsFor={(w) => (w === ref.work ? versions : (DEFAULT_VERSIONS[w] ?? []))} onNavigate={onNavigate} />}
       {!q && (
         <div className="flex gap-1 border-b border-line px-3 py-1.5">
           <button
@@ -128,7 +139,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   className="flex min-h-11 items-center rounded-lg bg-accent-soft px-3 font-medium text-accent"
                 >
-                  Go to {jump.hit.item.name} {jump.chapter}
+                  Go to {chapterTitle(jump.hit.item, jump.chapter)}
                   {jump.verse ? `:${jump.verse}` : ""}
                 </Link>
               </li>
