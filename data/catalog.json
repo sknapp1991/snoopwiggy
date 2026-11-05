@@ -12,7 +12,8 @@
     { "id": "hyp", "name": "Hatha Yoga Pradipika", "versification": "hyp" },
     { "id": "enoch", "name": "1 Enoch", "versification": "enoch" },
     { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" },
-    { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" }
+    { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" },
+    { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" }
   ],
   "versions": [
     {
@@ -374,6 +375,24 @@
       "attribution": "Mishnah, ed. Romm, Vilna 1913, public domain, via Sefaria.",
       "sourceUrl": "https://www.sefaria.org/texts/Mishnah",
       "licensed": false, "versification": "mishnah"
+    },
+    {
+      "id": "talmud-he", "work": "talmud", "abbr": "Talmud", "name": "Talmud Bavli (Hebrew/Aramaic, Wikisource)",
+      "language": "he", "kind": "native", "dir": "rtl", "year": 2012, "yearNote": "Vilna text, Wikisource edition",
+      "translator": "Hebrew/Aramaic original",
+      "license": "CC BY-SA", "licenseNote": "Only Berakhot has a free English translation (Cohen, 1921).",
+      "attribution": "Talmud Bavli, Wikisource edition (CC BY-SA), via Sefaria.",
+      "sourceUrl": "https://www.sefaria.org/texts/Talmud",
+      "licensed": false, "versification": "talmud"
+    },
+    {
+      "id": "cohen", "work": "talmud", "abbr": "Cohen", "name": "Tractate Berakot (A. Cohen)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1921,
+      "translator": "A. Cohen",
+      "license": "Public Domain", "licenseNote": "Berakhot only.",
+      "attribution": "Tractate Berakot translated by A. Cohen (Cambridge University Press, 1921), public domain, via Sefaria.",
+      "sourceUrl": "https://www.sefaria.org/Berakhot",
+      "licensed": false, "versification": "talmud"
     }
   ],
   "religions": [
@@ -605,7 +624,55 @@
           {"id": "yadayim", "name": "Yadayim", "work": "mishnah", "chapters": 4, "chapterName": "Yadayim"},
           {"id": "oktzin", "name": "Oktzin", "work": "mishnah", "chapters": 3, "chapterName": "Oktzin"}
         ] },
-        { "id": "talmud", "name": "Talmud", "items": [ { "id": "talmud", "name": "Talmud", "status": "coming-soon" } ] }
+        { "id": "talmud-zeraim", "name": "Talmud · Zeraim (Seeds)", "items": [
+          {"id": "berakhot", "name": "Berakhot", "work": "talmud", "chapters": 64, "chapterName": "Berakhot"}
+        ] },
+        { "id": "talmud-moed", "name": "Talmud · Moed (Appointed Times)", "items": [
+          {"id": "shabbat", "name": "Shabbat", "work": "talmud", "chapters": 157, "chapterName": "Shabbat"},
+          {"id": "eruvin", "name": "Eruvin", "work": "talmud", "chapters": 105, "chapterName": "Eruvin"},
+          {"id": "pesachim", "name": "Pesachim", "work": "talmud", "chapters": 121, "chapterName": "Pesachim"},
+          {"id": "rosh-hashanah", "name": "Rosh Hashanah", "work": "talmud", "chapters": 35, "chapterName": "Rosh Hashanah"},
+          {"id": "yoma", "name": "Yoma", "work": "talmud", "chapters": 88, "chapterName": "Yoma"},
+          {"id": "sukkah", "name": "Sukkah", "work": "talmud", "chapters": 56, "chapterName": "Sukkah"},
+          {"id": "beitzah", "name": "Beitzah", "work": "talmud", "chapters": 40, "chapterName": "Beitzah"},
+          {"id": "taanit", "name": "Taanit", "work": "talmud", "chapters": 31, "chapterName": "Taanit"},
+          {"id": "megillah", "name": "Megillah", "work": "talmud", "chapters": 32, "chapterName": "Megillah"},
+          {"id": "moed-katan", "name": "Moed Katan", "work": "talmud", "chapters": 29, "chapterName": "Moed Katan"},
+          {"id": "chagigah", "name": "Chagigah", "work": "talmud", "chapters": 27, "chapterName": "Chagigah"}
+        ] },
+        { "id": "talmud-nashim", "name": "Talmud · Nashim (Women)", "items": [
+          {"id": "yevamot", "name": "Yevamot", "work": "talmud", "chapters": 122, "chapterName": "Yevamot"},
+          {"id": "ketubot", "name": "Ketubot", "work": "talmud", "chapters": 112, "chapterName": "Ketubot"},
+          {"id": "nedarim", "name": "Nedarim", "work": "talmud", "chapters": 91, "chapterName": "Nedarim"},
+          {"id": "nazir", "name": "Nazir", "work": "talmud", "chapters": 66, "chapterName": "Nazir"},
+          {"id": "sotah", "name": "Sotah", "work": "talmud", "chapters": 49, "chapterName": "Sotah"},
+          {"id": "gittin", "name": "Gittin", "work": "talmud", "chapters": 90, "chapterName": "Gittin"},
+          {"id": "kiddushin", "name": "Kiddushin", "work": "talmud", "chapters": 82, "chapterName": "Kiddushin"}
+        ] },
+        { "id": "talmud-nezikin", "name": "Talmud · Nezikin (Damages)", "items": [
+          {"id": "bava-kamma", "name": "Bava Kamma", "work": "talmud", "chapters": 119, "chapterName": "Bava Kamma"},
+          {"id": "bava-metzia", "name": "Bava Metzia", "work": "talmud", "chapters": 119, "chapterName": "Bava Metzia"},
+          {"id": "bava-batra", "name": "Bava Batra", "work": "talmud", "chapters": 176, "chapterName": "Bava Batra"},
+          {"id": "sanhedrin", "name": "Sanhedrin", "work": "talmud", "chapters": 113, "chapterName": "Sanhedrin"},
+          {"id": "makkot", "name": "Makkot", "work": "talmud", "chapters": 24, "chapterName": "Makkot"},
+          {"id": "shevuot", "name": "Shevuot", "work": "talmud", "chapters": 49, "chapterName": "Shevuot"},
+          {"id": "avodah-zarah", "name": "Avodah Zarah", "work": "talmud", "chapters": 76, "chapterName": "Avodah Zarah"},
+          {"id": "horayot", "name": "Horayot", "work": "talmud", "chapters": 14, "chapterName": "Horayot"}
+        ] },
+        { "id": "talmud-kodashim", "name": "Talmud · Kodashim (Holy Things)", "items": [
+          {"id": "zevachim", "name": "Zevachim", "work": "talmud", "chapters": 120, "chapterName": "Zevachim"},
+          {"id": "menachot", "name": "Menachot", "work": "talmud", "chapters": 110, "chapterName": "Menachot"},
+          {"id": "chullin", "name": "Chullin", "work": "talmud", "chapters": 142, "chapterName": "Chullin"},
+          {"id": "bekhorot", "name": "Bekhorot", "work": "talmud", "chapters": 61, "chapterName": "Bekhorot"},
+          {"id": "arakhin", "name": "Arakhin", "work": "talmud", "chapters": 34, "chapterName": "Arakhin"},
+          {"id": "temurah", "name": "Temurah", "work": "talmud", "chapters": 34, "chapterName": "Temurah"},
+          {"id": "keritot", "name": "Keritot", "work": "talmud", "chapters": 28, "chapterName": "Keritot"},
+          {"id": "meilah", "name": "Meilah", "work": "talmud", "chapters": 22, "chapterName": "Meilah"},
+          {"id": "tamid", "name": "Tamid", "work": "talmud", "chapters": 33, "chapterName": "Tamid"}
+        ] },
+        { "id": "talmud-tahorot", "name": "Talmud · Tahorot (Purities)", "items": [
+          {"id": "niddah", "name": "Niddah", "work": "talmud", "chapters": 73, "chapterName": "Niddah"}
+        ] }
       ]
     },
     {

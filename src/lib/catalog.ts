@@ -22,6 +22,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   enoch: ["charles"],
   thomas: ["mattison"],
   mishnah: ["kulp", "mishnah-he"],
+  talmud: ["talmud-he"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

@@ -138,6 +138,16 @@ All six orders, 63 tractates, via Sefaria's API (`scripts/import-mishnah.ts`):
 - **Hebrew** – Mishnah, ed. Romm, Vilna 1913, public domain. (Bikkurim chapter 4, a later addition,
   isn't in this edition; that chapter shows a note.)
 
+## Talmud Bavli (Judaism, added Nov 2026)
+
+The 37 tractates of the six orders via Sefaria's API (`scripts/import-talmud.ts`); chapter = folio (daf),
+each segment labelled "2a:3":
+- **Talmud** – Hebrew/Aramaic text, Wikisource edition, **CC BY-SA** (credit shown; shared under the
+  same licence).
+- **Cohen** – English for Berakhot only: A. Cohen, Cambridge University Press 1921, public domain.
+- No English for the other tractates: the complete modern translation (William Davidson / Koren) is
+  CC BY-NC (non-commercial only), so it isn't used. Each tractate's first page says so.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

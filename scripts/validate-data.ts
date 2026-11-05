@@ -54,7 +54,9 @@ async function main() {
       try {
         files = (await readdir(path.join(dir, book))).filter((f) => f.endsWith(".json"));
       } catch {
-        if (!optional.has(`${v.work}/${book}`)) errors.push(`${v.id}: missing book ${book} (run the import script)`);
+        // Single-book translations (e.g. Cohen's Talmud: Berakhot only) say so in their licence note.
+        const partial = /\bonly\b/i.test(v.licenseNote ?? "");
+        if (!optional.has(`${v.work}/${book}`) && !partial) errors.push(`${v.id}: missing book ${book} (run the import script)`);
         continue;
       }
       const isOptional = optional.has(`${v.work}/${book}`);

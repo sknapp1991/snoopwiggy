@@ -1,0 +1,261 @@
+[
+ {
+  "id": "berakhot",
+  "name": "Berakhot",
+  "collection": "zeraim",
+  "collectionName": "Talmud · Zeraim (Seeds)",
+  "chapters": 64
+ },
+ {
+  "id": "shabbat",
+  "name": "Shabbat",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 157
+ },
+ {
+  "id": "eruvin",
+  "name": "Eruvin",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 105
+ },
+ {
+  "id": "pesachim",
+  "name": "Pesachim",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 121
+ },
+ {
+  "id": "rosh-hashanah",
+  "name": "Rosh Hashanah",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 35
+ },
+ {
+  "id": "yoma",
+  "name": "Yoma",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 88
+ },
+ {
+  "id": "sukkah",
+  "name": "Sukkah",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 56
+ },
+ {
+  "id": "beitzah",
+  "name": "Beitzah",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 40
+ },
+ {
+  "id": "taanit",
+  "name": "Taanit",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 31
+ },
+ {
+  "id": "megillah",
+  "name": "Megillah",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 32
+ },
+ {
+  "id": "moed-katan",
+  "name": "Moed Katan",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 29
+ },
+ {
+  "id": "chagigah",
+  "name": "Chagigah",
+  "collection": "moed",
+  "collectionName": "Talmud · Moed (Appointed Times)",
+  "chapters": 27
+ },
+ {
+  "id": "yevamot",
+  "name": "Yevamot",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 122
+ },
+ {
+  "id": "ketubot",
+  "name": "Ketubot",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 112
+ },
+ {
+  "id": "nedarim",
+  "name": "Nedarim",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 91
+ },
+ {
+  "id": "nazir",
+  "name": "Nazir",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 66
+ },
+ {
+  "id": "sotah",
+  "name": "Sotah",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 49
+ },
+ {
+  "id": "gittin",
+  "name": "Gittin",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 90
+ },
+ {
+  "id": "kiddushin",
+  "name": "Kiddushin",
+  "collection": "nashim",
+  "collectionName": "Talmud · Nashim (Women)",
+  "chapters": 82
+ },
+ {
+  "id": "bava-kamma",
+  "name": "Bava Kamma",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 119
+ },
+ {
+  "id": "bava-metzia",
+  "name": "Bava Metzia",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 119
+ },
+ {
+  "id": "bava-batra",
+  "name": "Bava Batra",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 176
+ },
+ {
+  "id": "sanhedrin",
+  "name": "Sanhedrin",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 113
+ },
+ {
+  "id": "makkot",
+  "name": "Makkot",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 24
+ },
+ {
+  "id": "shevuot",
+  "name": "Shevuot",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 49
+ },
+ {
+  "id": "avodah-zarah",
+  "name": "Avodah Zarah",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 76
+ },
+ {
+  "id": "horayot",
+  "name": "Horayot",
+  "collection": "nezikin",
+  "collectionName": "Talmud · Nezikin (Damages)",
+  "chapters": 14
+ },
+ {
+  "id": "zevachim",
+  "name": "Zevachim",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 120
+ },
+ {
+  "id": "menachot",
+  "name": "Menachot",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 110
+ },
+ {
+  "id": "chullin",
+  "name": "Chullin",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 142
+ },
+ {
+  "id": "bekhorot",
+  "name": "Bekhorot",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 61
+ },
+ {
+  "id": "arakhin",
+  "name": "Arakhin",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 34
+ },
+ {
+  "id": "temurah",
+  "name": "Temurah",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 34
+ },
+ {
+  "id": "keritot",
+  "name": "Keritot",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 28
+ },
+ {
+  "id": "meilah",
+  "name": "Meilah",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 22
+ },
+ {
+  "id": "tamid",
+  "name": "Tamid",
+  "collection": "kodashim",
+  "collectionName": "Talmud · Kodashim (Holy Things)",
+  "chapters": 33
+ },
+ {
+  "id": "niddah",
+  "name": "Niddah",
+  "collection": "tahorot",
+  "collectionName": "Talmud · Tahorot (Purities)",
+  "chapters": 73
+ }
+]
