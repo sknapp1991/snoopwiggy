@@ -61,6 +61,8 @@ export type Settings = {
   /** Listen to several versions: each verse in turn ("verse") or each whole chapter in turn ("chapter"). */
   ttsMix: string[];
   ttsMixOrder: "verse" | "chapter";
+  /** Pause after each verse (press play for the next) instead of reading on. */
+  ttsVerseStop: boolean;
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
   highlightColor: string;
@@ -119,6 +121,7 @@ const DEFAULTS: Settings = {
   ttsMoveFirst: false,
   ttsMix: [],
   ttsMixOrder: "verse",
+  ttsVerseStop: false,
   highlightMode: false,
   highlightColor: "yellow",
   chapterSwipe: "one",
@@ -160,6 +163,7 @@ function read(): Settings {
       ttsMoveFirst: (p as { ttsMoveFirst?: unknown }).ttsMoveFirst === true,
       ttsMix: Array.isArray(p.ttsMix) ? p.ttsMix.filter((x): x is string => typeof x === "string") : [],
       ttsMixOrder: p.ttsMixOrder === "chapter" ? "chapter" : "verse",
+      ttsVerseStop: p.ttsVerseStop === true,
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",

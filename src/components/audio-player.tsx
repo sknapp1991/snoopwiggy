@@ -19,6 +19,7 @@ import {
   resumeRecording,
   seekRecording,
   setRecordingRate,
+  setStopEachVerse,
   onWord,
   pause,
   pickVoice,
@@ -87,6 +88,7 @@ export function useReadAlong({
   const single: SpeechItem[] = useMemo(() => (loaded ? buildItems(rows, colIndex, lang) : []), [rows, colIndex, lang, loaded]);
 
   const voice = useMemo(() => pickVoice(allVoices, lang, settings.ttsVoices[lang]), [allVoices, lang, settings.ttsVoices]);
+  useEffect(() => setStopEachVerse(settings.ttsVerseStop), [settings.ttsVerseStop]);
 
   // Several versions in turn (e.g. WEB then RVR): every verse in each chosen version, or each whole
   // chapter in turn. Device voices only (a recording is one file per chapter).
@@ -625,7 +627,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
                   <option value="verse">Each verse in every version</option>
                   <option value="chapter">Whole chapter in each, one after another</option>
                 </select>
-                <span className="truncate">Device voices</span>
+                <VerseStopPill />
               </>
             ) : (
               <span>Tap the versions to hear, in this order.</span>
@@ -657,11 +659,12 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           <button
             type="button"
             onClick={() => ra.setMixMode(true)}
-            title="Hear several versions in turn, e.g. WEB then RVR"
+            title="Hear several versions in turn: verse 1 in English, then in Spanish, then verse 2…"
             className="flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-dashed border-line px-3 text-xs text-muted hover:text-ink"
           >
-            + Several
+            + Hear another version too
           </button>
+          <VerseStopPill />
         </div>
       )}
 
@@ -854,6 +857,18 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             />
           </label>
           <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+              Pause after each verse
+              <span className="block font-normal normal-case tracking-normal">Press ▶ (or tap the next verse) to hear the next one.</span>
+            </span>
+            <input
+              type="checkbox"
+              checked={settings.ttsVerseStop}
+              onChange={(e) => updateSettings({ ttsVerseStop: e.target.checked })}
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
+            />
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">Continue into the next chapter</span>
             <input
               type="checkbox"
@@ -865,6 +880,24 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** "Pause after each verse" on/off, right in the bar (also under ⚙). */
+function VerseStopPill() {
+  const on = useSettings().ttsVerseStop;
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={() => updateSettings({ ttsVerseStop: !on })}
+      title={on ? "Pausing after each verse — tap to read on" : "Pause after each verse (press ▶ for the next)"}
+      className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs ${
+        on ? "border-accent bg-accent-soft font-medium text-accent" : "border-line text-muted hover:text-ink"
+      }`}
+    >
+      <PauseIcon width={12} height={12} /> {on ? "Verse by verse" : "Pause each verse"}
+    </button>
   );
 }
 

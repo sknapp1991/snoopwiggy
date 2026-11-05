@@ -237,6 +237,13 @@ function speakItem(r: Run, my: number) {
       // A whole verse without word positions: this voice can't follow word by word.
       if (!sawWord && countWords(item.text) > 3 && state.wordTiming !== false) set({ wordTiming: false });
       r.index++;
+      // "Pause after each verse": stop at the next verse (after every version of this one); ▶ goes on.
+      const upcoming = r.items[r.index];
+      if (stopEachVerse && upcoming && upcoming.v !== item.v) {
+        pause();
+        set({ verse: upcoming.v });
+        return;
+      }
       speakItem(r, my);
       return;
     }
@@ -351,6 +358,12 @@ export function currentIndex() {
   return run ? run.index : -1;
 }
 
+/** Pause after each verse instead of reading on (set from the player's settings). */
+let stopEachVerse = false;
+export function setStopEachVerse(on: boolean) {
+  stopEachVerse = on;
+}
+
 export function pause() {
   token++;
   if (rec) cancelAnimationFrame(rec.raf);
@@ -415,8 +428,15 @@ function tick() {
   if (i < 0) i = vs.length - 1;
   const cur = vs[i];
   if (cur && cur.v !== rec.lastVerse) {
+    const moved = rec.lastVerse !== null;
     rec.lastVerse = cur.v;
     set({ verse: cur.v });
+    // "Pause after each verse": wait at the start of the next verse.
+    if (stopEachVerse && moved && audio) {
+      audio.currentTime = cur.s;
+      pause();
+      return;
+    }
   }
   if (cur) emitWord(t >= cur.s && t <= cur.e ? { verse: cur.v, frac: (t - cur.s) / Math.max(0.1, cur.e - cur.s) } : null);
   // End of a chosen verse range.
@@ -443,6 +463,8 @@ function mediaSession(title: string, artist: string) {
     const i = Math.max(0, vs.findIndex((x) => x.v === state.verse));
     const j = Math.min(vs.length - 1, Math.max(0, i + d));
     audio.currentTime = vs[j].s;
+    rec.lastVerse = vs[j].v;
+    set({ verse: vs[j].v });
   };
   ms.setActionHandler("play", () => audio?.play());
   ms.setActionHandler("pause", () => pause());
@@ -579,6 +601,8 @@ export function seekRecording(v: string): boolean {
   const x = rec.timing.verses.find((t) => t.v === v);
   if (!x) return false;
   audio.currentTime = x.s;
+  rec.lastVerse = v; // a jump isn't "reaching the next verse" (pause-after-each-verse)
+  set({ verse: v });
   return true;
 }
 
