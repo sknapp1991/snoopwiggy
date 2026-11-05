@@ -169,6 +169,13 @@ Ralph T. H. Griffith's verse translation, "The Rámáyan of Válmíki" (1870–7
 from the Internet Sacred Text Archive (`scripts/import-ramayana.ts`). Griffith doesn't number stanzas:
 verses are his stanzas in order (long ones split at a sentence end). Footnotes are left out.
 
+## Vedas (Hinduism, added Nov 2026)
+
+Ralph T. H. Griffith's translations (public domain), from the Internet Sacred Text Archive
+(`scripts/import-vedas.ts`): Rig Veda (1896, 10 books, hymn = chapter), Sama Veda (1895), White Yajur
+Veda / Vajasaneyi Samhita (1899, 40 books), Atharva Veda (1895–96, 20 books). English only: the site's
+Sanskrit is a machine conversion with errors.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

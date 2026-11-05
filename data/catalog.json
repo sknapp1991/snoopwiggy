@@ -16,7 +16,8 @@
     { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" },
     { "id": "hadith", "name": "Hadith", "versification": "hadith" },
     { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" },
-    { "id": "ramayana", "name": "Ramayana", "versification": "ramayana" }
+    { "id": "ramayana", "name": "Ramayana", "versification": "ramayana" },
+    { "id": "vedas", "name": "Vedas", "versification": "vedas" }
   ],
   "versions": [
     {
@@ -423,6 +424,15 @@
       "attribution": "Translated by Ralph T. H. Griffith (1870–74), public domain; transcription from the Internet Sacred Text Archive.",
       "sourceUrl": "https://sacred-texts.com/hin/rama/index.htm",
       "licensed": false, "versification": "ramayana"
+    },
+    {
+      "id": "griffith", "work": "vedas", "abbr": "Griffith", "name": "The Vedas (Ralph T. H. Griffith)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1896, "yearNote": "Rig Veda 1896, Sama Veda 1895, White Yajur Veda 1899, Atharva Veda 1895–96",
+      "translator": "Ralph T. H. Griffith",
+      "license": "Public Domain", "licenseNote": "English only for now (no reliable Sanskrit source yet).",
+      "attribution": "Translated by Ralph T. H. Griffith, public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/hin/rigveda/index.htm",
+      "licensed": false, "versification": "vedas"
     }
   ],
   "religions": [
@@ -751,7 +761,46 @@
           {"id": "kaushitaki", "name": "Kaushitaki Upanishad", "work": "upanishads", "chapters": 4, "chapterName": "Kaushitaki, part"},
           {"id": "maitri", "name": "Maitrayaniya Upanishad", "work": "upanishads", "chapters": 7, "chapterName": "Maitrayaniya, part"}
         ] },
-        { "id": "vedas", "name": "Vedas", "items": [ { "id": "vedas", "name": "Vedas", "status": "coming-soon" } ] }
+        { "id": "rigveda", "name": "Vedas \u00b7 Rig Veda", "items": [
+          {"id": "rv1", "name": "Rig Veda, Book 1", "work": "vedas", "chapters": 191, "chapterName": "Rig Veda 1."},
+          {"id": "rv2", "name": "Rig Veda, Book 2", "work": "vedas", "chapters": 43, "chapterName": "Rig Veda 2."},
+          {"id": "rv3", "name": "Rig Veda, Book 3", "work": "vedas", "chapters": 62, "chapterName": "Rig Veda 3."},
+          {"id": "rv4", "name": "Rig Veda, Book 4", "work": "vedas", "chapters": 58, "chapterName": "Rig Veda 4."},
+          {"id": "rv5", "name": "Rig Veda, Book 5", "work": "vedas", "chapters": 87, "chapterName": "Rig Veda 5."},
+          {"id": "rv6", "name": "Rig Veda, Book 6", "work": "vedas", "chapters": 75, "chapterName": "Rig Veda 6."},
+          {"id": "rv7", "name": "Rig Veda, Book 7", "work": "vedas", "chapters": 104, "chapterName": "Rig Veda 7."},
+          {"id": "rv8", "name": "Rig Veda, Book 8", "work": "vedas", "chapters": 103, "chapterName": "Rig Veda 8."},
+          {"id": "rv9", "name": "Rig Veda, Book 9", "work": "vedas", "chapters": 114, "chapterName": "Rig Veda 9."},
+          {"id": "rv10", "name": "Rig Veda, Book 10", "work": "vedas", "chapters": 191, "chapterName": "Rig Veda 10."}
+        ] },
+        { "id": "samaveda", "name": "Vedas \u00b7 Sama Veda", "items": [
+          {"id": "sv", "name": "Sama Veda", "work": "vedas", "chapters": 34, "chapterName": "Sama Veda, part"}
+        ] },
+        { "id": "yajurveda", "name": "Vedas \u00b7 Yajur Veda", "items": [
+          {"id": "wyv", "name": "White Yajur Veda (Vajasaneyi Samhita)", "work": "vedas", "chapters": 40, "chapterName": "White Yajur Veda, Book"}
+        ] },
+        { "id": "atharvaveda", "name": "Vedas \u00b7 Atharva Veda", "items": [
+          {"id": "av1", "name": "Atharva Veda, Book 1", "work": "vedas", "chapters": 35, "chapterName": "Atharva Veda 1."},
+          {"id": "av2", "name": "Atharva Veda, Book 2", "work": "vedas", "chapters": 32, "chapterName": "Atharva Veda 2."},
+          {"id": "av3", "name": "Atharva Veda, Book 3", "work": "vedas", "chapters": 31, "chapterName": "Atharva Veda 3."},
+          {"id": "av4", "name": "Atharva Veda, Book 4", "work": "vedas", "chapters": 39, "chapterName": "Atharva Veda 4."},
+          {"id": "av5", "name": "Atharva Veda, Book 5", "work": "vedas", "chapters": 31, "chapterName": "Atharva Veda 5."},
+          {"id": "av6", "name": "Atharva Veda, Book 6", "work": "vedas", "chapters": 142, "chapterName": "Atharva Veda 6."},
+          {"id": "av7", "name": "Atharva Veda, Book 7", "work": "vedas", "chapters": 116, "chapterName": "Atharva Veda 7."},
+          {"id": "av8", "name": "Atharva Veda, Book 8", "work": "vedas", "chapters": 10, "chapterName": "Atharva Veda 8."},
+          {"id": "av9", "name": "Atharva Veda, Book 9", "work": "vedas", "chapters": 10, "chapterName": "Atharva Veda 9."},
+          {"id": "av10", "name": "Atharva Veda, Book 10", "work": "vedas", "chapters": 10, "chapterName": "Atharva Veda 10."},
+          {"id": "av11", "name": "Atharva Veda, Book 11", "work": "vedas", "chapters": 10, "chapterName": "Atharva Veda 11."},
+          {"id": "av12", "name": "Atharva Veda, Book 12", "work": "vedas", "chapters": 5, "chapterName": "Atharva Veda 12."},
+          {"id": "av13", "name": "Atharva Veda, Book 13", "work": "vedas", "chapters": 4, "chapterName": "Atharva Veda 13."},
+          {"id": "av14", "name": "Atharva Veda, Book 14", "work": "vedas", "chapters": 2, "chapterName": "Atharva Veda 14."},
+          {"id": "av15", "name": "Atharva Veda, Book 15", "work": "vedas", "chapters": 18, "chapterName": "Atharva Veda 15."},
+          {"id": "av16", "name": "Atharva Veda, Book 16", "work": "vedas", "chapters": 9, "chapterName": "Atharva Veda 16."},
+          {"id": "av17", "name": "Atharva Veda, Book 17", "work": "vedas", "chapters": 1, "chapterName": "Atharva Veda 17."},
+          {"id": "av18", "name": "Atharva Veda, Book 18", "work": "vedas", "chapters": 4, "chapterName": "Atharva Veda 18."},
+          {"id": "av19", "name": "Atharva Veda, Book 19", "work": "vedas", "chapters": 72, "chapterName": "Atharva Veda 19."},
+          {"id": "av20", "name": "Atharva Veda, Book 20", "work": "vedas", "chapters": 143, "chapterName": "Atharva Veda 20."}
+        ] }
       ]
     },
     {

@@ -43,6 +43,7 @@ const LIST: Daily[] = [
   { work: "enoch", book: "1en", chapter: 1, verse: "8" },
   { work: "thomas", book: "gth", chapter: 1, verse: "3" },
   { work: "upanishads", book: "isha", chapter: 1, verse: "1" },
+  { work: "vedas", book: "rv10", chapter: 129, verse: "1" },
 ];
 
 /** Today's passage (local date). */

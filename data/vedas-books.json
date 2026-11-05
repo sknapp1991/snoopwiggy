@@ -1,0 +1,226 @@
+[
+ {
+  "id": "rv1",
+  "name": "Rig Veda, Book 1",
+  "collection": "rigveda",
+  "chapters": 191,
+  "chapterName": "Rig Veda 1."
+ },
+ {
+  "id": "rv2",
+  "name": "Rig Veda, Book 2",
+  "collection": "rigveda",
+  "chapters": 43,
+  "chapterName": "Rig Veda 2."
+ },
+ {
+  "id": "rv3",
+  "name": "Rig Veda, Book 3",
+  "collection": "rigveda",
+  "chapters": 62,
+  "chapterName": "Rig Veda 3."
+ },
+ {
+  "id": "rv4",
+  "name": "Rig Veda, Book 4",
+  "collection": "rigveda",
+  "chapters": 58,
+  "chapterName": "Rig Veda 4."
+ },
+ {
+  "id": "rv5",
+  "name": "Rig Veda, Book 5",
+  "collection": "rigveda",
+  "chapters": 87,
+  "chapterName": "Rig Veda 5."
+ },
+ {
+  "id": "rv6",
+  "name": "Rig Veda, Book 6",
+  "collection": "rigveda",
+  "chapters": 75,
+  "chapterName": "Rig Veda 6."
+ },
+ {
+  "id": "rv7",
+  "name": "Rig Veda, Book 7",
+  "collection": "rigveda",
+  "chapters": 104,
+  "chapterName": "Rig Veda 7."
+ },
+ {
+  "id": "rv8",
+  "name": "Rig Veda, Book 8",
+  "collection": "rigveda",
+  "chapters": 103,
+  "chapterName": "Rig Veda 8."
+ },
+ {
+  "id": "rv9",
+  "name": "Rig Veda, Book 9",
+  "collection": "rigveda",
+  "chapters": 114,
+  "chapterName": "Rig Veda 9."
+ },
+ {
+  "id": "rv10",
+  "name": "Rig Veda, Book 10",
+  "collection": "rigveda",
+  "chapters": 191,
+  "chapterName": "Rig Veda 10."
+ },
+ {
+  "id": "av1",
+  "name": "Atharva Veda, Book 1",
+  "collection": "atharvaveda",
+  "chapters": 35,
+  "chapterName": "Atharva Veda 1."
+ },
+ {
+  "id": "av2",
+  "name": "Atharva Veda, Book 2",
+  "collection": "atharvaveda",
+  "chapters": 32,
+  "chapterName": "Atharva Veda 2."
+ },
+ {
+  "id": "av3",
+  "name": "Atharva Veda, Book 3",
+  "collection": "atharvaveda",
+  "chapters": 31,
+  "chapterName": "Atharva Veda 3."
+ },
+ {
+  "id": "av4",
+  "name": "Atharva Veda, Book 4",
+  "collection": "atharvaveda",
+  "chapters": 39,
+  "chapterName": "Atharva Veda 4."
+ },
+ {
+  "id": "av5",
+  "name": "Atharva Veda, Book 5",
+  "collection": "atharvaveda",
+  "chapters": 31,
+  "chapterName": "Atharva Veda 5."
+ },
+ {
+  "id": "av6",
+  "name": "Atharva Veda, Book 6",
+  "collection": "atharvaveda",
+  "chapters": 142,
+  "chapterName": "Atharva Veda 6."
+ },
+ {
+  "id": "av7",
+  "name": "Atharva Veda, Book 7",
+  "collection": "atharvaveda",
+  "chapters": 116,
+  "chapterName": "Atharva Veda 7."
+ },
+ {
+  "id": "av8",
+  "name": "Atharva Veda, Book 8",
+  "collection": "atharvaveda",
+  "chapters": 10,
+  "chapterName": "Atharva Veda 8."
+ },
+ {
+  "id": "av9",
+  "name": "Atharva Veda, Book 9",
+  "collection": "atharvaveda",
+  "chapters": 10,
+  "chapterName": "Atharva Veda 9."
+ },
+ {
+  "id": "av10",
+  "name": "Atharva Veda, Book 10",
+  "collection": "atharvaveda",
+  "chapters": 10,
+  "chapterName": "Atharva Veda 10."
+ },
+ {
+  "id": "av11",
+  "name": "Atharva Veda, Book 11",
+  "collection": "atharvaveda",
+  "chapters": 10,
+  "chapterName": "Atharva Veda 11."
+ },
+ {
+  "id": "av12",
+  "name": "Atharva Veda, Book 12",
+  "collection": "atharvaveda",
+  "chapters": 5,
+  "chapterName": "Atharva Veda 12."
+ },
+ {
+  "id": "av13",
+  "name": "Atharva Veda, Book 13",
+  "collection": "atharvaveda",
+  "chapters": 4,
+  "chapterName": "Atharva Veda 13."
+ },
+ {
+  "id": "av14",
+  "name": "Atharva Veda, Book 14",
+  "collection": "atharvaveda",
+  "chapters": 2,
+  "chapterName": "Atharva Veda 14."
+ },
+ {
+  "id": "av15",
+  "name": "Atharva Veda, Book 15",
+  "collection": "atharvaveda",
+  "chapters": 18,
+  "chapterName": "Atharva Veda 15."
+ },
+ {
+  "id": "av16",
+  "name": "Atharva Veda, Book 16",
+  "collection": "atharvaveda",
+  "chapters": 9,
+  "chapterName": "Atharva Veda 16."
+ },
+ {
+  "id": "av17",
+  "name": "Atharva Veda, Book 17",
+  "collection": "atharvaveda",
+  "chapters": 1,
+  "chapterName": "Atharva Veda 17."
+ },
+ {
+  "id": "av18",
+  "name": "Atharva Veda, Book 18",
+  "collection": "atharvaveda",
+  "chapters": 4,
+  "chapterName": "Atharva Veda 18."
+ },
+ {
+  "id": "av19",
+  "name": "Atharva Veda, Book 19",
+  "collection": "atharvaveda",
+  "chapters": 72,
+  "chapterName": "Atharva Veda 19."
+ },
+ {
+  "id": "av20",
+  "name": "Atharva Veda, Book 20",
+  "collection": "atharvaveda",
+  "chapters": 143,
+  "chapterName": "Atharva Veda 20."
+ },
+ {
+  "id": "wyv",
+  "name": "White Yajur Veda (Vajasaneyi Samhita)",
+  "collection": "yajurveda",
+  "chapters": 40,
+  "chapterName": "White Yajur Veda, Book"
+ },
+ {
+  "id": "sv",
+  "name": "Sama Veda",
+  "collection": "samaveda",
+  "chapters": 34,
+  "chapterName": "Sama Veda, part"
+ }
+]
