@@ -178,6 +178,20 @@ export function ReaderView() {
   const jumped = useRef("");
   useEffect(() => {
     if (!allLoaded || !rows.length) return;
+    // A link to another verse of this same chapter changes only the #hash (no re-render): links send
+    // "va-jump" (see jumpToHash) so the view still moves.
+    const onJump = () => {
+      jumped.current = "";
+      run();
+    };
+    window.addEventListener("va-jump", onJump);
+    window.addEventListener("popstate", onJump);
+    run();
+    return () => {
+      window.removeEventListener("va-jump", onJump);
+      window.removeEventListener("popstate", onJump);
+    };
+    function run() {
     const hash = decodeURIComponent(window.location.hash.slice(1));
     // No #verse in the link: go back to where you were in this chapter (if not the top).
     const saved = hash ? null : getPosition(`${ref.work}/${ref.book}/${ref.chapter}`);
@@ -192,13 +206,25 @@ export function ReaderView() {
       }
       return;
     }
-    const el = document.getElementById(id);
+    // "#v30" = one verse (centred); "#v30-35" = a passage: its first verse at the top, so it reads
+    // downwards in order, and every verse of it marked.
+    const range = /^v(\d+[a-z]?)(?:-(\d+))?$/.exec(id);
+    const first = range ? `v${range[1]}` : id;
+    const el = document.getElementById(first);
     if (el) {
       jumped.current = key;
-      el.scrollIntoView({ block: "center" });
+      el.scrollIntoView({ block: range?.[2] ? "start" : "center" });
       document.querySelectorAll(".is-target").forEach((n) => n.classList.remove("is-target"));
-      const cells = document.querySelectorAll(`[data-v="${CSS.escape(id.slice(1))}"]`);
+      const from = range ? parseInt(range[1], 10) : NaN;
+      const to = range?.[2] ? parseInt(range[2], 10) : from;
+      const cells = range
+        ? [...document.querySelectorAll<HTMLElement>("[data-v]")].filter((n) => {
+            const v = parseInt(n.dataset.v ?? "", 10);
+            return v >= from && v <= to;
+          })
+        : [];
       (cells.length ? cells : [el]).forEach((n) => n.classList.add("is-target"));
+    }
     }
   }, [rows, allLoaded, ref.work, ref.book, ref.chapter]);
 

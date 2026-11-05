@@ -19,7 +19,20 @@ export function RefLink({ r }: { r: FoundRef }) {
   const touch = useMediaQuery("(hover: none)", false);
   const { ref: here, versions: current } = useReaderState();
   const versions = r.ref.work === here.work && current.length ? current : (DEFAULT_VERSIONS[r.ref.work] ?? []);
-  const href = readHref(r.ref, r.ref.work === here.work ? undefined : versions, r.verse);
+  // "#v30-35": the reader puts verse 30 at the top and marks the whole passage.
+  const href = readHref(r.ref, r.ref.work === here.work ? undefined : versions, r.verse && r.to ? `${r.verse}-${r.to}` : r.verse);
+  const sameChapter = r.ref.work === here.work && r.ref.book === here.book && r.ref.chapter === here.chapter;
+  /**
+   * Same chapter: only the #hash changes, which the router doesn't treat as a navigation — so set it
+   * here and tell the reader to move (reader.tsx listens for "va-jump"). Returns true when handled.
+   */
+  const jumpHere = (e: React.MouseEvent) => {
+    if (!sameChapter) return false;
+    e.preventDefault();
+    window.history.pushState(window.history.state, "", href.includes("#") ? href.slice(href.indexOf("#")) : "#v1");
+    window.dispatchEvent(new Event("va-jump"));
+    return true;
+  };
   const [pos, setPos] = useState<{ left: number; top?: number; bottom?: number } | null>(null);
   const link = useRef<HTMLAnchorElement>(null);
   const card = useRef<HTMLDivElement>(null);
@@ -75,7 +88,10 @@ export function RefLink({ r }: { r: FoundRef }) {
             e.preventDefault();
             if (pos) hide();
             else show();
-          } else hide();
+          } else {
+            hide();
+            jumpHere(e);
+          }
         }}
         onMouseEnter={() => {
           if (touch) return;
@@ -103,7 +119,14 @@ export function RefLink({ r }: { r: FoundRef }) {
           className="fixed z-[60] w-[min(320px,calc(100vw-16px))] rounded-xl border border-line bg-panel p-3 text-left text-sm font-normal not-italic text-ink shadow-2xl"
         >
           <Preview r={r} versions={versions.slice(0, 2)} />
-          <Link href={href} scroll={false} onClick={hide} className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink">
+          <Link
+            href={href}
+            scroll={false}
+            onClick={(e) => {
+              hide();
+              jumpHere(e);
+            }}
+            className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink">
             Open {r.label} →
           </Link>
         </div>

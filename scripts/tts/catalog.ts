@@ -35,6 +35,11 @@ const VOICES: Record<string, string> = {
   pf_dora: "Dora · Brazilian Portuguese (female)",
   pm_alex: "Alex · Brazilian Portuguese (male)",
   rapunzelina: "Rapunzelina · Greek (female)",
+  armenta: "Michael Armenta · human reader (LibriVox)",
+};
+/** Human recordings (not generated): public-domain readings, cut into chapters by scripts/tts/align-librivox.py. */
+const HUMAN: Record<string, string> = {
+  armenta: "Read by Michael Armenta for LibriVox (2001), public domain",
 };
 /** Voices made with Piper instead of Kokoro (licence noted per voice). */
 const PIPER: Record<string, string> = {
@@ -47,7 +52,7 @@ async function main() {
   const local = process.argv.includes("--local");
   const recs: Recording[] = [];
   for (const version of await dirs(SRC)) {
-    if (version === "hf" || version === "piper") continue;
+    if (version === "hf" || version === "piper" || version.startsWith("librivox")) continue; // tools / raw downloads, not recordings
     for (const voice of await dirs(path.join(SRC, version))) {
       const chapters: Record<string, number[]> = {};
       let total = 0;
@@ -65,15 +70,15 @@ async function main() {
         version,
         voice,
         label: VOICES[voice] ?? voice,
-        engine: PIPER[voice] ? "Piper" : "Kokoro-82M",
-        license: PIPER[voice] ?? "Generated with Kokoro-82M (Apache-2.0)",
+        engine: HUMAN[voice] ? "Human" : PIPER[voice] ? "Piper" : "Kokoro-82M",
+        license: HUMAN[voice] ?? PIPER[voice] ?? "Generated with Kokoro-82M (Apache-2.0)",
         ...(all ? {} : { chapters }),
       });
       console.log(`  ${version}/${voice}: ${total} chapters${all ? " (complete)" : ""}`);
     }
   }
   // Best-sounding voices first (Kokoro's own quality grades), then the rest.
-  const order = Object.keys(VOICES);
+  const order = ["armenta", ...Object.keys(VOICES)]; // a human reader first
   recs.sort((a, b) => a.version.localeCompare(b.version) || (order.indexOf(a.voice) + 1 || 99) - (order.indexOf(b.voice) + 1 || 99));
   const index = JSON.stringify({ generatedAt: new Date().toISOString(), recordings: recs });
   await writeFile(path.join(SRC, "index.json"), index);
