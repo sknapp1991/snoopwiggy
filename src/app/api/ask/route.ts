@@ -128,6 +128,16 @@ export async function POST(request: Request) {
   const enc = new TextEncoder();
   const dec = new TextDecoder();
   let buf = "";
+  const emit = (line: string, ctl: TransformStreamDefaultController<Uint8Array>) => {
+    if (!line.startsWith("data:")) return;
+    try {
+      const d = JSON.parse(line.slice(5)) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
+      const t = d.candidates?.[0]?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? "").join("") ?? "";
+      if (t) ctl.enqueue(enc.encode(t));
+    } catch {
+      /* partial line */
+    }
+  };
   const out = upstream.body.pipeThrough(
     new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, ctl) {
@@ -136,15 +146,14 @@ export async function POST(request: Request) {
         while ((nl = buf.indexOf("\n")) >= 0) {
           const line = buf.slice(0, nl).trim();
           buf = buf.slice(nl + 1);
-          if (!line.startsWith("data:")) continue;
-          try {
-            const d = JSON.parse(line.slice(5)) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
-            const t = d.candidates?.[0]?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? "").join("") ?? "";
-            if (t) ctl.enqueue(enc.encode(t));
-          } catch {
-            /* partial line */
-          }
+          emit(line, ctl);
         }
+      },
+      flush(ctl) {
+        // A last event without a trailing newline would otherwise be dropped.
+        buf += dec.decode();
+        emit(buf.trim(), ctl);
+        buf = "";
       },
     }),
   );

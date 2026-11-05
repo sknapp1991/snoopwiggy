@@ -47,6 +47,8 @@ export function SaveOffline() {
   const save = async () => {
     const jobs = versions.flatMap((v) => books.map((b) => `/texts/${ref.work}/${v}/${b.id}.json`));
     setProgress({ done: 0, total: jobs.length });
+    // First visit: let the service worker take over first, so the downloads land in its cache.
+    await Promise.race([navigator.serviceWorker.ready, new Promise((r) => setTimeout(r, 3000))]);
     let done = 0;
     let failed = 0;
     // A few at a time, so a phone on a slow connection isn't swamped.

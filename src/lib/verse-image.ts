@@ -43,7 +43,8 @@ export async function renderVerseImage(opts: { heading: string; reference: strin
   const lineH = Math.round(size * 1.42);
   const labelH = opts.verses.length > 1 ? 40 : 0;
   const bodyH = blocks.reduce((h, b) => h + labelH + b.length * lineH + 40, 0);
-  const H = Math.max(W, Math.min(2400, 250 + bodyH + 140));
+  // Tall rather than cut off: long passages (a sutta paragraph in two languages) can need more than a square.
+  const H = Math.max(W, 250 + bodyH + 140);
 
   const canvas = document.createElement("canvas");
   canvas.width = W;

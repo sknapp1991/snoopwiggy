@@ -391,7 +391,10 @@ export function useReadAlong({
         const verses = single.map((it) => it.v);
         const vi = verses.indexOf(items[cur].v);
         const target = verses[Math.min(verses.length - 1, Math.max(0, vi + d))];
-        i = Math.max(0, items.findIndex((it) => it.v === target));
+        // Whole chapters in turn: stay in the version being heard (its first verse is far from the next one's).
+        const ver = items[cur].version;
+        const same = settings.ttsMixOrder === "chapter" ? items.findIndex((it) => it.v === target && it.version === ver) : -1;
+        i = Math.max(0, same >= 0 ? same : items.findIndex((it) => it.v === target));
       }
       if (s.engine === "recorded" && s.chapterKey === chapterKey && items[i] && seekRecording(items[i].v)) return;
       if (s.status === "playing") startAt(i);
@@ -402,7 +405,11 @@ export function useReadAlong({
         setRecordingRate(overrides.rate);
         return;
       }
-      if (speech.status === "playing") startAt(index >= 0 ? index : 0, overrides);
+      if (speech.status !== "playing") return;
+      // Several versions in turn: each item carries its own voice, rebuilt from the saved choice on the
+      // next render — restart then, or the old voice would keep reading.
+      if (mixed && overrides && "voice" in overrides) return restartSoon();
+      startAt(index >= 0 ? index : 0, overrides);
     },
     /** Pick a recorded voice (or "device") for the version being read, and carry on from the same verse. */
     chooseRecording(id: string) {

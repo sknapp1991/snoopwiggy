@@ -63,7 +63,13 @@ function load() {
       ...chat,
       open: !!s.open,
       minimized: !!s.minimized,
-      messages: Array.isArray(s.messages) ? s.messages.filter((m) => m && typeof m.text === "string") : [],
+      messages: Array.isArray(s.messages)
+        ? s.messages
+            .filter((m) => m && typeof m.text === "string")
+            // An answer cut off by closing the page would show "Thinking…" forever (and an empty turn
+            // makes the next request fail).
+            .map((m) => (m.role === "model" && !m.text ? { ...m, text: "(no answer — the page was closed)", error: true } : m))
+        : [],
       box: s.box ?? null,
     };
   } catch {

@@ -25,23 +25,30 @@ self.addEventListener("activate", (event) => {
 const isData = (p) =>
   p.startsWith("/texts/") || p.startsWith("/search/") || p.startsWith("/_next/static/") || /^\/(icon|apple-icon|favicon)/.test(p) || p === "/manifest.webmanifest";
 
-async function staleWhileRevalidate(req) {
+async function staleWhileRevalidate(event) {
+  const req = event.request;
   const cache = await caches.open(DATA);
   const hit = await cache.match(req);
   const net = fetch(req)
     .then((res) => {
-      if (res.ok && res.status === 200) cache.put(req, res.clone());
+      if (res.ok && res.status === 200) return cache.put(req, res.clone()).then(() => res);
       return res;
     })
     .catch(() => null);
+  if (hit) event.waitUntil(net); // let the background refresh finish even if the page is done with us
   return hit || (await net) || new Response("Offline", { status: 503 });
 }
 
-/** Page / router payload: network first, else the cached copy (key without Next's ?_rsc= hash). */
+/**
+ * Page / router payload: network first, else the cached copy. The key drops Next's ?_rsc= hash; the
+ * router payload gets its own key via a query flag (the Cache API ignores URL fragments, so "#rsc"
+ * would collide with the HTML entry).
+ */
 async function networkFirst(req, url) {
   const key = new URL(url);
   key.searchParams.delete("_rsc");
-  const cacheKey = `${key.pathname}${key.search}${req.headers.get("RSC") ? "#rsc" : ""}`;
+  if (req.headers.get("RSC")) key.searchParams.set("_rsc", "1");
+  const cacheKey = key.href;
   const cache = await caches.open(PAGES);
   try {
     const res = await fetch(req);
@@ -65,6 +72,8 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   const p = url.pathname;
   if (p.startsWith("/api/") || p.endsWith(".mp3") || p === "/sw.js") return;
-  if (isData(p)) return event.respondWith(staleWhileRevalidate(req));
+  if (isData(p)) return event.respondWith(staleWhileRevalidate(event));
+  // Prefetches carry a partial payload: never cache (or serve) them as the page.
+  if (req.headers.get("Next-Router-Prefetch") || req.headers.get("Next-Router-Segment-Prefetch")) return;
   if (req.mode === "navigate" || req.headers.get("RSC")) return event.respondWith(networkFirst(req, url));
 });
