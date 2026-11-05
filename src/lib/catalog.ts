@@ -24,6 +24,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   mishnah: ["kulp", "mishnah-he"],
   talmud: ["talmud-he"],
   hadith: ["hadith-ar"],
+  upanishads: ["muller"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

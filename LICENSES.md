@@ -156,6 +156,13 @@ the open hadith-api project (fawazahmed0, The Unlicense; the classical Arabic it
 (`scripts/import-hadith.ts`). No English: the usual translations (Muhsin Khan, Siddiqui, …) are still
 under copyright; every chapter says so.
 
+## Upanishads (Hinduism, added Nov 2026)
+
+Twelve Upanishads (Isha, Kena, Katha, Prashna, Mundaka, Taittiriya, Aitareya Aranyaka, Chandogya,
+Brihadaranyaka, Svetasvatara, Kaushitaki, Maitrayaniya) in F. Max Müller's translation, Sacred Books of
+the East vols. 1 (1879) and 15 (1884), public domain, from the Internet Sacred Text Archive
+(`scripts/import-upanishads.ts`). Footnotes are left out. (Müller didn't translate the Mandukya.)
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

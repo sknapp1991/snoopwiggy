@@ -1,0 +1,62 @@
+[
+ {
+  "id": "isha",
+  "name": "Isha Upanishad",
+  "chapters": 1
+ },
+ {
+  "id": "kena",
+  "name": "Kena Upanishad",
+  "chapters": 4
+ },
+ {
+  "id": "katha",
+  "name": "Katha Upanishad",
+  "chapters": 6
+ },
+ {
+  "id": "prashna",
+  "name": "Prashna Upanishad",
+  "chapters": 6
+ },
+ {
+  "id": "mundaka",
+  "name": "Mundaka Upanishad",
+  "chapters": 6
+ },
+ {
+  "id": "taittiriya",
+  "name": "Taittiriya Upanishad",
+  "chapters": 31
+ },
+ {
+  "id": "aitareya",
+  "name": "Aitareya Aranyaka (with the Aitareya Upanishad)",
+  "chapters": 59
+ },
+ {
+  "id": "chandogya",
+  "name": "Chandogya Upanishad",
+  "chapters": 154
+ },
+ {
+  "id": "brihadaranyaka",
+  "name": "Brihadaranyaka Upanishad",
+  "chapters": 46
+ },
+ {
+  "id": "svetasvatara",
+  "name": "Svetasvatara Upanishad",
+  "chapters": 6
+ },
+ {
+  "id": "kaushitaki",
+  "name": "Kaushitaki Upanishad",
+  "chapters": 4
+ },
+ {
+  "id": "maitri",
+  "name": "Maitrayaniya Upanishad",
+  "chapters": 7
+ }
+]

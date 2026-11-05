@@ -14,7 +14,8 @@
     { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" },
     { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" },
     { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" },
-    { "id": "hadith", "name": "Hadith", "versification": "hadith" }
+    { "id": "hadith", "name": "Hadith", "versification": "hadith" },
+    { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" }
   ],
   "versions": [
     {
@@ -403,6 +404,15 @@
       "attribution": "Arabic text from the open hadith-api project (fawazahmed0, The Unlicense).",
       "sourceUrl": "https://github.com/fawazahmed0/hadith-api",
       "licensed": false, "versification": "hadith"
+    },
+    {
+      "id": "muller", "work": "upanishads", "abbr": "Max Müller", "name": "The Upanishads (F. Max Müller)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1879, "yearNote": "Sacred Books of the East 1 (1879) and 15 (1884)",
+      "translator": "F. Max Müller",
+      "license": "Public Domain", "licenseNote": "Footnotes not included.",
+      "attribution": "Translated by F. Max Müller, Sacred Books of the East vols. 1 and 15, public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/hin/sbe01/index.htm",
+      "licensed": false, "versification": "upanishads"
     }
   ],
   "religions": [
@@ -710,7 +720,20 @@
         { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "work": "gita", "chapters": 18, "chapterName": "Bhagavad Gita, Chapter" } ] },
         { "id": "mahabharata", "name": "Mahabharata", "items": [ { "id": "mahabharata", "name": "Mahabharata", "status": "coming-soon" } ] },
         { "id": "ramayana", "name": "Ramayana", "items": [ { "id": "ramayana", "name": "Ramayana", "status": "coming-soon" } ] },
-        { "id": "upanishads", "name": "Upanishads", "items": [ { "id": "upanishads", "name": "Upanishads", "status": "coming-soon" } ] },
+        { "id": "upanishads", "name": "Upanishads", "items": [
+          {"id": "isha", "name": "Isha Upanishad", "work": "upanishads", "chapters": 1, "chapterName": "Isha Upanishad"},
+          {"id": "kena", "name": "Kena Upanishad", "work": "upanishads", "chapters": 4, "chapterName": "Kena, part"},
+          {"id": "katha", "name": "Katha Upanishad", "work": "upanishads", "chapters": 6, "chapterName": "Katha, part"},
+          {"id": "prashna", "name": "Prashna Upanishad", "work": "upanishads", "chapters": 6, "chapterName": "Prashna, part"},
+          {"id": "mundaka", "name": "Mundaka Upanishad", "work": "upanishads", "chapters": 6, "chapterName": "Mundaka, part"},
+          {"id": "taittiriya", "name": "Taittiriya Upanishad", "work": "upanishads", "chapters": 31, "chapterName": "Taittiriya, part"},
+          {"id": "aitareya", "name": "Aitareya Aranyaka (with the Aitareya Upanishad)", "work": "upanishads", "chapters": 59, "chapterName": "Aitareya, part"},
+          {"id": "chandogya", "name": "Chandogya Upanishad", "work": "upanishads", "chapters": 154, "chapterName": "Chandogya, part"},
+          {"id": "brihadaranyaka", "name": "Brihadaranyaka Upanishad", "work": "upanishads", "chapters": 46, "chapterName": "Brihadaranyaka, part"},
+          {"id": "svetasvatara", "name": "Svetasvatara Upanishad", "work": "upanishads", "chapters": 6, "chapterName": "Svetasvatara, part"},
+          {"id": "kaushitaki", "name": "Kaushitaki Upanishad", "work": "upanishads", "chapters": 4, "chapterName": "Kaushitaki, part"},
+          {"id": "maitri", "name": "Maitrayaniya Upanishad", "work": "upanishads", "chapters": 7, "chapterName": "Maitrayaniya, part"}
+        ] },
         { "id": "vedas", "name": "Vedas", "items": [ { "id": "vedas", "name": "Vedas", "status": "coming-soon" } ] }
       ]
     },
