@@ -15,7 +15,8 @@
     { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" },
     { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" },
     { "id": "hadith", "name": "Hadith", "versification": "hadith" },
-    { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" }
+    { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" },
+    { "id": "ramayana", "name": "Ramayana", "versification": "ramayana" }
   ],
   "versions": [
     {
@@ -413,6 +414,15 @@
       "attribution": "Translated by F. Max Müller, Sacred Books of the East vols. 1 and 15, public domain; transcription from the Internet Sacred Text Archive.",
       "sourceUrl": "https://sacred-texts.com/hin/sbe01/index.htm",
       "licensed": false, "versification": "upanishads"
+    },
+    {
+      "id": "griffith-ry", "work": "ramayana", "abbr": "Griffith", "name": "The Rámáyan of Válmíki (Ralph T. H. Griffith)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1874, "yearNote": "Verse translation, 1870–74",
+      "translator": "Ralph T. H. Griffith",
+      "license": "Public Domain", "licenseNote": "Griffith doesn't number stanzas; verses here are his stanzas in order. Footnotes not included.",
+      "attribution": "Translated by Ralph T. H. Griffith (1870–74), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/hin/rama/index.htm",
+      "licensed": false, "versification": "ramayana"
     }
   ],
   "religions": [
@@ -719,7 +729,14 @@
       "collections": [
         { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "work": "gita", "chapters": 18, "chapterName": "Bhagavad Gita, Chapter" } ] },
         { "id": "mahabharata", "name": "Mahabharata", "items": [ { "id": "mahabharata", "name": "Mahabharata", "status": "coming-soon" } ] },
-        { "id": "ramayana", "name": "Ramayana", "items": [ { "id": "ramayana", "name": "Ramayana", "status": "coming-soon" } ] },
+        { "id": "ramayana", "name": "Ramayana", "items": [
+          {"id": "ry1", "name": "Bala Kanda (Childhood)", "work": "ramayana", "chapters": 75, "chapterName": "Bala Kanda, canto"},
+          {"id": "ry2", "name": "Ayodhya Kanda (Ayodhya)", "work": "ramayana", "chapters": 119, "chapterName": "Ayodhya Kanda, canto"},
+          {"id": "ry3", "name": "Aranya Kanda (The Forest)", "work": "ramayana", "chapters": 76, "chapterName": "Aranya Kanda, canto"},
+          {"id": "ry4", "name": "Kishkindha Kanda (Kishkindha)", "work": "ramayana", "chapters": 67, "chapterName": "Kishkindha Kanda, canto"},
+          {"id": "ry5", "name": "Sundara Kanda (Beautiful)", "work": "ramayana", "chapters": 55, "chapterName": "Sundara Kanda, canto"},
+          {"id": "ry6", "name": "Yuddha Kanda (War)", "work": "ramayana", "chapters": 102, "chapterName": "Yuddha Kanda, canto"}
+        ] },
         { "id": "upanishads", "name": "Upanishads", "items": [
           {"id": "isha", "name": "Isha Upanishad", "work": "upanishads", "chapters": 1, "chapterName": "Isha Upanishad"},
           {"id": "kena", "name": "Kena Upanishad", "work": "upanishads", "chapters": 4, "chapterName": "Kena, part"},

@@ -1,0 +1,32 @@
+[
+ {
+  "id": "ry1",
+  "name": "Bala Kanda (Childhood)",
+  "chapters": 75
+ },
+ {
+  "id": "ry2",
+  "name": "Ayodhya Kanda (Ayodhya)",
+  "chapters": 119
+ },
+ {
+  "id": "ry3",
+  "name": "Aranya Kanda (The Forest)",
+  "chapters": 76
+ },
+ {
+  "id": "ry4",
+  "name": "Kishkindha Kanda (Kishkindha)",
+  "chapters": 67
+ },
+ {
+  "id": "ry5",
+  "name": "Sundara Kanda (Beautiful)",
+  "chapters": 55
+ },
+ {
+  "id": "ry6",
+  "name": "Yuddha Kanda (War)",
+  "chapters": 102
+ }
+]

@@ -25,6 +25,9 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   talmud: ["talmud-he"],
   hadith: ["hadith-ar"],
   upanishads: ["muller"],
+  ramayana: ["griffith-ry"],
+  vedas: ["griffith"],
+  mahabharata: ["ganguli"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

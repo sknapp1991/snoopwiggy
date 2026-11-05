@@ -163,6 +163,12 @@ Brihadaranyaka, Svetasvatara, Kaushitaki, Maitrayaniya) in F. Max Müller's tran
 the East vols. 1 (1879) and 15 (1884), public domain, from the Internet Sacred Text Archive
 (`scripts/import-upanishads.ts`). Footnotes are left out. (Müller didn't translate the Mandukya.)
 
+## Ramayana (Hinduism, added Nov 2026)
+
+Ralph T. H. Griffith's verse translation, "The Rámáyan of Válmíki" (1870–74, public domain), six books,
+from the Internet Sacred Text Archive (`scripts/import-ramayana.ts`). Griffith doesn't number stanzas:
+verses are his stanzas in order (long ones split at a sentence end). Footnotes are left out.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the
