@@ -36,7 +36,7 @@ for rel in CATALOG["religions"]:
         if col["id"] in ("ot", "nt"):
             for it in col["items"]:
                 NAMES[it["name"].lower()] = it["id"]
-NAMES.update({"psalm": "psa", "song of songs": "sng", "song of solomon": "sng"})
+NAMES.update({"psalm": "psa", "phillipians": "php", "song of songs": "sng", "song of solomon": "sng"})
 
 TITLE = re.compile(r"^\d+ - (.+?)\s+(?:Ch\.\s*)?(\d+)(?:\s*-\s*(\d+))?$")
 
