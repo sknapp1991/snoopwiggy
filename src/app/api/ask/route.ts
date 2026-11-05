@@ -96,26 +96,38 @@ export async function POST(request: Request) {
   // Free-tier models are sometimes "busy" (503) or out of quota (429): retry once, then fall back to
   // Google's rolling aliases. A model that doesn't exist for this key (404) is skipped too.
   const primary = env().GEMINI_MODEL ?? process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
-  const models = [primary, primary, "gemini-flash-latest", "gemini-flash-lite-latest"];
-  const payload = JSON.stringify({
-    systemInstruction: { parts: [{ text: sys.join("\n") }] },
-    contents: turns,
-    generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
-  });
+  const models = [primary, "gemini-flash-latest", "gemini-flash-lite-latest"];
+  // Little "thinking" before answering: answers start in a few seconds instead of timing out.
+  const payload = (thinking: boolean) =>
+    JSON.stringify({
+      systemInstruction: { parts: [{ text: sys.join("\n") }] },
+      contents: turns,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 4096, ...(thinking ? { thinkingConfig: { thinkingLevel: "low" } } : {}) },
+    });
   let upstream: Response | null = null;
   let status = 0;
-  for (const [i, model] of models.entries()) {
+  let thinking = true;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
     upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: payload,
+      body: payload(thinking),
+      // No first byte within 25 s: try the next model rather than leave the reader waiting.
+      signal: AbortSignal.timeout(25_000),
     }).catch(() => null);
     if (upstream?.ok && upstream.body) break;
     status = upstream?.status ?? 0;
-    console.error("gemini failed", model, status, upstream ? (await upstream.text()).slice(0, 300) : "network");
+    const detail = upstream ? (await upstream.text()).slice(0, 300) : "network/timeout";
+    console.error("gemini failed", model, status, detail);
     upstream = null;
-    if (![0, 404, 429, 500, 503].includes(status)) break; // bad request etc.: another model won't help
-    if (i === 0) await new Promise((r) => setTimeout(r, 800));
+    // This model doesn't accept the thinking setting: same model again without it.
+    if (status === 400 && thinking && /thinking/i.test(detail)) {
+      thinking = false;
+      i--;
+      continue;
+    }
+    if (![0, 404, 429, 500, 502, 503, 504, 524].includes(status)) break; // bad request etc.: another model won't help
   }
   if (!upstream?.body) {
     return Response.json(
