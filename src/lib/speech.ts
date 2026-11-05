@@ -219,6 +219,7 @@ function speakItem(r: Run, my: number) {
   if (!item) {
     run = null;
     emitWord(null);
+    pauseKeepAlive();
     set({ status: "idle", verse: null });
     releaseWake();
     r.onDone();
@@ -293,6 +294,54 @@ function speakItem(r: Run, my: number) {
   next();
 }
 
+/* ---------- lock-screen controls while a device voice reads ---------- */
+
+/**
+ * Phones only show lock-screen / notification controls for a page that is playing audio. While a
+ * device voice reads, a silent looping track gives the page those controls (play / pause / previous /
+ * next verse) — and on iPhones it also helps speech carry on with the screen locked.
+ */
+let keepAlive: HTMLAudioElement | null = null;
+let deviceControls: { title: string; artist: string; toggle: () => void; step: (d: number) => void } | null = null;
+/** The reader registers what the lock-screen buttons do (and the chapter shown there). */
+export function setDeviceControls(c: typeof deviceControls) {
+  deviceControls = c;
+  if (state.engine === "device" && state.status !== "idle") showDeviceSession();
+}
+const isPhone = () => typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches;
+function showDeviceSession() {
+  const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+  if (!ms || !deviceControls || rec) return;
+  const c = deviceControls;
+  try {
+    ms.metadata = new MediaMetadata({ title: c.title, artist: c.artist, album: "Verses Across" });
+    ms.setActionHandler("play", () => c.toggle());
+    ms.setActionHandler("pause", () => c.toggle());
+    ms.setActionHandler("previoustrack", () => c.step(-1));
+    ms.setActionHandler("nexttrack", () => c.step(1));
+    for (const a of ["seekbackward", "seekforward"] as MediaSessionAction[]) ms.setActionHandler(a, null);
+    ms.playbackState = state.status === "playing" ? "playing" : "paused";
+  } catch {
+    /* not supported */
+  }
+}
+function startKeepAlive() {
+  if (!isPhone()) return;
+  try {
+    keepAlive ??= new Audio(SILENT);
+    keepAlive.loop = true;
+    void keepAlive.play().catch(() => {});
+  } catch {
+    /* no audio: speech still works with the screen on */
+  }
+  showDeviceSession();
+}
+function pauseKeepAlive() {
+  keepAlive?.pause();
+  const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+  if (ms && !rec && deviceControls) ms.playbackState = "paused";
+}
+
 /** Start (or restart) reading `items` from index `start`. */
 export function play(opts: {
   items: SpeechItem[];
@@ -323,6 +372,7 @@ export function play(opts: {
   if (opts.keepAwake) acquireWake();
   stopRecording();
   set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "device", ready: false, speaking: null });
+  startKeepAlive();
   if (opts.voice?.voiceURI !== lastVoice) {
     lastVoice = opts.voice?.voiceURI;
     set({ wordTiming: null });
@@ -372,6 +422,7 @@ export function pause() {
   emitWord(null);
   releaseWake();
   window.speechSynthesis?.cancel(); // `current` clears itself when the utterance's end event arrives
+  pauseKeepAlive();
   set({ status: "paused" });
 }
 
@@ -388,6 +439,11 @@ export function stop() {
 export function close() {
   stop();
   set({ open: false, error: null });
+  const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+  if (ms && deviceControls) {
+    ms.metadata = null;
+    ms.playbackState = "none";
+  }
 }
 
 /* ---------- recorded audio (audio v2): an <audio> element keeps playing with the screen locked ---------- */
@@ -718,6 +774,7 @@ function mediaSession(title: string, artist: string) {
 }
 
 function stopRecording() {
+  pauseKeepAlive(); // a recording has its own audio (and lock-screen controls)
   if (rec) cancelAnimationFrame(rec.raf);
   if (rec?.mix) {
     clearTimeout(rec.mix.timer);

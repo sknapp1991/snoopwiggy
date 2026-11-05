@@ -9,6 +9,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW = path.join(ROOT, "data", "raw", "enoch");
@@ -18,9 +19,11 @@ const exists = (p: string) => access(p).then(() => true, () => false);
 const ENT: Record<string, string> = { nbsp: " ", amp: "&", quot: '"', lt: "<", gt: ">", mdash: "—", ndash: "–", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“", icirc: "î", acirc: "â", ecirc: "ê", ucirc: "û", ocirc: "ô", eacute: "é", aelig: "æ" };
 const decode = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 
 const ROMAN: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100 };
 const roman = (r: string) => [...r].reduce((acc, c, i, a) => (ROMAN[c] < (ROMAN[a[i + 1]] ?? 0) ? acc - ROMAN[c] : acc + ROMAN[c]), 0);
@@ -49,6 +52,28 @@ async function main() {
     const nav = h.search(/<div class="filenav">|<HR>/i);
     if (nav >= 0) h = h.slice(0, nav);
     h = h.replace(/<script[\s\S]*?<\/script>/gi, "");
+    // Where Charles prints two recensions side by side (Ethiopic | Greek), keep only the left column,
+    // the Ethiopic his main text follows; otherwise both get run together (22:10 "… sinners been made for sinners").
+    h = h.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (table, inner: string) => {
+      if (!/width="50%"/i.test(inner)) return table;
+      const lefts: string[] = [];
+      const rights: string[] = [];
+      for (const [, row] of inner.matchAll(/<tr>([\s\S]*?)<\/tr>/gi)) {
+        const cells = row
+          .split(/<td[^>]*>/i)
+          .slice(1)
+          .map((c) => c.replace(/<\/td>[\s\S]*$/i, "").replace(/<p>(\s*)(\d{1,3}) (?=[A-Z])/gi, "<p>$1$2. ")); // "2 And" → "2. And"
+        lefts.push(cells[0] ?? "");
+        rights.push(cells[1] ?? "");
+      }
+      const nums = (c: string) => new Set([...c.replace(/<[^>]+>/g, " ").matchAll(/(?:^|\s)(\d{1,3})\.\s/g)].map((m) => m[1]));
+      const l = nums(lefts.join(" "));
+      const r = nums(rights.join(" "));
+      // Different verses side by side (90:13–15 | 16–18, doublets): keep both, left column first.
+      // The same verses: a second recension of them — keep only the left one.
+      const keepRight = r.size > 0 && ![...r].some((n) => l.has(n));
+      return ` ${lefts.join(" ")} ${keepRight ? rights.join(" ") : ""} `;
+    });
     h = h.replace(/<p align="CENTER">[\s\S]*?<\/p>/gi, " "); // section headings ("XXXVII-LXXI")
     h = h.replace(/<h3[^>]*>\s*CHAPTER\s+([IVXLC]+)\.?\s*<\/h3>/gi, (_, r: string) => ` \u0001${roman(r)}\u0001 `);
     h = h.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, " "); // other headings
@@ -60,6 +85,7 @@ async function main() {
   }
   text = text
     .replace(/[⌈⌉〈〉†]/g, "")
+    .replace("Honoured and 2 Mighty", "Honoured and Mighty") // a stray "2" in the source (103:1)
     .replace(/\bp\.\s*\d+\b/g, " ")
     .replace(/\s+/g, " ");
 
@@ -81,26 +107,46 @@ async function main() {
     const list: { v: string; t: string }[] = [];
     const firstNum = /(?:^|\s)(\d{1,3})\.\s/.exec(body);
     let expect = firstNum && Number(firstNum[1]) > 5 && Number(firstNum[1]) <= 30 ? Number(firstNum[1]) : 1;
-    let last = 0;
+    const first = expect;
     // OCR slips: "l." / "I." for 1, "O" for 0 — accepted only where that number is the one expected.
-    const re = /(?:^|\s)([\dlIO]{1,3})\s?\.(?:\s|(?=[A-Z‘'"(]))/g; // "2.For" (no space) too
+    // "2.For" (no space) too; "17 And" (no full stop) only where 17 is the number expected.
+    // (?<!\S) rather than \s, so "80. 17." finds the 17 too (74:17).
+    const re = /(?<!\S)([\dlIO]{1,3})(\s?\.(?:\s|(?=[A-Z‘'"(]))| (?=[A-Z]))/g;
+    const found = [...body.matchAll(re)].map((m) => ({
+      n: Number(m[1].replace(/[lI]/g, "1").replace(/O/g, "0")),
+      ocr: /[lIO]/.test(m[1]),
+      // A number without its full stop counts only after the end of a sentence ("…and 2 Mighty One" in 103:1 is a typo).
+      dot: m[2].includes("."),
+      sentence: m[2].includes(".") || /(?:^|[.:;!?'"’”)\]])\s*$/.test(body.slice(Math.max(0, m.index! - 4), m.index!)),
+      at: m.index!,
+      end: m.index! + m[0].length,
+    }));
     const cuts: { n: number; at: number; end: number }[] = [];
-    for (const m of body.matchAll(re)) {
-      const ocr = /[lIO]/.test(m[1]);
-      const n = Number(m[1].replace(/[lI]/g, "1").replace(/O/g, "0"));
-      if (ocr && n !== expect) continue;
-      if (n === expect || (n > expect && n <= expect + 2)) {
-        cuts.push({ n, at: m.index!, end: m.index! + m[0].length });
-        expect = n + 1;
-      }
+    const used = new Set<number>();
+    for (const [k, f] of found.entries()) {
+      const { n } = f;
+      if (f.ocr && (n !== expect || !f.dot)) continue; // "I Enoch" is not verse 1
+      if (!f.dot && (!f.sentence || (n !== expect && n !== expect + 1))) continue; // "17 And" when 16 is missing (10:17)
+      if (used.has(n)) continue;
+      const after = found.slice(k + 1).find((x) => x.dot && !x.ocr)?.n;
+      // In order (allowing a skipped number or two); or a run further on (91:18, 19 printed after 91:11);
+      // or one verse Charles moved here (60:25 after 60:6; 106:17 before 106:16) — reading then resumes.
+      const inOrder = n >= expect && n <= expect + 2;
+      const run = n > expect && n <= expect + 12 && after === n + 1;
+      const moved = n > expect && n <= expect + 30 && after === expect;
+      // A number skipped earlier, printed later (90:14, 15 come after 90:16 and 19 in the source).
+      const backfill = f.dot && !f.ocr && n < expect && n >= first;
+      if (!inOrder && !run && !moved && !backfill) continue;
+      cuts.push({ n, at: f.at, end: f.end });
+      used.add(n);
+      if (!moved && !backfill) expect = n + 1;
     }
     for (const [k, c] of cuts.entries()) {
       const t = body
         .slice(c.end, cuts[k + 1]?.at ?? body.length)
         .replace(/\s+([,.;:!?)])/g, "$1")
         .trim();
-      if (t && c.n > last) list.push({ v: String(c.n), t });
-      last = c.n;
+      if (t) list.push({ v: String(c.n), t });
     }
     // A one-verse chapter has no number printed.
     if (!list.length && body.trim()) list.push({ v: "1", t: body.replace(/\s+([,.;:!?)])/g, "$1").trim() });

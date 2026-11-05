@@ -11,6 +11,7 @@
 import { readFile, rm, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW = path.join(ROOT, "data", "raw", "ramayana");
@@ -20,9 +21,11 @@ const NAMES = ["Bala Kanda (Childhood)", "Ayodhya Kanda (Ayodhya)", "Aranya Kand
 const ENT: Record<string, string> = { nbsp: " ", amp: "&", quot: '"', lt: "<", gt: ">", mdash: "—", ndash: "–", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“", aacute: "á", Aacute: "Á", eacute: "é", Eacute: "É", iacute: "í", Iacute: "Í", oacute: "ó", Oacute: "Ó", uacute: "ú", Uacute: "Ú", acirc: "â", icirc: "î", ucirc: "û", ntilde: "ñ", aelig: "æ", uuml: "ü" };
 const decode = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 const tidy = (s: string) => s.replace(/[\s ]+/g, " ").replace(/\s+([,.;:!?)])/g, "$1").trim();
 
 function canto(html: string) {
@@ -35,7 +38,9 @@ function canto(html: string) {
     .replace(/<A NAME="page_[^"]*">[\s\S]*?<\/A>(<BR>)?/gi, "")
     .replace(/<A NAME="fr_[^"]*"><\/A>/gi, "")
     .replace(/<A HREF="#fn_[^"]*">[\s\S]*?<\/A>/gi, "")
-    .replace(/<CENTER>[\s\S]*?<\/CENTER>/gi, ""); // "*********", "OM."
+    .replace(/<CENTER>[\s\S]*?<\/CENTER>/gi, "") // "*********", "OM."
+    // The end of a footnote that a page break cut off from its start ("… Part II. p. 166.}", V, 27).
+    .replace(/second passage, may perhaps be understood[\s\S]*?Part II\. p\. 166\.\}(?:<BR>)?/, "");
   const raw = decode(h.replace(/<BR>/gi, "\n").replace(/<P>/gi, "\n").replace(/<[^>]+>/g, "")).split("\n");
   // A stanza starts on an indented line ("&nbsp;&nbsp; To sainted Nárad…"). Long stanzas are split
   // after a sentence end once they pass 8 lines, so a "verse" stays a readable size.

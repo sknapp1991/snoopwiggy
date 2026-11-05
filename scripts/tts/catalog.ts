@@ -8,7 +8,7 @@
  */
 import { cp, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { booksOfWork } from "../../src/lib/catalog";
+import { booksOfWork, getVersion } from "../../src/lib/catalog";
 type Recording = { id: string; version: string; voice: string; label: string; engine: string; license: string; chapters?: Record<string, number[]> };
 
 const ROOT = path.resolve(__dirname, "..", "..");
@@ -57,7 +57,7 @@ async function main() {
       const chapters: Record<string, number[]> = {};
       let total = 0;
       let all = true;
-      for (const b of booksOfWork("bible")) {
+      for (const b of booksOfWork(getVersion(version)?.work ?? "bible")) {
         const files = (await readdir(path.join(SRC, version, voice, b.id)).catch(() => [] as string[])).filter((f) => f.endsWith(".mp3"));
         const nums = files.map((f) => parseInt(f, 10)).sort((x, y) => x - y);
         if (nums.length) chapters[b.id] = nums;

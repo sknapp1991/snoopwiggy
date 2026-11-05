@@ -11,6 +11,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW = path.join(ROOT, "data", "raw", "upanishads");
@@ -37,9 +38,11 @@ const ENT: Record<string, string> = { nbsp: " ", amp: "&", quot: '"', lt: "<", g
 const CP1252: Record<number, string> = { 133: "…", 145: "‘", 146: "’", 147: "“", 148: "”", 150: "–", 151: "—" };
 const decodeOnce = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => CP1252[Number(n)] ?? String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 const decode = (s: string) => decodeOnce(decodeOnce(s));
 
 async function page(vol: string, n: number) {
@@ -79,21 +82,41 @@ function body(h: string) {
 
 /** "1. …" paragraphs → verses; text before the first number joins verse 1. */
 function verses(text: string) {
-  const out: { v: string; t: string }[] = [];
+  const out: { v: string; t: string; num: number; sec: number }[] = [];
   let expect = 1;
   let pre = "";
-  for (const para of text.split("\n")) {
+  let sec = 1;
+  // Paragraphs "1. …" (or "1. … 2. …" run together on one line) in order.
+  // A footnote mark between a number and its full stop leaves "3 . That" (Svetasvatara III, 3).
+  const paras = text
+    .replace(/(^|\n|[.;:!?'"’”)] )(\d{1,3}) \.(?=\s)/g, "$1$2.")
+    .split("\n")
+    .flatMap((p) => p.split(/(?<=[.;:!?'"’”)] )(?=\d{1,3}\.\s+[A-Z])/));
+  for (const para of paras) {
     const m = /^(\d{1,3})\.\s+([\s\S]*)$/.exec(para);
     const n = m ? Number(m[1]) : NaN;
+    // A page can hold two sections, each numbered from 1 (Brihadaranyaka I, 2 and I, 3).
+    if (m && n === 1 && out.length && expect > 2) {
+      sec++;
+      expect = 1;
+    }
     if (m && (n === expect || (n > expect && n <= expect + 3) || (out.length === 0 && n <= 30))) {
-      out.push({ v: String(n), t: (out.length === 0 && pre ? `${pre} ` : "") + m[2] });
+      out.push({ v: String(n), t: (out.length === 0 && pre ? `${pre} ` : "") + m[2], num: n, sec });
       expect = n + 1;
       pre = "";
     } else if (out.length) out[out.length - 1].t += ` ${para}`;
     else pre += (pre ? " " : "") + para;
   }
-  if (!out.length && pre) out.push({ v: "1", t: pre });
-  return out.map((x) => ({ v: x.v, t: x.t.replace(/\s+([,.;:!?)])/g, "$1").replace(/\s+/g, " ").trim() })).filter((x) => x.t);
+  if (!out.length && pre) out.push({ v: "1", t: pre, num: 1, sec: 1 });
+  // Verse ids stay unique and in order (sections after the first carry on counting); the label shows "2.3".
+  let last = 0;
+  return out
+    .map((x) => {
+      const v = x.sec === 1 ? x.num : Math.max(last + 1, x.num);
+      last = v;
+      return { v: String(v), t: x.t.replace(/\s+([,.;:!?)])/g, "$1").replace(/\s+/g, " ").trim(), ...(sec > 1 ? { n: `${x.sec}.${x.num}` } : {}) };
+    })
+    .filter((x) => x.t);
 }
 
 async function main() {

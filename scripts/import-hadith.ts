@@ -55,7 +55,8 @@ async function main() {
     // Group by kitab; book 0 (front matter in some editions) joins book 1.
     const byBook = new Map<number, { v: string; t: string; n: string }[]>();
     for (const h of ed.hadiths) {
-      const t = (h.text ?? "").replace(/\s+/g, " ").trim();
+      // Line breaks ("<br>") and characters the source lost ("�") out.
+      const t = (h.text ?? "").replace(/<br\s*\/?>/gi, " ").replace(/�/g, "").replace(/\s+/g, " ").trim();
       if (!t) continue;
       const b = Math.max(1, h.reference?.book ?? 1);
       const list = byBook.get(b) ?? byBook.set(b, []).get(b)!;

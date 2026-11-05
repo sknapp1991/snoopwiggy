@@ -14,6 +14,7 @@
 import { readdir, readFile, rm, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RV = path.join(ROOT, "data", "raw", "rigveda");
@@ -24,9 +25,11 @@ const ENT: Record<string, string> = { nbsp: " ", amp: "&", quot: '"', lt: "<", g
 const CP1252: Record<number, string> = { 133: "…", 145: "‘", 146: "’", 147: "“", 148: "”", 150: "–", 151: "—" };
 const decodeOnce = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => CP1252[Number(n)] ?? String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 const decode = (s: string) => decodeOnce(decodeOnce(s));
 const tidy = (s: string) => s.replace(/\s+/g, " ").replace(/\s+([,.;:!?)])/g, "$1").trim();
 const ROMAN: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100 };
@@ -78,10 +81,27 @@ function numbered(ls: string[], opts: { dot?: boolean; firstUnnumbered?: boolean
   return out.map((x) => ({ ...x, t: tidy(x.t) })).filter((x) => x.t);
 }
 
+/** "… Desire the mortar. 4. Diti is …" — a verse whose number sits inside the one before (AV 11.3.3–4). */
+function splitRunTogether(list: V[]): V[] {
+  const out: V[] = [];
+  const have = new Set(list.map((x) => x.v));
+  for (const x of list) {
+    const next = String(Number(x.v) + 1);
+    const m = /^\d+$/.test(x.v) && !have.has(next) ? new RegExp(`(?<=[.;:!?'"’”] )${next}\\. (?=[A-Z])`).exec(x.t) : null;
+    if (!m) {
+      out.push(x);
+      continue;
+    }
+    out.push({ ...x, t: x.t.slice(0, m.index).trim() }, { ...x, v: next, t: x.t.slice(m.index + m[0].length).trim() });
+    have.add(next);
+  }
+  return out;
+}
+
 async function write(book: string, chapters: Ch[]) {
   for (const [i, c] of chapters.entries()) {
     const ch = i + 1;
-    const verses = c.verses.length ? c.verses : [];
+    const verses = splitRunTogether(c.verses);
     const data = chapterSchema.parse({ work: "vedas", version: "griffith", book, chapter: ch, verses, ...(c.title ? { title: c.title } : {}), ...(verses.length ? {} : { note: "No text on this page of the edition." }) });
     const dir = path.join(OUT, "griffith", book);
     await mkdir(dir, { recursive: true });

@@ -48,7 +48,8 @@ async function main() {
         const m = /^dhp(\d+):(\d+)$/.exec(id);
         if (!m || !text.trim()) continue;
         const v = Number(m[1]);
-        (byVerse.get(v) ?? byVerse.set(v, []).get(v)!).push(text.trim());
+        // SuttaCentral marks verse-line breaks with <j> (and the odd <em>): plain text here.
+        (byVerse.get(v) ?? byVerse.set(v, []).get(v)!).push(text.replace(/<\/?[a-z]+>/gi, " ").replace(/\s+/g, " ").trim());
       }
       const list = [...byVerse.entries()].sort((a, b) => a[0] - b[0]).map(([v, lines]) => ({ v: String(v), t: lines.join(" ") }));
       const chapter = chapterSchema.parse({ work: "dhammapada", version, book: "dhp", chapter: i + 1, verses: list });

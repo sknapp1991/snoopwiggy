@@ -35,6 +35,7 @@ import {
   playRecordedMix,
   buildMixNext,
   type MixTrackSpec,
+  setDeviceControls,
 } from "@/lib/speech";
 import type { Version } from "@/lib/schema";
 import { RAW_WORD } from "@/lib/search-text";
@@ -556,6 +557,22 @@ export function useReadAlong({
   useEffect(() => {
     listen.current = ra;
   });
+  // Lock-screen buttons while a device voice reads (recordings set their own).
+  const lockTitle = chapterTitle(findBook(bookRef.work, bookRef.book), bookRef.chapter);
+  const lockArtist = mixed ? mixIds.map((id) => cols.find((c) => c.version.id === id)?.version.abbr ?? id).join(" + ") : (version?.abbr ?? "");
+  const raRef = useRef(ra);
+  useEffect(() => {
+    raRef.current = ra;
+  });
+  useEffect(() => {
+    setDeviceControls({
+      title: lockTitle,
+      artist: lockArtist,
+      toggle: () => raRef.current.toggle(),
+      step: (d) => raRef.current.step(d),
+    });
+    return () => setDeviceControls(null);
+  }, [lockTitle, lockArtist]);
   useEffect(() => {
     listen.set(true);
     return () => {

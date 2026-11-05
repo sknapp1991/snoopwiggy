@@ -103,9 +103,12 @@
 {"v":"102","t":"They will not hear the slightest sound thereof, while they abide in that which their souls desire."},
 {"v":"103","t":"The Supreme Horror will not grieve them, and the angels will welcome them, (saying): This is your Day which ye were promised;"},
 {"v":"104","t":"The Day when We shall roll up the heavens as a recorder rolleth up a written scroll. As We began the first creation, We shall repeat it. (It is) a promise (binding) upon Us. Lol We are to perform it."},
-{"v":"105","t":"And verily We have written in the Scripture, after the Reminder: My righteous slaves will inherit the earth: 6. Lol there is a plain statement for folk who are devout."},
-{"v":"109","t":"We sent thee not save as a mercy for the peoples. Say: It is only inspired in me that your God is One God. Will ye then surrender (unto Him) ?","n":"107–108"},
-{"v":"110","t":"But if they are averse, then say: I have warned you all alike, although I know not whether nigh or far is that which ye are promised.","n":"109"},
+{"v":"105","t":"And verily We have written in the Scripture, after the Reminder: My righteous slaves will inherit the earth:"},
+{"v":"106","t":"Lol there is a plain statement for folk who are devout."},
+{"v":"107","t":"We sent thee not save as a mercy for the peoples."},
+{"v":"108","t":"Say: It is only inspired in me that your God is One God. Will ye then surrender (unto Him) ?"},
+{"v":"109","t":"But if they are averse, then say: I have warned you all alike, although I know not whether nigh or far is that which ye are promised.","to":"110"},
+{"v":"110","t":"","cont":"21:109"},
 {"v":"111","t":"Lol He knoweth that which is said openly, and that which ye conceal.","n":"110"},
 {"v":"112","t":"And I know not but that this may be a trial for you, and enjoyment for a while,","n":"111"}
 ]}

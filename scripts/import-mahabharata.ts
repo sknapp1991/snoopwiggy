@@ -10,6 +10,7 @@
 import { readFile, rm, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW = path.join(ROOT, "data", "raw", "mahabharata");
@@ -20,9 +21,11 @@ const ENT: Record<string, string> = { nbsp: " ", amp: "&", quot: '"', lt: "<", g
 const CP1252: Record<number, string> = { 133: "…", 145: "‘", 146: "’", 147: "“", 148: "”", 150: "–", 151: "—" };
 const decodeOnce = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => CP1252[Number(n)] ?? String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 const decode = (s: string) => decodeOnce(decodeOnce(s));
 const tidy = (s: string) => s.replace(/\s+/g, " ").replace(/\s+([,.;:!?)])/g, "$1").trim();
 

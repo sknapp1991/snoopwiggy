@@ -10,6 +10,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chapterSchema } from "../src/lib/schema";
+import { namedEntity, SITE_FOOTER } from "./lib/sacred-texts";
 
 const ROOT = path.resolve(__dirname, "..");
 const RAW = path.join(ROOT, "data", "raw", "hyp");
@@ -23,9 +24,12 @@ Object.assign(ENT, { ntilde: "ñ", Ntilde: "Ñ", aelig: "æ", atilde: "ã", aacu
 const CP1252: Record<number, string> = { 133: "…", 145: "‘", 146: "’", 147: "“", 148: "”", 150: "–", 151: "—" };
 const decodeOnce = (s: string) =>
   s
+    .replace(/\[paragraph continues\]/gi, " ") // sacred-texts' page-break marker
+    .replace(/(^|\s)p\. \d{1,3}\.?(?=\s|$)/g, " ") // a printed page number ("p. 61") left in the text
     .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n: string) => CP1252[Number(n)] ?? String.fromCodePoint(Number(n)))
-    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? m);
+    .replace(/&(\w+);/g, (m, n: string) => ENT[n] ?? namedEntity(n) ?? m)
+    .replace(SITE_FOOTER, " ");
 const decode = (s: string) => decodeOnce(decodeOnce(s)); // some entities are double-encoded ("&amp;ntilde;")
 
 async function get(name: string) {

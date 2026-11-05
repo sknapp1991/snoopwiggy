@@ -308,6 +308,32 @@ function align(s: number, en: Verses, arab: Verses): Verses {
   return out;
 }
 
+/**
+ * A verse number the scan read short ("105." as "6.") leaves two verses run together and that number
+ * missing: "… of the believers. 6. And, (O Muhammad) set thy purpose …" (10:104–105). Split them again.
+ */
+function splitHidden(vs: Verses): boolean {
+  let any = false;
+  for (let pass = 0; pass < 3; pass++) {
+    let changed = false;
+    for (const v of [...vs.keys()].sort((a, b) => a - b)) {
+      const x = vs.get(v)!;
+      if (vs.has(v + 1) || !x.t) continue;
+      const want = String(v + 1);
+      const re = /(?<=[.;:!?'"’”)] )(\d{1,3})\. (?=[A-Z(‘'"“])/g;
+      for (const m of x.t.matchAll(re)) {
+        if (!want.endsWith(m[1])) continue;
+        vs.set(v, { ...x, t: x.t.slice(0, m.index).trim() });
+        vs.set(v + 1, { t: x.t.slice(m.index! + m[0].length).trim() });
+        changed = any = true;
+        break;
+      }
+    }
+    if (!changed) break;
+  }
+  return any;
+}
+
 async function main() {
   const ar = await arabic();
   await write("tanzil", ar);
@@ -335,7 +361,8 @@ async function main() {
       const last = Math.max(...pick.keys());
       for (const [v, x] of c) if (v > last) pick.set(v, x);
     }
-    const perfect = s === 1 || (pick.size === want && Math.max(...pick.keys()) === want);
+    const split = splitHidden(pick);
+    const perfect = s === 1 || (!split && pick.size === want && Math.max(...pick.keys()) === want);
     if (!perfect) {
       const before = pick.size;
       const aligned = align(s, pick, ar.get(s)!);
