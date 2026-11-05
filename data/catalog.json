@@ -17,7 +17,8 @@
     { "id": "hadith", "name": "Hadith", "versification": "hadith" },
     { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" },
     { "id": "ramayana", "name": "Ramayana", "versification": "ramayana" },
-    { "id": "vedas", "name": "Vedas", "versification": "vedas" }
+    { "id": "vedas", "name": "Vedas", "versification": "vedas" },
+    { "id": "mahabharata", "name": "Mahabharata", "versification": "mahabharata" }
   ],
   "versions": [
     {
@@ -433,6 +434,15 @@
       "attribution": "Translated by Ralph T. H. Griffith, public domain; transcription from the Internet Sacred Text Archive.",
       "sourceUrl": "https://sacred-texts.com/hin/rigveda/index.htm",
       "licensed": false, "versification": "vedas"
+    },
+    {
+      "id": "ganguli", "work": "mahabharata", "abbr": "Ganguli", "name": "The Mahabharata (Kisari Mohan Ganguli)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1896, "yearNote": "Prose translation, 1883–96",
+      "translator": "Kisari Mohan Ganguli",
+      "license": "Public Domain", "licenseNote": "Paragraphs are numbered as verses. Footnotes not included.",
+      "attribution": "Translated by Kisari Mohan Ganguli (1883–96), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/hin/maha/index.htm",
+      "licensed": false, "versification": "mahabharata"
     }
   ],
   "religions": [
@@ -738,7 +748,26 @@
       "name": "Hinduism",
       "collections": [
         { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "work": "gita", "chapters": 18, "chapterName": "Bhagavad Gita, Chapter" } ] },
-        { "id": "mahabharata", "name": "Mahabharata", "items": [ { "id": "mahabharata", "name": "Mahabharata", "status": "coming-soon" } ] },
+        { "id": "mahabharata", "name": "Mahabharata", "items": [
+          {"id": "mbh1", "name": "1. Adi Parva", "work": "mahabharata", "chapters": 236, "chapterName": "Adi Parva, section"},
+          {"id": "mbh2", "name": "2. Sabha Parva", "work": "mahabharata", "chapters": 80, "chapterName": "Sabha Parva, section"},
+          {"id": "mbh3", "name": "3. Vana Parva", "work": "mahabharata", "chapters": 313, "chapterName": "Vana Parva, section"},
+          {"id": "mbh4", "name": "4. Virata Parva", "work": "mahabharata", "chapters": 72, "chapterName": "Virata Parva, section"},
+          {"id": "mbh5", "name": "5. Udyoga Parva", "work": "mahabharata", "chapters": 199, "chapterName": "Udyoga Parva, section"},
+          {"id": "mbh6", "name": "6. Bhishma Parva", "work": "mahabharata", "chapters": 124, "chapterName": "Bhishma Parva, section"},
+          {"id": "mbh7", "name": "7. Drona Parva", "work": "mahabharata", "chapters": 199, "chapterName": "Drona Parva, section"},
+          {"id": "mbh8", "name": "8. Karna Parva", "work": "mahabharata", "chapters": 96, "chapterName": "Karna Parva, section"},
+          {"id": "mbh9", "name": "9. Shalya Parva", "work": "mahabharata", "chapters": 65, "chapterName": "Shalya Parva, section"},
+          {"id": "mbh10", "name": "10. Sauptika Parva", "work": "mahabharata", "chapters": 18, "chapterName": "Sauptika Parva, section"},
+          {"id": "mbh11", "name": "11. Stri Parva", "work": "mahabharata", "chapters": 26, "chapterName": "Stri Parva, section"},
+          {"id": "mbh12", "name": "12. Shanti Parva", "work": "mahabharata", "chapters": 363, "chapterName": "Shanti Parva, section"},
+          {"id": "mbh13", "name": "13. Anushasana Parva", "work": "mahabharata", "chapters": 168, "chapterName": "Anushasana Parva, section"},
+          {"id": "mbh14", "name": "14. Ashvamedhika Parva", "work": "mahabharata", "chapters": 92, "chapterName": "Ashvamedhika Parva, section"},
+          {"id": "mbh15", "name": "15. Ashramavasika Parva", "work": "mahabharata", "chapters": 39, "chapterName": "Ashramavasika Parva, section"},
+          {"id": "mbh16", "name": "16. Mausala Parva", "work": "mahabharata", "chapters": 8, "chapterName": "Mausala Parva, section"},
+          {"id": "mbh17", "name": "17. Mahaprasthanika Parva", "work": "mahabharata", "chapters": 3, "chapterName": "Mahaprasthanika Parva, section"},
+          {"id": "mbh18", "name": "18. Svargarohana Parva", "work": "mahabharata", "chapters": 6, "chapterName": "Svargarohana Parva, section"}
+        ] },
         { "id": "ramayana", "name": "Ramayana", "items": [
           {"id": "ry1", "name": "Bala Kanda (Childhood)", "work": "ramayana", "chapters": 75, "chapterName": "Bala Kanda, canto"},
           {"id": "ry2", "name": "Ayodhya Kanda (Ayodhya)", "work": "ramayana", "chapters": 119, "chapterName": "Ayodhya Kanda, canto"},

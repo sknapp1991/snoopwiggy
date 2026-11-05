@@ -1,0 +1,92 @@
+[
+ {
+  "id": "mbh1",
+  "name": "1. Adi Parva",
+  "chapters": 236
+ },
+ {
+  "id": "mbh2",
+  "name": "2. Sabha Parva",
+  "chapters": 80
+ },
+ {
+  "id": "mbh3",
+  "name": "3. Vana Parva",
+  "chapters": 313
+ },
+ {
+  "id": "mbh4",
+  "name": "4. Virata Parva",
+  "chapters": 72
+ },
+ {
+  "id": "mbh5",
+  "name": "5. Udyoga Parva",
+  "chapters": 199
+ },
+ {
+  "id": "mbh6",
+  "name": "6. Bhishma Parva",
+  "chapters": 124
+ },
+ {
+  "id": "mbh7",
+  "name": "7. Drona Parva",
+  "chapters": 199
+ },
+ {
+  "id": "mbh8",
+  "name": "8. Karna Parva",
+  "chapters": 96
+ },
+ {
+  "id": "mbh9",
+  "name": "9. Shalya Parva",
+  "chapters": 65
+ },
+ {
+  "id": "mbh10",
+  "name": "10. Sauptika Parva",
+  "chapters": 18
+ },
+ {
+  "id": "mbh11",
+  "name": "11. Stri Parva",
+  "chapters": 26
+ },
+ {
+  "id": "mbh12",
+  "name": "12. Shanti Parva",
+  "chapters": 363
+ },
+ {
+  "id": "mbh13",
+  "name": "13. Anushasana Parva",
+  "chapters": 168
+ },
+ {
+  "id": "mbh14",
+  "name": "14. Ashvamedhika Parva",
+  "chapters": 92
+ },
+ {
+  "id": "mbh15",
+  "name": "15. Ashramavasika Parva",
+  "chapters": 39
+ },
+ {
+  "id": "mbh16",
+  "name": "16. Mausala Parva",
+  "chapters": 8
+ },
+ {
+  "id": "mbh17",
+  "name": "17. Mahaprasthanika Parva",
+  "chapters": 3
+ },
+ {
+  "id": "mbh18",
+  "name": "18. Svargarohana Parva",
+  "chapters": 6
+ }
+]

@@ -176,6 +176,12 @@ Ralph T. H. Griffith's translations (public domain), from the Internet Sacred Te
 Veda / Vajasaneyi Samhita (1899, 40 books), Atharva Veda (1895–96, 20 books). English only: the site's
 Sanskrit is a machine conversion with errors.
 
+## Mahabharata (Hinduism, added Nov 2026)
+
+Kisari Mohan Ganguli's prose translation (1883–96, public domain), all 18 books, from the Internet Sacred
+Text Archive (`scripts/import-mahabharata.ts`). Chapter = Ganguli's section; verse = paragraph.
+Footnotes are left out.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the
