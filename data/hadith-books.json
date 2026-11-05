@@ -1,0 +1,56 @@
+[
+ {
+  "id": "bukhari",
+  "name": "Sahih al-Bukhari",
+  "chapters": 97,
+  "chapterName": "Bukhari, book"
+ },
+ {
+  "id": "muslim",
+  "name": "Sahih Muslim",
+  "chapters": 56,
+  "chapterName": "Muslim, book"
+ },
+ {
+  "id": "abudawud",
+  "name": "Sunan Abi Dawud",
+  "chapters": 43,
+  "chapterName": "Abu Dawud, book"
+ },
+ {
+  "id": "tirmidhi",
+  "name": "Jami at-Tirmidhi",
+  "chapters": 49,
+  "chapterName": "Tirmidhi, book"
+ },
+ {
+  "id": "nasai",
+  "name": "Sunan an-Nasa'i",
+  "chapters": 51,
+  "chapterName": "Nasa'i, book"
+ },
+ {
+  "id": "ibnmajah",
+  "name": "Sunan Ibn Majah",
+  "chapters": 37,
+  "chapterName": "Ibn Majah, book"
+ },
+ {
+  "id": "malik",
+  "name": "Muwatta Malik",
+  "chapters": 61,
+  "chapterName": "Muwatta, book"
+ },
+ {
+  "id": "nawawi",
+  "name": "Forty Hadith of an-Nawawi",
+  "chapters": 1,
+  "chapterName": "Forty Hadith of an-Nawawi"
+ },
+ {
+  "id": "qudsi",
+  "name": "Forty Hadith Qudsi",
+  "chapters": 1,
+  "chapterName": "Forty Hadith Qudsi"
+ }
+]

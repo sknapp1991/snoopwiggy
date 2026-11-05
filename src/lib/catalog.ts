@@ -23,6 +23,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   thomas: ["mattison"],
   mishnah: ["kulp", "mishnah-he"],
   talmud: ["talmud-he"],
+  hadith: ["hadith-ar"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

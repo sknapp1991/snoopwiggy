@@ -148,6 +148,14 @@ each segment labelled "2a:3":
 - No English for the other tractates: the complete modern translation (William Davidson / Koren) is
   CC BY-NC (non-commercial only), so it isn't used. Each tractate's first page says so.
 
+## Hadith (Islam, added Nov 2026)
+
+Nine collections in Arabic — Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami at-Tirmidhi,
+Sunan an-Nasa'i, Sunan Ibn Majah, Muwatta Malik, and the Forty Hadith of an-Nawawi and Qudsi — from
+the open hadith-api project (fawazahmed0, The Unlicense; the classical Arabic itself is public domain)
+(`scripts/import-hadith.ts`). No English: the usual translations (Muhsin Khan, Siddiqui, …) are still
+under copyright; every chapter says so.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

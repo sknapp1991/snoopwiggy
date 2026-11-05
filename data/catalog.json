@@ -13,7 +13,8 @@
     { "id": "enoch", "name": "1 Enoch", "versification": "enoch" },
     { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" },
     { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" },
-    { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" }
+    { "id": "talmud", "name": "Talmud Bavli", "versification": "talmud" },
+    { "id": "hadith", "name": "Hadith", "versification": "hadith" }
   ],
   "versions": [
     {
@@ -393,6 +394,15 @@
       "attribution": "Tractate Berakot translated by A. Cohen (Cambridge University Press, 1921), public domain, via Sefaria.",
       "sourceUrl": "https://www.sefaria.org/Berakhot",
       "licensed": false, "versification": "talmud"
+    },
+    {
+      "id": "hadith-ar", "work": "hadith", "abbr": "Arabic", "name": "Hadith collections (Arabic)",
+      "language": "ar", "kind": "native", "dir": "rtl", "year": 2021, "yearNote": "Classical Arabic texts, digital edition",
+      "translator": "Arabic original",
+      "license": "Public Domain", "licenseNote": "Arabic only: the common English translations are still under copyright.",
+      "attribution": "Arabic text from the open hadith-api project (fawazahmed0, The Unlicense).",
+      "sourceUrl": "https://github.com/fawazahmed0/hadith-api",
+      "licensed": false, "versification": "hadith"
     }
   ],
   "religions": [
@@ -680,7 +690,17 @@
       "name": "Islam",
       "collections": [
         { "id": "quran", "name": "Quran", "items": [ { "id": "quran", "name": "The Quran", "work": "quran", "chapters": 114, "chapterName": "Surah" } ] },
-        { "id": "hadith", "name": "Hadith", "items": [ { "id": "hadith", "name": "Hadith", "status": "coming-soon" } ] }
+        { "id": "hadith", "name": "Hadith (Arabic)", "items": [
+          {"id": "bukhari", "name": "Sahih al-Bukhari", "work": "hadith", "chapters": 97, "chapterName": "Bukhari, book"},
+          {"id": "muslim", "name": "Sahih Muslim", "work": "hadith", "chapters": 56, "chapterName": "Muslim, book"},
+          {"id": "abudawud", "name": "Sunan Abi Dawud", "work": "hadith", "chapters": 43, "chapterName": "Abu Dawud, book"},
+          {"id": "tirmidhi", "name": "Jami at-Tirmidhi", "work": "hadith", "chapters": 49, "chapterName": "Tirmidhi, book"},
+          {"id": "nasai", "name": "Sunan an-Nasa'i", "work": "hadith", "chapters": 51, "chapterName": "Nasa'i, book"},
+          {"id": "ibnmajah", "name": "Sunan Ibn Majah", "work": "hadith", "chapters": 37, "chapterName": "Ibn Majah, book"},
+          {"id": "malik", "name": "Muwatta Malik", "work": "hadith", "chapters": 61, "chapterName": "Muwatta, book"},
+          {"id": "nawawi", "name": "Forty Hadith of an-Nawawi", "work": "hadith", "chapters": 1, "chapterName": "Forty Hadith of an-Nawawi"},
+          {"id": "qudsi", "name": "Forty Hadith Qudsi", "work": "hadith", "chapters": 1, "chapterName": "Forty Hadith Qudsi"}
+        ] }
       ]
     },
     {
