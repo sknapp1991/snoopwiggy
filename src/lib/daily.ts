@@ -39,6 +39,9 @@ const LIST: Daily[] = [
   { work: "gita", book: "gita", chapter: 2, verse: "20" },
   { work: "bible", book: "jhn", chapter: 14, verse: "27" },
   { work: "bible", book: "gal", chapter: 5, verse: "22" },
+  { work: "mishnah", book: "pirkei-avot", chapter: 1, verse: "14" },
+  { work: "enoch", book: "1en", chapter: 1, verse: "8" },
+  { work: "thomas", book: "gth", chapter: 1, verse: "3" },
 ];
 
 /** Today's passage (local date). */

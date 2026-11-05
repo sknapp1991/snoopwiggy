@@ -11,7 +11,8 @@
     { "id": "gita", "name": "Bhagavad Gita", "versification": "gita" },
     { "id": "hyp", "name": "Hatha Yoga Pradipika", "versification": "hyp" },
     { "id": "enoch", "name": "1 Enoch", "versification": "enoch" },
-    { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" }
+    { "id": "thomas", "name": "Gospel of Thomas", "versification": "thomas" },
+    { "id": "mishnah", "name": "Mishnah", "versification": "mishnah" }
   ],
   "versions": [
     {
@@ -355,6 +356,24 @@
       "attribution": "Translated by Mark M. Mattison, public domain (gospels.net).",
       "sourceUrl": "https://www.gospels.net/thomas",
       "licensed": false, "versification": "thomas"
+    },
+    {
+      "id": "kulp", "work": "mishnah", "abbr": "Kulp", "name": "Mishnah Yomit (Dr. Joshua Kulp)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 2018,
+      "translator": "Dr. Joshua Kulp",
+      "license": "CC BY", "licenseNote": "",
+      "attribution": "Mishnah Yomit by Dr. Joshua Kulp (Conservative Yeshiva), CC BY, via Sefaria.",
+      "sourceUrl": "https://www.sefaria.org/texts/Mishnah",
+      "licensed": false, "versification": "mishnah"
+    },
+    {
+      "id": "mishnah-he", "work": "mishnah", "abbr": "Hebrew", "name": "Mishnah (Hebrew, Vilna 1913)",
+      "language": "he", "kind": "native", "dir": "rtl", "year": 1913, "yearNote": "Romm edition, Vilna 1913",
+      "translator": "Hebrew original",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Mishnah, ed. Romm, Vilna 1913, public domain, via Sefaria.",
+      "sourceUrl": "https://www.sefaria.org/texts/Mishnah",
+      "licensed": false, "versification": "mishnah"
     }
   ],
   "religions": [
@@ -511,7 +530,81 @@
             { "id": "1ch", "name": "1 Chronicles · Divrei HaYamim I", "work": "tanakh", "chapters": 29, "chapterName": "1 Chronicles" },
             { "id": "2ch", "name": "2 Chronicles · Divrei HaYamim II", "work": "tanakh", "chapters": 36, "chapterName": "2 Chronicles" }
           ] },
-        { "id": "mishnah", "name": "Mishnah", "items": [ { "id": "mishnah", "name": "Mishnah", "status": "coming-soon" } ] },
+        { "id": "mishnah-zeraim", "name": "Mishnah · Zeraim (Seeds)", "items": [
+          {"id": "berakhot", "name": "Berakhot", "work": "mishnah", "chapters": 9, "chapterName": "Berakhot"},
+          {"id": "peah", "name": "Peah", "work": "mishnah", "chapters": 8, "chapterName": "Peah"},
+          {"id": "demai", "name": "Demai", "work": "mishnah", "chapters": 7, "chapterName": "Demai"},
+          {"id": "kilayim", "name": "Kilayim", "work": "mishnah", "chapters": 9, "chapterName": "Kilayim"},
+          {"id": "sheviit", "name": "Sheviit", "work": "mishnah", "chapters": 10, "chapterName": "Sheviit"},
+          {"id": "terumot", "name": "Terumot", "work": "mishnah", "chapters": 11, "chapterName": "Terumot"},
+          {"id": "maasrot", "name": "Maasrot", "work": "mishnah", "chapters": 5, "chapterName": "Maasrot"},
+          {"id": "maaser-sheni", "name": "Maaser Sheni", "work": "mishnah", "chapters": 5, "chapterName": "Maaser Sheni"},
+          {"id": "challah", "name": "Challah", "work": "mishnah", "chapters": 4, "chapterName": "Challah"},
+          {"id": "orlah", "name": "Orlah", "work": "mishnah", "chapters": 3, "chapterName": "Orlah"},
+          {"id": "bikkurim", "name": "Bikkurim", "work": "mishnah", "chapters": 4, "chapterName": "Bikkurim"}
+        ] },
+        { "id": "mishnah-moed", "name": "Mishnah · Moed (Appointed Times)", "items": [
+          {"id": "shabbat", "name": "Shabbat", "work": "mishnah", "chapters": 24, "chapterName": "Shabbat"},
+          {"id": "eruvin", "name": "Eruvin", "work": "mishnah", "chapters": 10, "chapterName": "Eruvin"},
+          {"id": "pesachim", "name": "Pesachim", "work": "mishnah", "chapters": 10, "chapterName": "Pesachim"},
+          {"id": "shekalim", "name": "Shekalim", "work": "mishnah", "chapters": 8, "chapterName": "Shekalim"},
+          {"id": "yoma", "name": "Yoma", "work": "mishnah", "chapters": 8, "chapterName": "Yoma"},
+          {"id": "sukkah", "name": "Sukkah", "work": "mishnah", "chapters": 5, "chapterName": "Sukkah"},
+          {"id": "beitzah", "name": "Beitzah", "work": "mishnah", "chapters": 5, "chapterName": "Beitzah"},
+          {"id": "rosh-hashanah", "name": "Rosh Hashanah", "work": "mishnah", "chapters": 4, "chapterName": "Rosh Hashanah"},
+          {"id": "taanit", "name": "Ta'anit", "work": "mishnah", "chapters": 4, "chapterName": "Ta'anit"},
+          {"id": "megillah", "name": "Megillah", "work": "mishnah", "chapters": 4, "chapterName": "Megillah"},
+          {"id": "moed-katan", "name": "Moed Katan", "work": "mishnah", "chapters": 3, "chapterName": "Moed Katan"},
+          {"id": "chagigah", "name": "Chagigah", "work": "mishnah", "chapters": 3, "chapterName": "Chagigah"}
+        ] },
+        { "id": "mishnah-nashim", "name": "Mishnah · Nashim (Women)", "items": [
+          {"id": "yevamot", "name": "Yevamot", "work": "mishnah", "chapters": 16, "chapterName": "Yevamot"},
+          {"id": "ketubot", "name": "Ketubot", "work": "mishnah", "chapters": 13, "chapterName": "Ketubot"},
+          {"id": "nedarim", "name": "Nedarim", "work": "mishnah", "chapters": 11, "chapterName": "Nedarim"},
+          {"id": "nazir", "name": "Nazir", "work": "mishnah", "chapters": 9, "chapterName": "Nazir"},
+          {"id": "sotah", "name": "Sotah", "work": "mishnah", "chapters": 9, "chapterName": "Sotah"},
+          {"id": "gittin", "name": "Gittin", "work": "mishnah", "chapters": 9, "chapterName": "Gittin"},
+          {"id": "kiddushin", "name": "Kiddushin", "work": "mishnah", "chapters": 4, "chapterName": "Kiddushin"}
+        ] },
+        { "id": "mishnah-nezikin", "name": "Mishnah · Nezikin (Damages)", "items": [
+          {"id": "bava-kamma", "name": "Bava Kamma", "work": "mishnah", "chapters": 10, "chapterName": "Bava Kamma"},
+          {"id": "bava-metzia", "name": "Bava Metzia", "work": "mishnah", "chapters": 10, "chapterName": "Bava Metzia"},
+          {"id": "bava-batra", "name": "Bava Batra", "work": "mishnah", "chapters": 10, "chapterName": "Bava Batra"},
+          {"id": "sanhedrin", "name": "Sanhedrin", "work": "mishnah", "chapters": 11, "chapterName": "Sanhedrin"},
+          {"id": "makkot", "name": "Makkot", "work": "mishnah", "chapters": 3, "chapterName": "Makkot"},
+          {"id": "shevuot", "name": "Shevuot", "work": "mishnah", "chapters": 8, "chapterName": "Shevuot"},
+          {"id": "eduyot", "name": "Eduyot", "work": "mishnah", "chapters": 8, "chapterName": "Eduyot"},
+          {"id": "avodah-zarah", "name": "Avodah Zarah", "work": "mishnah", "chapters": 5, "chapterName": "Avodah Zarah"},
+          {"id": "pirkei-avot", "name": "Pirkei Avot (Ethics of the Fathers)", "work": "mishnah", "chapters": 6, "chapterName": "Pirkei Avot"},
+          {"id": "horayot", "name": "Horayot", "work": "mishnah", "chapters": 3, "chapterName": "Horayot"}
+        ] },
+        { "id": "mishnah-kodashim", "name": "Mishnah · Kodashim (Holy Things)", "items": [
+          {"id": "zevachim", "name": "Zevachim", "work": "mishnah", "chapters": 14, "chapterName": "Zevachim"},
+          {"id": "menachot", "name": "Menachot", "work": "mishnah", "chapters": 13, "chapterName": "Menachot"},
+          {"id": "chullin", "name": "Chullin", "work": "mishnah", "chapters": 12, "chapterName": "Chullin"},
+          {"id": "bekhorot", "name": "Bekhorot", "work": "mishnah", "chapters": 9, "chapterName": "Bekhorot"},
+          {"id": "arakhin", "name": "Arakhin", "work": "mishnah", "chapters": 9, "chapterName": "Arakhin"},
+          {"id": "temurah", "name": "Temurah", "work": "mishnah", "chapters": 7, "chapterName": "Temurah"},
+          {"id": "keritot", "name": "Keritot", "work": "mishnah", "chapters": 6, "chapterName": "Keritot"},
+          {"id": "meilah", "name": "Meilah", "work": "mishnah", "chapters": 6, "chapterName": "Meilah"},
+          {"id": "tamid", "name": "Tamid", "work": "mishnah", "chapters": 7, "chapterName": "Tamid"},
+          {"id": "middot", "name": "Middot", "work": "mishnah", "chapters": 5, "chapterName": "Middot"},
+          {"id": "kinnim", "name": "Kinnim", "work": "mishnah", "chapters": 3, "chapterName": "Kinnim"}
+        ] },
+        { "id": "mishnah-tahorot", "name": "Mishnah · Tahorot (Purities)", "items": [
+          {"id": "kelim", "name": "Kelim", "work": "mishnah", "chapters": 30, "chapterName": "Kelim"},
+          {"id": "oholot", "name": "Oholot", "work": "mishnah", "chapters": 18, "chapterName": "Oholot"},
+          {"id": "negaim", "name": "Negaim", "work": "mishnah", "chapters": 14, "chapterName": "Negaim"},
+          {"id": "parah", "name": "Parah", "work": "mishnah", "chapters": 12, "chapterName": "Parah"},
+          {"id": "tahorot", "name": "Tahorot", "work": "mishnah", "chapters": 10, "chapterName": "Tahorot"},
+          {"id": "mikvaot", "name": "Mikvaot", "work": "mishnah", "chapters": 10, "chapterName": "Mikvaot"},
+          {"id": "niddah", "name": "Niddah", "work": "mishnah", "chapters": 10, "chapterName": "Niddah"},
+          {"id": "makhshirin", "name": "Makhshirin", "work": "mishnah", "chapters": 6, "chapterName": "Makhshirin"},
+          {"id": "zavim", "name": "Zavim", "work": "mishnah", "chapters": 5, "chapterName": "Zavim"},
+          {"id": "tevul-yom", "name": "Tevul Yom", "work": "mishnah", "chapters": 4, "chapterName": "Tevul Yom"},
+          {"id": "yadayim", "name": "Yadayim", "work": "mishnah", "chapters": 4, "chapterName": "Yadayim"},
+          {"id": "oktzin", "name": "Oktzin", "work": "mishnah", "chapters": 3, "chapterName": "Oktzin"}
+        ] },
         { "id": "talmud", "name": "Talmud", "items": [ { "id": "talmud", "name": "Talmud", "status": "coming-soon" } ] }
       ]
     },

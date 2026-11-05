@@ -1,0 +1,443 @@
+[
+ {
+  "id": "berakhot",
+  "name": "Berakhot",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 9
+ },
+ {
+  "id": "peah",
+  "name": "Peah",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 8
+ },
+ {
+  "id": "demai",
+  "name": "Demai",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 7
+ },
+ {
+  "id": "kilayim",
+  "name": "Kilayim",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 9
+ },
+ {
+  "id": "sheviit",
+  "name": "Sheviit",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 10
+ },
+ {
+  "id": "terumot",
+  "name": "Terumot",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 11
+ },
+ {
+  "id": "maasrot",
+  "name": "Maasrot",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 5
+ },
+ {
+  "id": "maaser-sheni",
+  "name": "Maaser Sheni",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 5
+ },
+ {
+  "id": "challah",
+  "name": "Challah",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 4
+ },
+ {
+  "id": "orlah",
+  "name": "Orlah",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 3
+ },
+ {
+  "id": "bikkurim",
+  "name": "Bikkurim",
+  "collection": "zeraim",
+  "collectionName": "Mishnah · Zeraim (Seeds)",
+  "chapters": 4
+ },
+ {
+  "id": "shabbat",
+  "name": "Shabbat",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 24
+ },
+ {
+  "id": "eruvin",
+  "name": "Eruvin",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 10
+ },
+ {
+  "id": "pesachim",
+  "name": "Pesachim",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 10
+ },
+ {
+  "id": "shekalim",
+  "name": "Shekalim",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 8
+ },
+ {
+  "id": "yoma",
+  "name": "Yoma",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 8
+ },
+ {
+  "id": "sukkah",
+  "name": "Sukkah",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 5
+ },
+ {
+  "id": "beitzah",
+  "name": "Beitzah",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 5
+ },
+ {
+  "id": "rosh-hashanah",
+  "name": "Rosh Hashanah",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 4
+ },
+ {
+  "id": "taanit",
+  "name": "Ta'anit",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 4
+ },
+ {
+  "id": "megillah",
+  "name": "Megillah",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 4
+ },
+ {
+  "id": "moed-katan",
+  "name": "Moed Katan",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 3
+ },
+ {
+  "id": "chagigah",
+  "name": "Chagigah",
+  "collection": "moed",
+  "collectionName": "Mishnah · Moed (Appointed Times)",
+  "chapters": 3
+ },
+ {
+  "id": "yevamot",
+  "name": "Yevamot",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 16
+ },
+ {
+  "id": "ketubot",
+  "name": "Ketubot",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 13
+ },
+ {
+  "id": "nedarim",
+  "name": "Nedarim",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 11
+ },
+ {
+  "id": "nazir",
+  "name": "Nazir",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 9
+ },
+ {
+  "id": "sotah",
+  "name": "Sotah",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 9
+ },
+ {
+  "id": "gittin",
+  "name": "Gittin",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 9
+ },
+ {
+  "id": "kiddushin",
+  "name": "Kiddushin",
+  "collection": "nashim",
+  "collectionName": "Mishnah · Nashim (Women)",
+  "chapters": 4
+ },
+ {
+  "id": "bava-kamma",
+  "name": "Bava Kamma",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 10
+ },
+ {
+  "id": "bava-metzia",
+  "name": "Bava Metzia",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 10
+ },
+ {
+  "id": "bava-batra",
+  "name": "Bava Batra",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 10
+ },
+ {
+  "id": "sanhedrin",
+  "name": "Sanhedrin",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 11
+ },
+ {
+  "id": "makkot",
+  "name": "Makkot",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 3
+ },
+ {
+  "id": "shevuot",
+  "name": "Shevuot",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 8
+ },
+ {
+  "id": "eduyot",
+  "name": "Eduyot",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 8
+ },
+ {
+  "id": "avodah-zarah",
+  "name": "Avodah Zarah",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 5
+ },
+ {
+  "id": "pirkei-avot",
+  "name": "Pirkei Avot (Ethics of the Fathers)",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 6
+ },
+ {
+  "id": "horayot",
+  "name": "Horayot",
+  "collection": "nezikin",
+  "collectionName": "Mishnah · Nezikin (Damages)",
+  "chapters": 3
+ },
+ {
+  "id": "zevachim",
+  "name": "Zevachim",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 14
+ },
+ {
+  "id": "menachot",
+  "name": "Menachot",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 13
+ },
+ {
+  "id": "chullin",
+  "name": "Chullin",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 12
+ },
+ {
+  "id": "bekhorot",
+  "name": "Bekhorot",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 9
+ },
+ {
+  "id": "arakhin",
+  "name": "Arakhin",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 9
+ },
+ {
+  "id": "temurah",
+  "name": "Temurah",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 7
+ },
+ {
+  "id": "keritot",
+  "name": "Keritot",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 6
+ },
+ {
+  "id": "meilah",
+  "name": "Meilah",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 6
+ },
+ {
+  "id": "tamid",
+  "name": "Tamid",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 7
+ },
+ {
+  "id": "middot",
+  "name": "Middot",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 5
+ },
+ {
+  "id": "kinnim",
+  "name": "Kinnim",
+  "collection": "kodashim",
+  "collectionName": "Mishnah · Kodashim (Holy Things)",
+  "chapters": 3
+ },
+ {
+  "id": "kelim",
+  "name": "Kelim",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 30
+ },
+ {
+  "id": "oholot",
+  "name": "Oholot",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 18
+ },
+ {
+  "id": "negaim",
+  "name": "Negaim",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 14
+ },
+ {
+  "id": "parah",
+  "name": "Parah",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 12
+ },
+ {
+  "id": "tahorot",
+  "name": "Tahorot",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 10
+ },
+ {
+  "id": "mikvaot",
+  "name": "Mikvaot",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 10
+ },
+ {
+  "id": "niddah",
+  "name": "Niddah",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 10
+ },
+ {
+  "id": "makhshirin",
+  "name": "Makhshirin",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 6
+ },
+ {
+  "id": "zavim",
+  "name": "Zavim",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 5
+ },
+ {
+  "id": "tevul-yom",
+  "name": "Tevul Yom",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 4
+ },
+ {
+  "id": "yadayim",
+  "name": "Yadayim",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 4
+ },
+ {
+  "id": "oktzin",
+  "name": "Oktzin",
+  "collection": "tahorot",
+  "collectionName": "Mishnah · Tahorot (Purities)",
+  "chapters": 3
+ }
+]

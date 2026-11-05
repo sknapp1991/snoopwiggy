@@ -21,6 +21,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   hyp: ["sinh"],
   enoch: ["charles"],
   thomas: ["mattison"],
+  mishnah: ["kulp", "mishnah-he"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

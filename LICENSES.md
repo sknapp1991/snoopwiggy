@@ -131,6 +131,13 @@ conversion its editor says doesn't line up with the book.
 - **Gospel of Thomas** – Mark M. Mattison's translation from the Coptic, which he committed to the
   public domain (gospels.net/thomas), 114 sayings (`scripts/import-thomas.ts`).
 
+## Mishnah (Judaism, added Nov 2026)
+
+All six orders, 63 tractates, via Sefaria's API (`scripts/import-mishnah.ts`):
+- **Kulp** – "Mishnah Yomit" English translation by Dr. Joshua Kulp, CC BY (credit shown with the text).
+- **Hebrew** – Mishnah, ed. Romm, Vilna 1913, public domain. (Bikkurim chapter 4, a later addition,
+  isn't in this edition; that chapter shows a note.)
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the
