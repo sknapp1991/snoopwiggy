@@ -24,6 +24,7 @@ import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
 import { StudiedBox } from "./studied-box";
+import { FloatingNav } from "./floating-nav";
 import { HighlightModeBar } from "./highlight-mode";
 import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
@@ -32,7 +33,7 @@ import { useSpeech } from "@/lib/speech";
 import { setReadingContext } from "@/lib/ai-chat";
 import { getPosition, savePosition } from "@/lib/reading-position";
 import { FirstTips } from "./first-tips";
-import { ListenButton, ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
+import { ReadAlongBar, ReadAlongSpacer, useReadAlong, type ReadAlong } from "./audio-player";
 import { useReaderState } from "./use-reader-state";
 import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./use-chapter-swipe";
 
@@ -273,7 +274,7 @@ export function ReaderView() {
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <FirstTips />
-        <ChapterHeader title={title} subtitle={entries.flatMap((e) => (e.status === "ok" && e.data.title ? [e.data.title] : [])).filter((t, i, a) => a.indexOf(t) === i).join(" · ")} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
+        <ChapterHeader title={title} subtitle={entries.flatMap((e) => (e.status === "ok" && e.data.title ? [e.data.title] : [])).filter((t, i, a) => a.indexOf(t) === i).join(" · ")} bookRef={ref} versions={versions} prev={prev} next={next} />
       </div>
 
       <ListenCtx.Provider value={ra}>
@@ -316,9 +317,9 @@ export function ReaderView() {
       </div>
     )}
     {settings.floatingNav && (
-      <FloatingNav prev={prev} next={next} versions={versions} visible={idle && !hint} raised={ra.speech.open} />
+      <FloatingNav prev={prev} next={next} versions={versions} faint={!idle || !!hint} raised={ra.speech.open} />
     )}
-    <ReadAlongBar ra={ra} />
+    {ra.speech.open && <ReadAlongBar ra={ra} />}
     <HighlightModeBar raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
     </>
@@ -346,32 +347,6 @@ function SwipeHintView({ hint, prev, next }: { hint: SwipeHint; prev?: BookRef; 
 }
 
 /** Small round ‹ › buttons at the bottom corners; they fade while scrolling and return when idle. */
-function FloatingNav({ prev, next, versions, visible, raised }: { prev?: BookRef; next?: BookRef; versions: string[]; visible: boolean; raised: boolean }) {
-  const cls = `pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full border border-line bg-panel/90 text-muted shadow-md backdrop-blur transition-opacity duration-300 hover:text-ink ${
-    visible ? "opacity-90" : "pointer-events-none opacity-0"
-  }`;
-  return (
-    <div
-      className={`pointer-events-none absolute inset-x-0 z-10 flex justify-between px-3 ${raised ? "bottom-24" : "bottom-4 mb-[env(safe-area-inset-bottom)]"}`}
-    >
-      {prev ? (
-        <Link href={readHref(prev, versions)} aria-label={`Previous chapter: ${refLabel(prev)}`} title={refLabel(prev)} className={cls} tabIndex={visible ? 0 : -1}>
-          <ChevronLeft />
-        </Link>
-      ) : (
-        <span />
-      )}
-      {next ? (
-        <Link href={readHref(next, versions)} aria-label={`Next chapter: ${refLabel(next)}`} title={refLabel(next)} className={cls} tabIndex={visible ? 0 : -1}>
-          <ChevronRight />
-        </Link>
-      ) : (
-        <span />
-      )}
-    </div>
-  );
-}
-
 function refLabel(r: BookRef) {
   return chapterTitle(findBook(r.work, r.book), r.chapter, r.book);
 }
@@ -383,7 +358,6 @@ function ChapterHeader({
   versions,
   prev,
   next,
-  ra,
 }: {
   title: string;
   /** The chapter's own name(s) from the versions shown, e.g. a sutta title in English · Pāli. */
@@ -392,7 +366,6 @@ function ChapterHeader({
   versions: string[];
   prev?: BookRef;
   next?: BookRef;
-  ra: ReadAlong;
 }) {
   const book = findBook(bookRef.work, bookRef.book)!;
   return (
@@ -405,7 +378,6 @@ function ChapterHeader({
         {subtitle && <p className="mt-0.5 font-serif text-base text-muted md:text-lg">{subtitle}</p>}
       </div>
       <div className="flex shrink-0 gap-1">
-        <ListenButton ra={ra} />
         <NavIcon to={prev} versions={versions} label="Previous chapter" icon={<ChevronLeft />} />
         <NavIcon to={next} versions={versions} label="Next chapter" icon={<ChevronRight />} />
       </div>

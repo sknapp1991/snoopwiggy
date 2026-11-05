@@ -5,7 +5,7 @@
  * Spanish, listen in Spanish), speed and voice; optionally keep going into the next chapter.
  */
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import type { AlignedRow } from "@/lib/align";
 import { chapterTitle, findBook, readHref, type BookRef } from "@/lib/catalog";
 import type { ChapterEntry } from "@/lib/chapter-store";
@@ -345,7 +345,7 @@ export function useReadAlong({
     };
   }, [scroller, readingVersion]);
 
-  return {
+  const ra = {
     speech,
     supported,
     cols,
@@ -498,6 +498,59 @@ export function useReadAlong({
     },
     startAt,
   };
+  // The ▶ in the top bar plays this chapter (see ListenTopButton).
+  useEffect(() => {
+    listen.current = ra;
+  });
+  useEffect(() => {
+    listen.set(true);
+    return () => {
+      listen.current = null;
+      listen.set(false);
+    };
+  }, []);
+  return ra;
+}
+
+/** The reader on screen registers here, so the top bar's ▶ can start / pause it. */
+const listen = (() => {
+  let available = false;
+  const subs = new Set<() => void>();
+  return {
+    current: null as { toggle: () => void; supported: boolean } | null,
+    set(on: boolean) {
+      available = on;
+      subs.forEach((l) => l());
+    },
+    subscribe(l: () => void) {
+      subs.add(l);
+      return () => subs.delete(l);
+    },
+    get: () => available,
+  };
+})();
+
+/** ▶ / ⏸ next to search: one tap reads this chapter aloud from the first verse on screen. */
+export function ListenTopButton() {
+  const on = useSyncExternalStore(listen.subscribe, listen.get, () => false);
+  const speech = useSpeech();
+  const supported = useSpeechSupported();
+  if (!on || !supported) return null;
+  const playing = speech.status === "playing";
+  return (
+    <button
+      type="button"
+      onClick={() => listen.current?.toggle()}
+      aria-label={playing ? "Pause reading aloud" : "Read this chapter aloud"}
+      aria-pressed={playing}
+      title={playing ? "Pause" : "Read aloud from the first verse on screen"}
+      className={`flex h-11 w-11 items-center justify-center rounded-lg hover:bg-raised hover:text-ink desk:border desk:border-line ${
+        playing || speech.open ? "bg-accent-soft text-accent" : "text-muted desk:bg-raised"
+      }`}
+    >
+      {playing ? <PauseIcon /> : <PlayIcon />}
+    </button>
+  );
 }
 
 /** Headphones button in the chapter header. */
@@ -527,6 +580,8 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
   const [more, setMore] = useState(false);
   const [picker, setPicker] = useState(false);
   const [range, setRange] = useState<{ from: string; to: string } | null>(null);
+  const [tucked, setTucked] = useState(false);
+  const swipeStart = useRef<{ x: number; y: number; done: boolean } | null>(null);
   const settings = useSettings();
   const { speech, version, lang } = ra;
   if (!speech.open || !version) return null;
@@ -539,13 +594,64 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
 
   const btn = "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink disabled:opacity-40";
 
+  // Swipe down: first closes the settings / verse picker, then tucks the bar away into a small chip
+  // (reading carries on); tap the chip to bring the bar back.
+  const swipe = {
+    onPointerDown: (e: React.PointerEvent) => {
+      if ((e.target as HTMLElement).closest("select, input, textarea")) return;
+      swipeStart.current = { y: e.clientY, x: e.clientX, done: false };
+    },
+    onPointerMove: (e: React.PointerEvent) => {
+      const s = swipeStart.current;
+      if (!s || s.done) return;
+      const dy = e.clientY - s.y;
+      if (dy > 45 && dy > Math.abs(e.clientX - s.x) * 1.5) {
+        s.done = true;
+        if (more || picker) {
+          setMore(false);
+          setPicker(false);
+        } else setTucked(true);
+      }
+    },
+    onPointerUp: () => {
+      swipeStart.current = null;
+    },
+    onPointerCancel: () => {
+      swipeStart.current = null;
+    },
+  };
+
+  if (tucked)
+    return (
+      <div data-no-swipe className="absolute bottom-3 right-3 z-20 mb-[env(safe-area-inset-bottom)] flex items-center gap-1 rounded-full border border-line bg-panel/90 p-1 shadow-lg backdrop-blur">
+        <button type="button" onClick={ra.toggle} aria-label={playing ? "Pause" : "Play"} className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-ink">
+          {playing ? <PauseIcon width={18} height={18} /> : <PlayIcon width={18} height={18} />}
+        </button>
+        <button type="button" onClick={() => setTucked(false)} aria-label="Show the read-aloud controls" className="flex h-10 items-center gap-1 rounded-full px-2 text-xs font-medium text-muted hover:text-ink">
+          {chapterTitle(book, ra.bookRef.chapter)}
+          {verse ? `:${verse}` : ""}
+          <span aria-hidden className="text-base leading-none">⌃</span>
+        </button>
+      </div>
+    );
+
   return (
     <div
       role="region"
       aria-label="Read aloud"
       data-no-swipe
-      className="absolute inset-x-0 bottom-0 z-20 border-t border-line bg-panel/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur"
+      {...swipe}
+      className="absolute inset-x-0 bottom-0 z-20 touch-pan-x border-t border-line bg-panel/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur"
     >
+      {/* Grab handle: swipe down to close the options, then to tuck the bar away */}
+      <button
+        type="button"
+        onClick={() => (more || picker ? (setMore(false), setPicker(false)) : setTucked(true))}
+        aria-label={more || picker ? "Close the options" : "Tuck the player away (it keeps reading)"}
+        className="mx-auto flex h-4 w-16 items-center justify-center"
+      >
+        <span className="h-1 w-10 rounded-full bg-line" />
+      </button>
       <div className="mx-auto flex max-w-3xl items-center gap-1 px-2 py-1.5">
         <button type="button" className={btn} onClick={() => ra.step(-1)} aria-label="Previous verse" disabled={!ra.ready}>
           <PrevIcon />

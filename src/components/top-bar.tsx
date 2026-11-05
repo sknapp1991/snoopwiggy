@@ -11,6 +11,7 @@ import { Modal } from "./modal";
 import { useReaderState } from "./use-reader-state";
 import { AiButton } from "./ai-window";
 import { SaveOffline } from "./offline";
+import { ListenTopButton } from "./audio-player";
 
 export function TopBar({
   onOpenLibrary,
@@ -63,6 +64,8 @@ export function TopBar({
       >
         <SearchIcon />
       </button>
+
+      <ListenTopButton />
 
       <button
         type="button"
