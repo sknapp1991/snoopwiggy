@@ -102,7 +102,8 @@ export function useReadAlong({
       const ci = cols.findIndex((c) => c.version.id === id);
       const l = cols[ci].version.language;
       const vo = pickVoice(allVoices, l, settings.ttsVoices[l]);
-      return buildItems(rows, ci, l).map((it) => ({ ...it, lang: l, voice: vo, version: id }));
+      const rate = settings.ttsRates[l] ?? settings.ttsRate; // e.g. English 1×, Spanish 0.9×
+      return buildItems(rows, ci, l).map((it) => ({ ...it, lang: l, voice: vo, version: id, rate }));
     });
     if (settings.ttsMixOrder === "chapter") return per.flat();
     const byVerse = new Map<string, SpeechItem[]>();
@@ -110,7 +111,7 @@ export function useReadAlong({
     return rows.flatMap((r) => byVerse.get(r.v) ?? []);
     // cols is rebuilt every render; mixKey + mixReady + rows cover what matters
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mixReady, mixKey, rows, allVoices, settings.ttsVoices, settings.ttsMixOrder]);
+  }, [mixReady, mixKey, rows, allVoices, settings.ttsVoices, settings.ttsRates, settings.ttsRate, settings.ttsMixOrder]);
   const items = mixed ? mixItems : single;
 
   const onDone = () => {
@@ -378,6 +379,15 @@ export function useReadAlong({
       updateSettings({ ttsMixOrder: order });
       if (getSpeech().status === "playing") restartSoon();
     },
+    /** Voice / speed for one language while several versions are read in turn (carries on from the same verse). */
+    setLangVoice(language: string, voiceURI: string) {
+      updateSettings({ ttsVoices: { ...getSettings().ttsVoices, [language]: voiceURI } });
+      if (getSpeech().status === "playing") restartSoon();
+    },
+    setLangRate(language: string, rate: number) {
+      updateSettings({ ttsRates: { ...getSettings().ttsRates, [language]: rate } });
+      if (getSpeech().status === "playing") restartSoon();
+    },
     toggle() {
       const s = getSpeech();
       if (s.status === "playing") pause();
@@ -615,7 +625,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               Just one
             </button>
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
             {ra.mixed ? (
               <>
                 <select
@@ -628,6 +638,14 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
                   <option value="chapter">Whole chapter in each, one after another</option>
                 </select>
                 <VerseStopPill />
+                <button
+                  type="button"
+                  aria-expanded={more}
+                  onClick={() => setMore((m) => !m)}
+                  className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs ${more ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-ink"}`}
+                >
+                  <GearIcon width={12} height={12} /> Voices &amp; speed
+                </button>
               </>
             ) : (
               <span>Tap the versions to hear, in this order.</span>
@@ -763,6 +781,9 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
 
       {more && (
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-2 px-4 pb-3 pt-1 text-sm sm:grid-cols-2">
+          {ra.mixed && <MixVoices ra={ra} />}
+          {!ra.mixed && (
+          <>
           <label className="flex min-h-11 items-center justify-between gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">Listen to</span>
             <select
@@ -833,6 +854,8 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               </optgroup>
             </select>
           </label>
+          </>
+          )}
           <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">
               Keep screen on while listening
@@ -879,6 +902,58 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           </label>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Several versions in turn: a voice and a speed for each one, side by side. */
+function MixVoices({ ra }: { ra: ReadAlong }) {
+  const settings = useSettings();
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:col-span-2 sm:grid-cols-2">
+      {ra.mixIds.map((id) => {
+        const v = ra.cols.find((c) => c.version.id === id)?.version;
+        if (!v) return null;
+        const lang = v.language;
+        const { list } = voicesFor(ra.allVoices, lang);
+        const chosen = pickVoice(ra.allVoices, lang, settings.ttsVoices[lang]);
+        const rate = settings.ttsRates[lang] ?? settings.ttsRate;
+        return (
+          <div key={id} className="space-y-1.5 rounded-lg border border-line bg-raised/60 p-2">
+            <p className="text-xs font-semibold">
+              {v.abbr} <span className="font-normal text-muted">· {getLanguage(lang).name}</span>
+            </p>
+            <div className="flex gap-2">
+              <select
+                aria-label={`${getLanguage(lang).name} voice`}
+                value={chosen?.voiceURI ?? ""}
+                disabled={!list.length}
+                onChange={(e) => ra.setLangVoice(lang, e.target.value)}
+                className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-raised px-2"
+              >
+                {!list.length && <option value="">Browser default</option>}
+                {list.map((x) => (
+                  <option key={x.voiceURI} value={x.voiceURI}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                aria-label={`${getLanguage(lang).name} speed`}
+                value={rate}
+                onChange={(e) => ra.setLangRate(lang, Math.min(TTS_RATE_MAX, Math.max(TTS_RATE_MIN, Number(e.target.value))))}
+                className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
+              >
+                {RATES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}×
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

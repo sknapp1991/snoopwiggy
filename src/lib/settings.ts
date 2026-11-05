@@ -51,6 +51,8 @@ export type Settings = {
   /** Read-along: speech rate (0.5–2), chosen voice per language (voiceURI), keep going into the next chapter. */
   ttsRate: number;
   ttsVoices: Record<string, string>;
+  /** Speed per language when several versions are read in turn (else ttsRate). */
+  ttsRates: Record<string, number>;
   /** Recorded voice per version ("<version>/<voice>"), or "device" to use the device's voices. */
   ttsRecorded: Record<string, string>;
   ttsContinue: boolean;
@@ -115,6 +117,7 @@ const DEFAULTS: Settings = {
   tabsRecent: [],
   ttsRate: 1,
   ttsVoices: {},
+  ttsRates: {},
   ttsRecorded: {},
   ttsContinue: true,
   ttsKeepAwake: true,
@@ -157,6 +160,7 @@ function read(): Settings {
       tabsRecent: Array.isArray(p.tabsRecent) ? p.tabsRecent.filter((t): t is string => typeof t === "string").slice(0, 40) : [],
       ttsRate: num(p.ttsRate, TTS_RATE_MIN, TTS_RATE_MAX) ?? 1,
       ttsVoices: p.ttsVoices && typeof p.ttsVoices === "object" ? p.ttsVoices : {},
+      ttsRates: p.ttsRates && typeof p.ttsRates === "object" ? p.ttsRates : {},
       ttsRecorded: p.ttsRecorded && typeof p.ttsRecorded === "object" ? p.ttsRecorded : {},
       ttsContinue: p.ttsContinue !== false,
       ttsKeepAwake: p.ttsKeepAwake !== false,

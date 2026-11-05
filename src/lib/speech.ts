@@ -11,7 +11,7 @@ import { useSyncExternalStore } from "react";
 import { RAW_WORD } from "./search-text";
 
 /** One verse to speak. lang/voice/version are set when several versions are read in turn. */
-export type SpeechItem = { v: string; text: string; lang?: string; voice?: SpeechSynthesisVoice | null; version?: string };
+export type SpeechItem = { v: string; text: string; lang?: string; voice?: SpeechSynthesisVoice | null; version?: string; rate?: number };
 
 export type SpeechState = {
   /** Player bar visible. */
@@ -251,7 +251,7 @@ function speakItem(r: Run, my: number) {
     const voice = item.voice !== undefined ? item.voice : r.voice;
     u.lang = voice?.lang ?? item.lang ?? r.lang;
     if (voice) u.voice = voice;
-    u.rate = r.rate;
+    u.rate = item.rate ?? r.rate;
     const chunkText = parts[p - 1];
     const chunkBase = base;
     u.onboundary = (e) => {
