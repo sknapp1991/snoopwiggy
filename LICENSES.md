@@ -78,6 +78,16 @@ Joel 4, psalm titles as verse 1).
   Both from SuttaCentral's bilara-data, dedicated to the public domain (CC0):
   https://github.com/suttacentral/bilara-data (`scripts/import-dhammapada.ts`).
 
+## Pali Canon / Tipiṭaka (Buddhism, added Nov 2026)
+
+Sutta Pitaka (DN, MN, SN 1–56, AN 1–11, and the Khuddaka books Kp, Ud, Iti, Snp, Thag, Thig), Vinaya
+Pitaka (Pātimokkhas, Vibhaṅgas, Khandhaka, Parivāra) and Abhidhamma Pitaka (7 books), from SuttaCentral's
+bilara-data, all dedicated to the public domain (CC0) (`scripts/import-tipitaka.ts`):
+- **English** – Bhikkhu Sujato (Sutta Pitaka) and Bhikkhu Brahmali (Vinaya Pitaka).
+- **Pāli** – Mahāsaṅgīti Tipiṭaka edition (root text).
+- **No English Abhidhamma**: every English translation (PTS and others) is still under copyright, so the
+  Abhidhamma is shown in Pāli only, with a note saying why.
+
 ## The Quran (Islam, added Nov 2026)
 
 114 surahs in the standard (Hafs) verse numbering.

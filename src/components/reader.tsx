@@ -246,7 +246,7 @@ export function ReaderView() {
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <FirstTips />
-        <ChapterHeader title={title} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
+        <ChapterHeader title={title} subtitle={entries.flatMap((e) => (e.status === "ok" && e.data.title ? [e.data.title] : [])).filter((t, i, a) => a.indexOf(t) === i).join(" · ")} bookRef={ref} versions={versions} prev={prev} next={next} ra={ra} />
       </div>
 
       <ListenCtx.Provider value={ra}>
@@ -351,6 +351,7 @@ function refLabel(r: BookRef) {
 
 function ChapterHeader({
   title,
+  subtitle,
   bookRef,
   versions,
   prev,
@@ -358,6 +359,8 @@ function ChapterHeader({
   ra,
 }: {
   title: string;
+  /** The chapter's own name(s) from the versions shown, e.g. a sutta title in English · Pāli. */
+  subtitle?: string;
   bookRef: BookRef;
   versions: string[];
   prev?: BookRef;
@@ -372,6 +375,7 @@ function ChapterHeader({
           {book.religion.name} · {book.collection.name}
         </p>
         <h1 className="font-serif text-2xl font-semibold md:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-0.5 font-serif text-base text-muted md:text-lg">{subtitle}</p>}
       </div>
       <div className="flex shrink-0 gap-1">
         <ListenButton ra={ra} />
@@ -632,7 +636,7 @@ function ColumnError({ col, inline = false }: { col: Col; inline?: boolean }) {
   if (/not available in this version/i.test(col.entry.message))
     return (
       <span className={`${inline ? "" : "mt-1 block"} text-xs font-normal normal-case tracking-normal text-faint`}>
-        This Bible doesn{"’"}t include this book
+        This version doesn{"’"}t include this book
       </span>
     );
   return (
@@ -694,7 +698,8 @@ function Attribution({ versions }: { versions: Version[] }) {
           </a>
         </p>
       ))}
-      <p>Verse numbers follow the English (KJV) system so versions line up; a version’s own number is shown where it differs.</p>
+      {versions[0]?.work === "bible" && <p>Verse numbers follow the English (KJV) system so versions line up; a version’s own number is shown where it differs.</p>}
+      {versions[0] && ["tipitaka", "abhidhamma"].includes(versions[0].work) && <p>Numbers in the margin count the paragraphs of each discourse; SuttaCentral’s own segment numbering is the same in every language, so the versions line up exactly.</p>}
     </footer>
   );
 }

@@ -25,7 +25,7 @@ export function chapterKey(work: string, ver: string, book: string, chapter: num
   return `${work}/${ver}/${book}/${chapter}`;
 }
 
-export type BookFile = { work: string; version: string; book: string; chapters: Record<string, Pick<Chapter, "verses" | "note">> };
+export type BookFile = { work: string; version: string; book: string; chapters: Record<string, Pick<Chapter, "verses" | "note" | "title">> };
 /** Texts are served one file per book (scripts/pack-texts.ts); every chapter of a book shares one request. */
 const books = new Map<string, Promise<BookFile>>();
 

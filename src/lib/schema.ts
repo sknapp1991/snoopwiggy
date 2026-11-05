@@ -93,6 +93,8 @@ export const chapterSchema = z.object({
   book: idSchema,
   chapter: z.number().int().positive(),
   verses: z.array(verseSchema),
+  /** The chapter's own name in this version, e.g. a sutta title ("Mindfulness Meditation"). */
+  title: z.string().optional(),
   /** Why this chapter has no verses in this version (e.g. a section the source orders differently). */
   note: z.string().optional(),
 }).refine((c) => c.verses.length > 0 || !!c.note, { message: "empty chapter needs a note" });

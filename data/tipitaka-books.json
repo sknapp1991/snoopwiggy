@@ -1,0 +1,706 @@
+[
+ {
+  "id": "dn",
+  "name": "Long Discourses (Dīgha Nikāya)",
+  "work": "tipitaka",
+  "collection": "sutta-dn-mn",
+  "chapters": 34,
+  "chapterName": "DN"
+ },
+ {
+  "id": "mn",
+  "name": "Middle Discourses (Majjhima Nikāya)",
+  "work": "tipitaka",
+  "collection": "sutta-dn-mn",
+  "chapters": 152,
+  "chapterName": "MN"
+ },
+ {
+  "id": "sn1",
+  "name": "1. Linked Discourses With Deities (Devatāsaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 81,
+  "chapterName": "SN 1."
+ },
+ {
+  "id": "sn2",
+  "name": "2. Linked Discourses on Godlings (Devaputtasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 30,
+  "chapterName": "SN 2."
+ },
+ {
+  "id": "sn3",
+  "name": "3. Linked Discourses With King Pasenadi of Kosala (Kosalasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 25,
+  "chapterName": "SN 3."
+ },
+ {
+  "id": "sn4",
+  "name": "4. Linked Discourses With Māra (Mārasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 25,
+  "chapterName": "SN 4."
+ },
+ {
+  "id": "sn5",
+  "name": "5. Linked Discourses With Nuns (Bhikkhunīsaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 5."
+ },
+ {
+  "id": "sn6",
+  "name": "6. Linked Discourses With Divinities (Brahmasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 15,
+  "chapterName": "SN 6."
+ },
+ {
+  "id": "sn7",
+  "name": "7. Linked Discourses with Brahmins (Brāhmaṇasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 22,
+  "chapterName": "SN 7."
+ },
+ {
+  "id": "sn8",
+  "name": "8. Linked Discourses With Vaṅgīsa (Vaṅgīsasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 12,
+  "chapterName": "SN 8."
+ },
+ {
+  "id": "sn9",
+  "name": "9. Linked Discourses in the Woods (Vanasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 14,
+  "chapterName": "SN 9."
+ },
+ {
+  "id": "sn10",
+  "name": "10. Linked Discourses with Spirits (Yakkhasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 12,
+  "chapterName": "SN 10."
+ },
+ {
+  "id": "sn11",
+  "name": "11. Linked Discourses with Sakka (Sakkasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 25,
+  "chapterName": "SN 11."
+ },
+ {
+  "id": "sn12",
+  "name": "12. Linked Discourses on Causation (Nidānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 213,
+  "chapterName": "SN 12."
+ },
+ {
+  "id": "sn13",
+  "name": "13. Linked Discourses on Comprehension (Abhisamayasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 11,
+  "chapterName": "SN 13."
+ },
+ {
+  "id": "sn14",
+  "name": "14. Linked Discourses on the Elements (Dhātusaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 39,
+  "chapterName": "SN 14."
+ },
+ {
+  "id": "sn15",
+  "name": "15. Linked Discourses on the Unknowable Beginning (Anamataggasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 20,
+  "chapterName": "SN 15."
+ },
+ {
+  "id": "sn16",
+  "name": "16. Linked Discourses with Kassapa (Kassapasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 13,
+  "chapterName": "SN 16."
+ },
+ {
+  "id": "sn17",
+  "name": "17. Linked Discourses on Gains and Honor (Lābhasakkārasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 43,
+  "chapterName": "SN 17."
+ },
+ {
+  "id": "sn18",
+  "name": "18. Linked Discourses with Rāhula (Rāhulasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 22,
+  "chapterName": "SN 18."
+ },
+ {
+  "id": "sn19",
+  "name": "19. Linked Discourses with Lakkhaṇa (Lakkhaṇasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 21,
+  "chapterName": "SN 19."
+ },
+ {
+  "id": "sn20",
+  "name": "20. Linked Discourses with Similes (Opammasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 12,
+  "chapterName": "SN 20."
+ },
+ {
+  "id": "sn21",
+  "name": "21. Linked Discourses with Monks (Bhikkhusaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 12,
+  "chapterName": "SN 21."
+ },
+ {
+  "id": "sn22",
+  "name": "22. Linked Discourses on the Aggregates (Khandhasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 159,
+  "chapterName": "SN 22."
+ },
+ {
+  "id": "sn23",
+  "name": "23. Linked Discourses with Rādha (Rādhasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 46,
+  "chapterName": "SN 23."
+ },
+ {
+  "id": "sn24",
+  "name": "24. Linked Discourses on Views (Diṭṭhisaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 96,
+  "chapterName": "SN 24."
+ },
+ {
+  "id": "sn25",
+  "name": "25. Linked Discourses on Stepping Into (Okkantasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 25."
+ },
+ {
+  "id": "sn26",
+  "name": "26. Linked Discourses on Arising (Uppādasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 26."
+ },
+ {
+  "id": "sn27",
+  "name": "27. Linked Discourses on Corruptions (Kilesasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 27."
+ },
+ {
+  "id": "sn28",
+  "name": "28. Linked Discourses with Sāriputta (Sāriputtasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 28."
+ },
+ {
+  "id": "sn29",
+  "name": "29. Linked Discourses on Dragons (Nāgasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 50,
+  "chapterName": "SN 29."
+ },
+ {
+  "id": "sn30",
+  "name": "30. Linked Discourses on Phoenixes (Supaṇṇasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 46,
+  "chapterName": "SN 30."
+ },
+ {
+  "id": "sn31",
+  "name": "31. Linked Discourses on Centaurs (Gandhabbakāyasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 112,
+  "chapterName": "SN 31."
+ },
+ {
+  "id": "sn32",
+  "name": "32. Linked Discourses on Cloud Gods (Valāhakasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 57,
+  "chapterName": "SN 32."
+ },
+ {
+  "id": "sn33",
+  "name": "33. Linked Discourses with Vacchagotta (Vacchagottasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 55,
+  "chapterName": "SN 33."
+ },
+ {
+  "id": "sn34",
+  "name": "34. Linked Discourses on Absorption (Jhānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 55,
+  "chapterName": "SN 34."
+ },
+ {
+  "id": "sn35",
+  "name": "35. Linked Discourses on the Six Sense Fields (Saḷāyatanasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 248,
+  "chapterName": "SN 35."
+ },
+ {
+  "id": "sn36",
+  "name": "36. Linked Discourses on Feelings (Vedanāsaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 31,
+  "chapterName": "SN 36."
+ },
+ {
+  "id": "sn37",
+  "name": "37. Linked Discourses on Females (Mātugāmasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 34,
+  "chapterName": "SN 37."
+ },
+ {
+  "id": "sn38",
+  "name": "38. Linked Discourses with Jambukhādaka (Jambukhādakasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 16,
+  "chapterName": "SN 38."
+ },
+ {
+  "id": "sn39",
+  "name": "39. Linked Discourses with Sāmaṇḍaka (Sāmaṇḍakasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 16,
+  "chapterName": "SN 39."
+ },
+ {
+  "id": "sn40",
+  "name": "40. Linked Discourses with Moggallāna (Moggallānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 11,
+  "chapterName": "SN 40."
+ },
+ {
+  "id": "sn41",
+  "name": "41. Linked Discourses with Citta the Householder (Cittasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 10,
+  "chapterName": "SN 41."
+ },
+ {
+  "id": "sn42",
+  "name": "42. Linked Discourses with Chiefs (Gāmaṇisaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 13,
+  "chapterName": "SN 42."
+ },
+ {
+  "id": "sn43",
+  "name": "43. Linked Discourses on the Unconditioned (Asaṅkhatasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 44,
+  "chapterName": "SN 43."
+ },
+ {
+  "id": "sn44",
+  "name": "44. Linked Discourses on the Undeclared (Abyākatasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 11,
+  "chapterName": "SN 44."
+ },
+ {
+  "id": "sn45",
+  "name": "45. Linked Discourses on the Eightfold Path (Maggasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 180,
+  "chapterName": "SN 45."
+ },
+ {
+  "id": "sn46",
+  "name": "46. Linked Discourses on the Awakening Factors (Bojjhaṅgasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 184,
+  "chapterName": "SN 46."
+ },
+ {
+  "id": "sn47",
+  "name": "47. Linked Discourses on Mindfulness Meditation (Satipaṭṭhānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 104,
+  "chapterName": "SN 47."
+ },
+ {
+  "id": "sn48",
+  "name": "48. Linked Discourses on the Faculties (Indriyasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 178,
+  "chapterName": "SN 48."
+ },
+ {
+  "id": "sn49",
+  "name": "49. Linked Discourses on the Right Efforts (Sammappadhānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 54,
+  "chapterName": "SN 49."
+ },
+ {
+  "id": "sn50",
+  "name": "50. Linked Discourses on the Five Powers (Balasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 108,
+  "chapterName": "SN 50."
+ },
+ {
+  "id": "sn51",
+  "name": "51. Linked Discourses on the Bases of Psychic Power (Iddhipādasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 86,
+  "chapterName": "SN 51."
+ },
+ {
+  "id": "sn52",
+  "name": "52. Linked Discourses with Anuruddha (Anuruddhasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 24,
+  "chapterName": "SN 52."
+ },
+ {
+  "id": "sn53",
+  "name": "53. Linked Discourses on Absorption (Jhānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 54,
+  "chapterName": "SN 53."
+ },
+ {
+  "id": "sn54",
+  "name": "54. Linked Discourses on Breath Meditation (Ānāpānasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 20,
+  "chapterName": "SN 54."
+ },
+ {
+  "id": "sn55",
+  "name": "55. Linked Discourses on Stream-Entry (Sotāpattisaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 74,
+  "chapterName": "SN 55."
+ },
+ {
+  "id": "sn56",
+  "name": "56. Linked Discourses on the Truths (Saccasaṁyutta)",
+  "work": "tipitaka",
+  "collection": "sutta-sn",
+  "chapters": 131,
+  "chapterName": "SN 56."
+ },
+ {
+  "id": "an1",
+  "name": "The Book of the Ones (Ekakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 627,
+  "chapterName": "AN 1."
+ },
+ {
+  "id": "an2",
+  "name": "The Book of the Twos (Dukanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 479,
+  "chapterName": "AN 2."
+ },
+ {
+  "id": "an3",
+  "name": "The Book of the Threes (Tikanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 352,
+  "chapterName": "AN 3."
+ },
+ {
+  "id": "an4",
+  "name": "The Book of the Fours (Catukkanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 783,
+  "chapterName": "AN 4."
+ },
+ {
+  "id": "an5",
+  "name": "The Book of the Fives (Pañcakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 1152,
+  "chapterName": "AN 5."
+ },
+ {
+  "id": "an6",
+  "name": "The Book of the Sixes (Chakkanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 649,
+  "chapterName": "AN 6."
+ },
+ {
+  "id": "an7",
+  "name": "The Book of the Sevens (Sattakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 1124,
+  "chapterName": "AN 7."
+ },
+ {
+  "id": "an8",
+  "name": "The Book of the Eights (Aṭṭhakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 627,
+  "chapterName": "AN 8."
+ },
+ {
+  "id": "an9",
+  "name": "The Book of the Nines (Navakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 432,
+  "chapterName": "AN 9."
+ },
+ {
+  "id": "an10",
+  "name": "The Book of the Tens (Dasakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 746,
+  "chapterName": "AN 10."
+ },
+ {
+  "id": "an11",
+  "name": "The Book of the Elevens (Ekādasakanipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-an",
+  "chapters": 1151,
+  "chapterName": "AN 11."
+ },
+ {
+  "id": "kp",
+  "name": "Short Passages (Khuddakapāṭha)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 9,
+  "chapterName": "Kp"
+ },
+ {
+  "id": "ud",
+  "name": "Heartfelt Sayings (Udāna)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 80,
+  "chapterName": "Ud, part"
+ },
+ {
+  "id": "iti",
+  "name": "So It Was Said (Itivuttaka)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 112,
+  "chapterName": "Iti"
+ },
+ {
+  "id": "snp",
+  "name": "Anthology of Discourses (Sutta Nipāta)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 73,
+  "chapterName": "Snp, part"
+ },
+ {
+  "id": "thag",
+  "name": "Verses of the Senior Monks (Theragāthā)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 264,
+  "chapterName": "Thag, poem"
+ },
+ {
+  "id": "thig",
+  "name": "Verses of the Senior Nuns (Therīgāthā)",
+  "work": "tipitaka",
+  "collection": "sutta-kn",
+  "chapters": 73,
+  "chapterName": "Thig, poem"
+ },
+ {
+  "id": "bu-pm",
+  "name": "Monks’ Pātimokkha (the rules)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 1,
+  "chapterName": "Part"
+ },
+ {
+  "id": "bu-vb",
+  "name": "Monks’ Analysis (Bhikkhu Vibhaṅga)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 221,
+  "chapterName": "Rule"
+ },
+ {
+  "id": "bi-pm",
+  "name": "Nuns’ Pātimokkha (the rules)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 1,
+  "chapterName": "Part"
+ },
+ {
+  "id": "bi-vb",
+  "name": "Nuns’ Analysis (Bhikkhunī Vibhaṅga)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 126,
+  "chapterName": "Rule"
+ },
+ {
+  "id": "kd",
+  "name": "Chapters (Khandhaka)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 22,
+  "chapterName": "Khandhaka"
+ },
+ {
+  "id": "pvr",
+  "name": "Compendium (Parivāra)",
+  "work": "tipitaka",
+  "collection": "vinaya",
+  "chapters": 51,
+  "chapterName": "Parivāra, part"
+ },
+ {
+  "id": "ds",
+  "name": "Dhammasaṅgaṇī",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 21,
+  "chapterName": "Ds, part"
+ },
+ {
+  "id": "vb",
+  "name": "Vibhaṅga",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 18,
+  "chapterName": "Vb"
+ },
+ {
+  "id": "dt",
+  "name": "Dhātukathā",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 19,
+  "chapterName": "Dt, part"
+ },
+ {
+  "id": "pp",
+  "name": "Puggalapaññatti",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 20,
+  "chapterName": "Pp, part"
+ },
+ {
+  "id": "kv",
+  "name": "Kathāvatthu",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 219,
+  "chapterName": "Kv, part"
+ },
+ {
+  "id": "ya",
+  "name": "Yamaka",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 77,
+  "chapterName": "Ya, part"
+ },
+ {
+  "id": "patthana",
+  "name": "Paṭṭhāna",
+  "work": "abhidhamma",
+  "collection": "abhidhamma",
+  "chapters": 728,
+  "chapterName": "Paṭṭhāna, part"
+ }
+]

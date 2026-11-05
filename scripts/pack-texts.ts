@@ -31,7 +31,7 @@ async function main() {
         const names = (await readdir(dir)).filter((f) => /^\d+\.json$/.test(f)).sort((a, b) => parseInt(a) - parseInt(b));
         for (const f of names) {
           const c = JSON.parse(await readFile(path.join(dir, f), "utf8"));
-          chapters[String(c.chapter)] = c.note ? { verses: c.verses, note: c.note } : { verses: c.verses };
+          chapters[String(c.chapter)] = { verses: c.verses, ...(c.note ? { note: c.note } : {}), ...(c.title ? { title: c.title } : {}) };
         }
         const body = JSON.stringify({ work, version, book, chapters });
         await mkdir(path.join(OUT, work, version), { recursive: true });

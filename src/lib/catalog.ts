@@ -15,6 +15,8 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   bible: ["kjv", "web", "rvr1909"],
   tanakh: ["jps1917", "mt"],
   dhammapada: ["sujato", "pli"],
+  tipitaka: ["sc-en", "sc-pli"],
+  abhidhamma: ["abh-pli"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };
@@ -90,5 +92,6 @@ export function sortVersions(ids: string[]): string[] {
 
 /** "Genesis 1", "Psalm 23" (uses the book's singular chapterName when it has one). */
 export function chapterTitle(book: CatalogItem | undefined, chapter: number, fallback = ""): string {
-  return `${book?.chapterName ?? book?.name ?? fallback} ${chapter}`;
+  const name = book?.chapterName ?? book?.name ?? fallback;
+  return name.endsWith(".") ? `${name}${chapter}` : `${name} ${chapter}`; // "SN 12." + 2 → "SN 12.2"
 }
