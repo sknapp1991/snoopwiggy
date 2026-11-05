@@ -367,6 +367,7 @@ export function setStopEachVerse(on: boolean) {
 export function pause() {
   token++;
   if (rec) cancelAnimationFrame(rec.raf);
+  if (rec?.mix) clearTimeout(rec.mix.timer);
   if (audio && !audio.paused) audio.pause();
   emitWord(null);
   releaseWake();
@@ -404,7 +405,227 @@ let rec: {
   onAdvance?: (chapterKey: string) => void;
   title: string;
   artist: string;
+  /** Several versions in turn from their recordings (one verse of one file at a time). */
+  mix?: Mix;
+  getMixNext?: () => Promise<MixNext | null>;
 } | null = null;
+
+/* ---------- several recorded versions in turn (keeps going with the screen locked) ---------- */
+
+export type MixSeg = { v: string; version: string; rate: number };
+type Seg = MixSeg & { s: number; e: number };
+type MixTrack = { src: string; timing: Timing; blob: boolean };
+type Mix = { seq: Seg[]; i: number; tracks: Record<string, MixTrack>; cur: string | null; timer: number; next?: Promise<MixNext | null> };
+export type MixTrackSpec = { version: string; url: string; timingUrl: string };
+type MixNext = { seq: Seg[]; tracks: Record<string, MixTrack>; chapterKey: string; title: string };
+
+/** Timing plus the whole file in memory, so switching between versions is instant (also with the screen off). */
+async function loadTrack(t: MixTrackSpec): Promise<MixTrack> {
+  const timing = await loadTiming(t.timingUrl);
+  try {
+    const r = await fetch(t.url);
+    if (r.ok) return { src: URL.createObjectURL(await r.blob()), timing, blob: true };
+  } catch {
+    /* stream it instead */
+  }
+  return { src: t.url, timing, blob: false };
+}
+async function loadTracks(specs: MixTrackSpec[]) {
+  const list = await Promise.all(specs.map(loadTrack));
+  const tracks: Record<string, MixTrack> = {};
+  specs.forEach((s, k) => (tracks[s.version] = list[k]));
+  return tracks;
+}
+function freeTracks(t?: Record<string, MixTrack>) {
+  for (const x of Object.values(t ?? {})) if (x.blob) URL.revokeObjectURL(x.src);
+}
+/** Attach start / end times; drop verses a recording doesn't have. */
+function resolveSeq(seq: MixSeg[], tracks: Record<string, MixTrack>): Seg[] {
+  const out: Seg[] = [];
+  for (const x of seq) {
+    const t = tracks[x.version]?.timing.verses.find((y) => y.v === x.v);
+    if (t) out.push({ ...x, s: t.s, e: t.e });
+  }
+  return out;
+}
+
+/** Next chapter for several versions in turn: verse order follows the first version's recording. */
+export async function buildMixNext(opts: {
+  specs: MixTrackSpec[];
+  rates: Record<string, number>;
+  order: "verse" | "chapter";
+  chapterKey: string;
+  title: string;
+}): Promise<MixNext | null> {
+  const tracks = await loadTracks(opts.specs);
+  const ids = opts.specs.map((s) => s.version);
+  const seg = (v: string, version: string) => ({ v, version, rate: opts.rates[version] ?? 1 });
+  const seq =
+    opts.order === "chapter"
+      ? ids.flatMap((id) => tracks[id].timing.verses.map((x) => seg(x.v, id)))
+      : tracks[ids[0]].timing.verses.flatMap((x) => ids.map((id) => seg(x.v, id)));
+  return { seq: resolveSeq(seq, tracks), tracks, chapterKey: opts.chapterKey, title: opts.title };
+}
+
+function mixGo(i: number, autoplay = true) {
+  const m = rec?.mix;
+  if (!audio || !rec || !m) return;
+  const seg = m.seq[i];
+  if (!seg) return void mixEnd();
+  m.i = i;
+  clearTimeout(m.timer);
+  const a = audio;
+  if (m.cur !== seg.version) {
+    m.cur = seg.version;
+    a.src = m.tracks[seg.version].src;
+    a.currentTime = seg.s;
+  } else if (Math.abs(a.currentTime - seg.s) > 0.35) a.currentTime = seg.s; // the next verse of the same file just carries on
+  a.defaultPlaybackRate = seg.rate;
+  a.playbackRate = seg.rate;
+  rec.lastVerse = seg.v;
+  set({ verse: seg.v, speaking: seg.version });
+  // Fetch the next chapter early, so carrying on with the screen off doesn't wait on the network.
+  if (!m.next && rec.getMixNext && !rec.until && i >= m.seq.length / 2) {
+    m.next = rec.getMixNext().catch(() => null);
+  }
+  if (autoplay) a.play().catch(() => set({ status: "paused", error: "Tap play to start." }));
+}
+
+/** Has the verse being heard finished? (timeupdate + a timer, so it works with the screen off too) */
+function mixCheck() {
+  const m = rec?.mix;
+  if (!audio || !rec || !m || audio.paused) return;
+  const seg = m.seq[m.i];
+  if (!seg || m.cur !== seg.version) return;
+  clearTimeout(m.timer);
+  const left = seg.e - audio.currentTime;
+  if (left <= 0.04) return mixNext();
+  m.timer = window.setTimeout(mixCheck, Math.max(30, (left / (audio.playbackRate || 1)) * 1000));
+}
+
+function mixNext() {
+  const m = rec?.mix;
+  if (!audio || !m) return;
+  const seg = m.seq[m.i];
+  const nx = m.seq[m.i + 1];
+  if (!nx) return void mixEnd();
+  if (stopEachVerse && nx.v !== seg.v) {
+    mixGo(m.i + 1, false);
+    pause();
+    return;
+  }
+  mixGo(m.i + 1);
+}
+
+async function mixEnd() {
+  const r = rec;
+  const m = r?.mix;
+  if (!r || !m) return;
+  cancelAnimationFrame(r.raf);
+  clearTimeout(m.timer);
+  const next = !r.until && r.getMixNext ? await (m.next ?? r.getMixNext().catch(() => null)) : null;
+  if (rec !== r) {
+    freeTracks(next?.tracks);
+    return;
+  }
+  if (next && next.seq.length) {
+    freeTracks(m.tracks);
+    r.mix = { seq: next.seq, i: 0, tracks: next.tracks, cur: null, timer: 0 };
+    set({ chapterKey: next.chapterKey });
+    mediaSession(next.title, r.artist);
+    r.onAdvance?.(next.chapterKey);
+    mixGo(0);
+    r.raf = requestAnimationFrame(tick);
+    return;
+  }
+  stopRecording();
+  set({ status: "idle", verse: null, until: null, speaking: null });
+  emitWord(null);
+  r.onDone();
+}
+
+/** Read several versions in turn from their recordings, starting at `start` in `seq`. */
+export async function playRecordedMix(opts: {
+  tracks: MixTrackSpec[];
+  seq: MixSeg[];
+  start: number;
+  version: string;
+  chapterKey: string;
+  until: string | null;
+  title: string;
+  artist: string;
+  onDone: () => void;
+  getNext?: () => Promise<MixNext | null>;
+  onAdvance?: (chapterKey: string) => void;
+}): Promise<boolean> {
+  const my = ++token;
+  if (speechSupported()) window.speechSynthesis.cancel();
+  run = null;
+  current = null;
+  emitWord(null);
+  releaseWake();
+  stopRecording();
+  const startAt = opts.seq[opts.start];
+  set({ open: true, version: opts.version, chapterKey: opts.chapterKey, continuePending: false, status: "playing", engine: "recorded", error: null, wordTiming: true, ready: false, verse: startAt?.v ?? null, speaking: startAt?.version ?? null });
+  let tracks: Record<string, MixTrack>;
+  try {
+    tracks = await loadTracks(opts.tracks);
+  } catch {
+    if (my !== token) return true;
+    set({ status: "idle", engine: "device" });
+    return false;
+  }
+  if (my !== token) {
+    freeTracks(tracks);
+    return true;
+  }
+  // Positions in the full list → positions after dropping verses a recording lacks.
+  const before = resolveSeq(opts.seq.slice(0, opts.start), tracks).length;
+  const seq = resolveSeq(opts.seq, tracks);
+  if (!seq.length) {
+    freeTracks(tracks);
+    set({ status: "idle", engine: "device" });
+    return false;
+  }
+  audio ??= new Audio();
+  audio.preload = "auto";
+  const first = tracks[opts.tracks[0].version].timing;
+  rec = { timing: first, until: opts.until, onDone: opts.onDone, raf: 0, lastVerse: null, onAdvance: opts.onAdvance, title: opts.title, artist: opts.artist, getMixNext: opts.getNext };
+  rec.mix = { seq, i: 0, tracks, cur: null, timer: 0 };
+  const a = audio;
+  a.onended = () => {
+    if (rec?.mix) mixNext();
+  };
+  a.ontimeupdate = mixCheck;
+  a.onpause = () => {
+    // Switching to another version's file pauses for a moment: only a real pause counts.
+    if (rec && !a.ended)
+      setTimeout(() => {
+        if (rec && a.paused) set({ status: "paused" });
+      }, 250);
+  };
+  a.onplay = () => {
+    if (rec) {
+      set({ status: "playing" });
+      cancelAnimationFrame(rec.raf);
+      rec.raf = requestAnimationFrame(tick);
+      mixCheck();
+    }
+  };
+  mediaSession(opts.title, opts.artist);
+  mixGo(Math.min(before, seq.length - 1), false);
+  try {
+    await a.play();
+  } catch (e) {
+    if ((e as DOMException)?.name === "NotAllowedError") set({ status: "paused", error: "Tap play to start." });
+    else {
+      stopRecording();
+      set({ status: "idle", engine: "device" });
+      return false;
+    }
+  }
+  return true;
+}
 
 const timings = new Map<string, Promise<Timing>>();
 export function loadTiming(url: string): Promise<Timing> {
@@ -423,6 +644,14 @@ export function loadTiming(url: string): Promise<Timing> {
 function tick() {
   if (!audio || !rec) return;
   const t = audio.currentTime;
+  if (rec.mix) {
+    // Several versions in turn: mixCheck moves between verses; this only follows the words.
+    const seg = rec.mix.seq[rec.mix.i];
+    if (seg && rec.mix.cur === seg.version)
+      emitWord(t >= seg.s && t <= seg.e ? { verse: seg.v, frac: (t - seg.s) / Math.max(0.1, seg.e - seg.s) } : null);
+    rec.raf = requestAnimationFrame(tick);
+    return;
+  }
   const vs = rec.timing.verses;
   let i = vs.findIndex((x) => t < x.e + 0.2);
   if (i < 0) i = vs.length - 1;
@@ -459,6 +688,16 @@ function mediaSession(title: string, artist: string) {
   ms.metadata = new MediaMetadata({ title, artist, album: "Verses Across" });
   const step = (d: number) => () => {
     if (!audio || !rec) return;
+    if (rec.mix) {
+      // Previous / next verse (its first version).
+      const m = rec.mix;
+      const vs = [...new Set(m.seq.map((x) => x.v))];
+      const at = vs.indexOf(m.seq[m.i]?.v);
+      const target = vs[Math.min(vs.length - 1, Math.max(0, at + d))];
+      const j = m.seq.findIndex((x) => x.v === target);
+      if (j >= 0) mixGo(j, !audio.paused);
+      return;
+    }
     const vs = rec.timing.verses;
     const i = Math.max(0, vs.findIndex((x) => x.v === state.verse));
     const j = Math.min(vs.length - 1, Math.max(0, i + d));
@@ -480,9 +719,15 @@ function mediaSession(title: string, artist: string) {
 
 function stopRecording() {
   if (rec) cancelAnimationFrame(rec.raf);
+  if (rec?.mix) {
+    clearTimeout(rec.mix.timer);
+    freeTracks(rec.mix.tracks);
+    void rec.mix.next?.then((n) => freeTracks(n?.tracks));
+  }
   const had = !!rec;
   rec = null;
   if (audio) {
+    audio.ontimeupdate = null;
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
@@ -596,8 +841,16 @@ export function resumeRecording(): boolean {
 }
 
 /** Jump within the playing recording to a verse (stays in the same chapter). */
-export function seekRecording(v: string): boolean {
+export function seekRecording(v: string, version?: string): boolean {
   if (!audio || !rec) return false;
+  if (rec.mix) {
+    const m = rec.mix;
+    let j = m.seq.findIndex((x) => x.v === v && (!version || x.version === version));
+    if (j < 0) j = m.seq.findIndex((x) => x.v === v);
+    if (j < 0) return false;
+    mixGo(j, !audio.paused);
+    return true;
+  }
   const x = rec.timing.verses.find((t) => t.v === v);
   if (!x) return false;
   audio.currentTime = x.s;

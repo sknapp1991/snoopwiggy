@@ -32,6 +32,9 @@ import {
   useVoices,
   voicesFor,
   type SpeechItem,
+  playRecordedMix,
+  buildMixNext,
+  type MixTrackSpec,
 } from "@/lib/speech";
 import type { Version } from "@/lib/schema";
 import { RAW_WORD } from "@/lib/search-text";
@@ -91,7 +94,7 @@ export function useReadAlong({
   useEffect(() => setStopEachVerse(settings.ttsVerseStop), [settings.ttsVerseStop]);
 
   // Several versions in turn (e.g. WEB then RVR): every verse in each chosen version, or each whole
-  // chapter in turn. Device voices only (a recording is one file per chapter).
+  // chapter in turn. Uses the recordings when every version has one (screen-off), else device voices.
   const mixIds = cols.filter((c) => settings.ttsMix.includes(c.version.id)).map((c) => c.version.id);
   const mixed = mixIds.length >= 2;
   const mixReady = mixed && mixIds.every((id) => cols.find((c) => c.version.id === id)?.entry.status === "ok");
@@ -152,17 +155,67 @@ export function useReadAlong({
       if (!mixItems.length || !version) return;
       const until = overrides && "until" in overrides ? overrides.until! : getSpeech().until;
       setSpeech({ until });
-      play({
-        items: ranged(mixItems, until),
-        start: index,
-        lang,
-        voice: null,
-        rate: overrides?.rate ?? getSettings().ttsRate,
-        version: version.id,
-        chapterKey,
-        onDone,
-        keepAwake: getSettings().ttsKeepAwake,
-      });
+      const list = ranged(mixItems, until);
+      const playDevice = () =>
+        play({
+          items: list,
+          start: index,
+          lang,
+          voice: null,
+          rate: overrides?.rate ?? getSettings().ttsRate,
+          version: version.id,
+          chapterKey,
+          onDone,
+          keepAwake: getSettings().ttsKeepAwake,
+        });
+      // Every version has a recording of this chapter: play those (keeps going with the phone locked).
+      const recs = mixIds.map((id) => recordingFor(id));
+      if (!(overrides && "voice" in overrides) && recs.every(Boolean)) {
+        const specs = (at: BookRef) =>
+          mixIds.map((id) => {
+            const r = recordingFor(id, at.book, at.chapter);
+            return r ? { version: id, url: audioUrl(r, at.book, at.chapter), timingUrl: timingUrl(r, at.book, at.chapter) } : null;
+          });
+        const abbr = (id: string) => cols.find((c) => c.version.id === id)?.version.abbr ?? id;
+        void playRecordedMix({
+          tracks: specs(bookRef) as MixTrackSpec[],
+          seq: list.map((it) => ({ v: it.v, version: it.version!, rate: it.rate ?? getSettings().ttsRate })),
+          start: index,
+          version: version.id,
+          chapterKey,
+          until,
+          title: chapterTitle(findBook(bookRef.work, bookRef.book), bookRef.chapter),
+          artist: mixIds.map(abbr).join(" + "),
+          onDone,
+          getNext: async () => {
+            const s = getSettings();
+            const at = adjacentChapters(bookRef).next;
+            if (!s.ttsContinue || !at) return null;
+            const sp = specs(at);
+            if (!sp.every(Boolean)) return null;
+            const rates: Record<string, number> = {};
+            for (const id of mixIds) {
+              const l = cols.find((c) => c.version.id === id)?.version.language ?? "en";
+              rates[id] = s.ttsRates[l] ?? s.ttsRate;
+            }
+            return buildMixNext({
+              specs: sp as MixTrackSpec[],
+              rates,
+              order: s.ttsMixOrder,
+              chapterKey: `${at.work}/${at.book}/${at.chapter}`,
+              title: chapterTitle(findBook(at.work, at.book), at.chapter),
+            });
+          },
+          onAdvance: () => {
+            setSpeech({ continuePending: true });
+            if (next) router.push(readHref(next, versions), { scroll: false });
+          },
+        }).then((ok) => {
+          if (!ok) playDevice();
+        });
+        return;
+      }
+      playDevice();
       return;
     }
     // Optionally read another column (e.g. the Spanish verse that was tapped).
@@ -408,12 +461,13 @@ export function useReadAlong({
         const same = settings.ttsMixOrder === "chapter" ? items.findIndex((it) => it.v === target && it.version === ver) : -1;
         i = Math.max(0, same >= 0 ? same : items.findIndex((it) => it.v === target));
       }
-      if (s.engine === "recorded" && s.chapterKey === chapterKey && items[i] && seekRecording(items[i].v)) return;
+      if (s.engine === "recorded" && s.chapterKey === chapterKey && items[i] && seekRecording(items[i].v, mixed ? items[i].version : undefined)) return;
       if (s.status === "playing") startAt(i);
       else setSpeech({ verse: items[i]?.v ?? null, chapterKey, status: "paused" });
     },
     restart(overrides?: { rate?: number; voice?: SpeechSynthesisVoice | null }) {
       if (speech.engine === "recorded" && overrides?.rate !== undefined && !("voice" in overrides)) {
+        if (mixed) return restartSoon(); // each version keeps its own speed
         setRecordingRate(overrides.rate);
         return;
       }
@@ -632,6 +686,18 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           {verse ? `:${verse}` : ""}
           <span aria-hidden className="text-base leading-none">⌃</span>
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            setTucked(false);
+            close();
+          }}
+          aria-label="Stop and close the player"
+          title="Stop"
+          className="flex h-10 w-8 items-center justify-center rounded-full text-faint hover:text-ink"
+        >
+          <CloseIcon width={14} height={14} />
+        </button>
       </div>
     );
 
@@ -695,7 +761,17 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         >
           <GearIcon />
         </button>
-        <button type="button" className={btn} onClick={close} aria-label="Close player">
+        <button
+          type="button"
+          className={btn}
+          onClick={() => {
+            setMore(false);
+            setPicker(false);
+            setTucked(true);
+          }}
+          aria-label="Minimize the player (it keeps playing)"
+          title="Minimize (keeps playing)"
+        >
           <CloseIcon />
         </button>
       </div>
@@ -865,7 +941,15 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
       )}
 
       {speech.engine === "recorded" && (
-        <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted">Recorded voice: keeps playing with the screen off · lock-screen controls.</p>
+        <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted">
+          {ra.mixed ? "Recorded voices" : "Recorded voice"}: keeps playing with the screen off · lock-screen controls.
+        </p>
+      )}
+      {speech.engine !== "recorded" && ra.mixed && speech.status !== "idle" && (
+        <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted">
+          Device voices stop when the phone locks. To keep listening locked, every version read in turn needs a recorded
+          voice for this chapter (the ● in ⚙).
+        </p>
       )}
       {speech.engine !== "recorded" && ra.recordings.length > 0 && !ra.recording && settings.ttsRecorded[version.id] !== "device" && (
         <p className="mx-auto max-w-3xl px-4 pb-1.5 text-xs text-muted">No recording of this chapter yet, so a device voice is reading.</p>
