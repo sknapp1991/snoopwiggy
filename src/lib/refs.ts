@@ -6,7 +6,7 @@
  */
 import { catalog, type BookRef } from "./catalog";
 
-export type FoundRef = { start: number; end: number; ref: BookRef; verse?: string; label: string };
+export type FoundRef = { start: number; end: number; ref: BookRef; verse?: string; to?: string; label: string };
 
 const norm = (s: string) =>
   s
@@ -108,7 +108,7 @@ export function findRefs(text: string, preferWork?: string): FoundRef[] {
     const chapter = Number(m[2]);
     if (chapter < 1 || chapter > b.chapters) continue;
     // A bare "Genesis 1" is a reference; "Chapter 1" or "Verse 3" is not (no such book anyway).
-    out.push({ start, end: m.index! + m[0].length, ref: { work: b.work, book: b.id, chapter }, verse: m[3], label: text.slice(start, m.index! + m[0].length) });
+    out.push({ start, end: m.index! + m[0].length, ref: { work: b.work, book: b.id, chapter }, verse: m[3], to: m[4], label: text.slice(start, m.index! + m[0].length) });
   }
   return out.sort((a, b) => a.start - b.start);
 }

@@ -21,8 +21,8 @@ import {
 } from "@/lib/ai-chat";
 import { useMediaQuery, WIDE_QUERY } from "@/lib/settings";
 import { toast } from "@/lib/ui-store";
-import Link from "next/link";
-import { DEFAULT_VERSIONS, readHref } from "@/lib/catalog";
+import { RefLink } from "./ref-link";
+
 import { findRefs } from "@/lib/refs";
 import { getItem, saveNote, type StudyRef } from "@/lib/study";
 import { CloseIcon, CopyIcon, MinusIcon, NoteIcon, SendIcon, SparkIcon, StopIcon, TrashIcon } from "./icons";
@@ -33,6 +33,8 @@ const SUGGESTIONS = [
   "What is the historical background?",
   "Explain key words in the original language",
 ];
+/** Where the conversation was scrolled (kept while the window is closed or the page changes). */
+let savedScroll: number | null = null;
 const MIN_W = 300;
 const MIN_H = 320;
 
@@ -92,12 +94,35 @@ export function AiWindow() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- chat.box only seeds the first position
   }, [showing, wide]);
 
-  // Follow the answer as it streams in.
-  const last = chat.messages[chat.messages.length - 1];
+  // Scrolling: a new question puts that question (and the start of its answer) at the top, and the
+  // view then stays put while the answer streams in — read from the beginning. Opening the window (or
+  // coming back to it) restores where you were.
+  const count = chat.messages.length;
+  const seen = useRef(count);
   useEffect(() => {
     const el = scroller.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [chat.messages.length, last?.text, showing]);
+    if (!el) return;
+    if (count > seen.current) {
+      const q = el.querySelector<HTMLElement>(`[data-msg="${count - 2}"]`);
+      if (q) el.scrollTop = q.offsetTop - 8; // offsetTop is relative to the (positioned) scroller
+    }
+    seen.current = count;
+  }, [count]);
+  const sized = !wide || !!box; // desktop: wait until the window has its size, or there's nothing to scroll yet
+  useEffect(() => {
+    const el = scroller.current;
+    if (!showing || !sized || !el) return;
+    const id = requestAnimationFrame(() => {
+      // Back where you were; first time: the start of the latest answer.
+      if (savedScroll !== null) el.scrollTop = savedScroll;
+      else {
+        const q = el.querySelector<HTMLElement>(`[data-msg="${chat.messages.length - 2}"]`);
+        el.scrollTop = q ? q.offsetTop - 8 : el.scrollHeight;
+      }
+    });
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the window (re)appears
+  }, [showing, sized]);
 
   useEffect(() => {
     if (showing && chat.attached) inputRef.current?.focus();
@@ -170,7 +195,13 @@ export function AiWindow() {
         </button>
       </header>
 
-      <div ref={scroller} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 text-sm">
+      <div
+        ref={scroller}
+        onScroll={(e) => {
+          savedScroll = e.currentTarget.scrollTop;
+        }}
+        className="relative min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 text-sm"
+      >
         {chat.messages.length === 0 && (
           <div className="space-y-3">
             <p className="text-muted">
@@ -189,18 +220,34 @@ export function AiWindow() {
         )}
         {chat.messages.map((m, i) =>
           m.role === "user" ? (
-            <div key={i} className="ml-8 rounded-xl rounded-br-sm bg-accent-soft px-3 py-2 text-ink">
+            <div key={i} data-msg={i} className="ml-8 rounded-xl rounded-br-sm bg-accent-soft px-3 py-2 text-ink">
               {m.ref && <div className="mb-0.5 text-xs font-semibold text-accent">{m.ref}</div>}
               <div className="whitespace-pre-wrap">{m.text}</div>
             </div>
           ) : (
             <div key={i} className={`group relative mr-4 leading-relaxed ${m.error ? "text-red-700 dark:text-red-400" : ""}`}>
-              {m.text ? <Rich text={m.text} preferWork={m.at?.work ?? ctx?.at.work} /> : <span className="animate-pulse text-muted">Thinking…</span>}
+              {m.text ? <Rich text={splitNext(m.text).body} preferWork={m.at?.work ?? ctx?.at.work} /> : <span className="animate-pulse text-muted">Thinking…</span>}
+              {/* "Would you like to explore…": follow-ups under the latest answer */}
+              {i === chat.messages.length - 1 && !chat.busy && !m.error && splitNext(m.text).next.length > 0 && (
+                <span className="mt-2 flex flex-col items-start gap-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-faint">Explore further</span>
+                  {splitNext(m.text).next.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => send(q)}
+                      className="rounded-2xl border border-accent/40 bg-accent-soft/50 px-3 py-1.5 text-left text-sm text-ink hover:border-accent hover:bg-accent-soft"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </span>
+              )}
               {m.text && !m.error && !(chat.busy && i === chat.messages.length - 1) && (
                 <span className="mt-1 flex flex-wrap gap-1">
                   <button
                     type="button"
-                    onClick={() => navigator.clipboard?.writeText(m.text).then(() => toast("Answer copied"), () => toast("Couldn’t copy"))}
+                    onClick={() => navigator.clipboard?.writeText(splitNext(m.text).body).then(() => toast("Answer copied"), () => toast("Couldn’t copy"))}
                     className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
                   >
                     <CopyIcon width={13} height={13} /> Copy
@@ -208,7 +255,7 @@ export function AiWindow() {
                   {m.at && (
                     <button
                       type="button"
-                      onClick={() => saveAnswer(m.at!, chat.messages[i - 1]?.text, m.text)}
+                      onClick={() => saveAnswer(m.at!, chat.messages[i - 1]?.text, splitNext(m.text).body)}
                       className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
                     >
                       <NoteIcon width={13} height={13} /> Save as note
@@ -346,19 +393,27 @@ function linked(s: string, preferWork?: string): ReactNode {
   refs.forEach((r, k) => {
     out.push(s.slice(at, r.start));
     out.push(
-      <Link
-        key={k}
-        href={readHref(r.ref, DEFAULT_VERSIONS[r.ref.work] && r.ref.work !== preferWork ? DEFAULT_VERSIONS[r.ref.work] : undefined, r.verse)}
-        className="font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
-        title="Open in the reader"
-      >
-        {r.label}
-      </Link>,
+      <RefLink key={k} r={r} />,
     );
     at = r.end;
   });
   out.push(s.slice(at));
   return out;
+}
+
+/**
+ * The answer and its closing "Next: question | question" line (follow-up suggestions). While the
+ * answer is still streaming, a half-written "Next:" line is hidden too.
+ */
+function splitNext(text: string): { body: string; next: string[] } {
+  const m = /\n\s*\**\s*Next\s*:?\**\s*:?\s*([^\n]*)\s*$/i.exec(text) ?? /\n\s*\**N(?:e(?:x(?:t)?)?)?$/.exec(text);
+  if (!m) return { body: text, next: [] };
+  const next = (m[1] ?? "")
+    .split("|")
+    .map((q) => q.replace(/^[\s*"“'-]+|[\s*"”']+$/g, "").trim())
+    .filter((q) => q.length > 3)
+    .slice(0, 2);
+  return { body: text.slice(0, m.index).trimEnd(), next };
 }
 
 /** Add the answer (with its question) to the note on that verse / chapter, keeping what's there. */

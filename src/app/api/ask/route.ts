@@ -70,7 +70,12 @@ export async function POST(request: Request) {
   const { context, verse, messages } = parsed.data;
 
   // The reader's screen goes in the system prompt, so follow-up questions keep it.
-  const sys = [ASK_SYSTEM, "Format with short paragraphs; use **bold** sparingly and simple '-' lists when helpful."];
+  const sys = [
+    ASK_SYSTEM,
+    "Format with short paragraphs; use **bold** sparingly and simple '-' lists when helpful. Give scripture references in the usual form (e.g. Numbers 21:4–9, Surah 2:255, MN 10).",
+    // The app turns this line into tappable suggestion bubbles (src/components/ai-window.tsx).
+    "End with one final line in exactly this form: 'Next: <follow-up question> | <follow-up question>' — two short questions (under 12 words each) the reader might like to explore next, written as the reader would ask them.",
+  ];
   if (context) {
     sys.push(
       "",
