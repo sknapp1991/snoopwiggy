@@ -17,6 +17,8 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   dhammapada: ["sujato", "pli"],
   tipitaka: ["sc-en", "sc-pli"],
   abhidhamma: ["abh-pli"],
+  gita: ["besant", "sanskrit"],
+  hyp: ["sinh"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
 };

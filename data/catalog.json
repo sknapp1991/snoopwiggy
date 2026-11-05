@@ -7,7 +7,9 @@
     { "id": "tipitaka", "name": "Pali Canon (Tipiṭaka)", "versification": "tipitaka" },
     { "id": "abhidhamma", "name": "Abhidhamma Pitaka", "versification": "tipitaka" },
     { "id": "quran", "name": "The Quran", "versification": "hafs" },
-    { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "versification": "ys" }
+    { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "versification": "ys" },
+    { "id": "gita", "name": "Bhagavad Gita", "versification": "gita" },
+    { "id": "hyp", "name": "Hatha Yoga Pradipika", "versification": "hyp" }
   ],
   "versions": [
     {
@@ -306,6 +308,33 @@
       "attribution": "Translated by Charles Johnston (1912), public domain, Project Gutenberg #2526.",
       "sourceUrl": "https://www.gutenberg.org/ebooks/2526",
       "licensed": false, "versification": "ys"
+    },
+    {
+      "id": "besant", "work": "gita", "abbr": "Besant", "name": "The Bhagavad-Gita (Annie Besant)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1922, "yearNote": "4th edition, 1922",
+      "translator": "Annie Besant",
+      "license": "Public Domain (US)", "licenseNote": "Besant's footnotes are not included.",
+      "attribution": "Translated by Annie Besant (4th ed., 1922), public domain in the US; transcription from Wikisource.",
+      "sourceUrl": "https://en.wikisource.org/wiki/Bhagavad-Gita_(Besant_4th)",
+      "licensed": false, "versification": "gita"
+    },
+    {
+      "id": "sanskrit", "work": "gita", "abbr": "Sanskrit", "name": "Bhagavad Gita (Sanskrit, Devanagari)",
+      "language": "sa", "kind": "native", "dir": "ltr", "year": 1922, "yearNote": "Sanskrit text as printed in Besant's 4th edition",
+      "translator": "Sanskrit original",
+      "license": "Public Domain", "licenseNote": "",
+      "attribution": "Sanskrit text as printed in Annie Besant's edition (1922), public domain; transcription from Wikisource.",
+      "sourceUrl": "https://en.wikisource.org/wiki/Bhagavad-Gita_(Besant_4th)",
+      "licensed": false, "versification": "gita"
+    },
+    {
+      "id": "sinh", "work": "hyp", "abbr": "Pancham Sinh", "name": "The Hatha Yoga Pradipika (Pancham Sinh)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 1914,
+      "translator": "Pancham Sinh",
+      "license": "Public Domain", "licenseNote": "English only for now (no reliable Sanskrit source yet).",
+      "attribution": "Translated by Pancham Sinh (1914), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/hin/hyp/index.htm",
+      "licensed": false, "versification": "hyp"
     }
   ],
   "religions": [
@@ -478,7 +507,7 @@
       "id": "hinduism",
       "name": "Hinduism",
       "collections": [
-        { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "status": "coming-soon" } ] },
+        { "id": "gita", "name": "Bhagavad Gita", "items": [ { "id": "gita", "name": "Bhagavad Gita", "work": "gita", "chapters": 18, "chapterName": "Bhagavad Gita, Chapter" } ] },
         { "id": "mahabharata", "name": "Mahabharata", "items": [ { "id": "mahabharata", "name": "Mahabharata", "status": "coming-soon" } ] },
         { "id": "ramayana", "name": "Ramayana", "items": [ { "id": "ramayana", "name": "Ramayana", "status": "coming-soon" } ] },
         { "id": "upanishads", "name": "Upanishads", "items": [ { "id": "upanishads", "name": "Upanishads", "status": "coming-soon" } ] },
@@ -490,7 +519,7 @@
       "name": "Yoga",
       "collections": [
         { "id": "yoga-sutras", "name": "Yoga Sutras of Patanjali", "items": [ { "id": "ys", "name": "Yoga Sutras of Patanjali", "work": "yoga-sutras", "chapters": 4, "chapterName": "Yoga Sutras, Book" } ] },
-        { "id": "hyp", "name": "Hatha Yoga Pradipika", "items": [ { "id": "hyp", "name": "Hatha Yoga Pradipika", "status": "coming-soon" } ] }
+        { "id": "hyp", "name": "Hatha Yoga Pradipika", "items": [ { "id": "hyp", "name": "Hatha Yoga Pradipika", "work": "hyp", "chapters": 4, "chapterName": "Hatha Yoga Pradipika, Chapter" } ] }
       ]
     },
     {

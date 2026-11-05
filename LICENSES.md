@@ -110,6 +110,20 @@ bilara-data, all dedicated to the public domain (CC0) (`scripts/import-tipitaka.
   Kaivalya; 51 + 55 + 55 + 34 sutras). Only the sutras are included, not Johnston's commentary.
   A Sanskrit text will be added once a public-domain source is confirmed.
 
+## Bhagavad Gita (Hinduism, added Nov 2026)
+
+18 chapters, 700 verses (standard numbering). Both versions come from Wikisource's proofread
+transcription of Annie Besant's translation, 4th edition (1922, public domain in the US), which prints
+each verse in Sanskrit and English (`scripts/import-gita.ts`):
+- **Besant** – English, Annie Besant. Her footnotes are not included.
+- **Sanskrit** – the Devanagari text as printed in that edition.
+
+## Hatha Yoga Pradipika (Yoga, added Nov 2026)
+
+4 chapters; Pancham Sinh's translation (1914, public domain), from the Internet Sacred Text Archive's
+transcription (`scripts/import-hyp.ts`). English only: the site's Sanskrit is an experimental
+conversion its editor says doesn't line up with the book.
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

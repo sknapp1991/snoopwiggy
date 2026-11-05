@@ -21,6 +21,7 @@ export const LANGUAGES: Language[] = [
   { code: "ar", name: "Arabic", native: "العربية", dir: "rtl" },
   { code: "he", name: "Hebrew", native: "עברית", dir: "rtl" },
   { code: "pi", name: "Pali", native: "Pāli", dir: "ltr" },
+  { code: "sa", name: "Sanskrit", native: "संस्कृतम्", dir: "ltr" },
 ];
 
 export function getLanguage(code: string): Language {

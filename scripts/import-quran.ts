@@ -208,7 +208,7 @@ async function scan(counts: Map<number, number>): Promise<Map<number, Verses>> {
       continue;
     }
     if (inFootnote || !cur || done) continue;
-    if (/^(Revealed at|In the name of Allah|S[UÛOÜ]R[AÂ]H)/i.test(line)) continue;
+    if (/^(Revealed at|In the name of Allah|S[UÛOÜ]R[AÂ]H\b)/i.test(line)) continue;
     if (/^\S{1,5}\s*[.,:;]\s+[A-Z(‘'"“]/.test(line)) cur.cand.push(cur.parts.length);
     cur.parts.push(line);
   }

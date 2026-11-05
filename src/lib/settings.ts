@@ -95,6 +95,7 @@ export const DEFAULT_PALETTE: Record<string, string> = {
   ar: "#be185d",
   he: "#4d7c0f",
   pi: "#a16207",
+  sa: "#c2410c",
 };
 
 const DEFAULTS: Settings = {
