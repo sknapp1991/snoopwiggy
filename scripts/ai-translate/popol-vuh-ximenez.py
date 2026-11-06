@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data" / "raw" / "popol-vuh"
 PARAS = RAW / "ximenez-paras.txt"
 FIXES = RAW / "ximenez-fixes.txt"  # optional manual "wrong => right" lines
-OUT = ROOT / "data" / "texts" / "popol-vuh" / "ximenez" / "popol-vuh"
+OUT = ROOT / "data" / "texts" / "popol-vuh-full" / "ximenez" / "popol-vuh-full"
 
 COPIES = ["lashistoriasdelo00sche", "lashistoriasdelo00xim", "lashistoriasdelo00ximguat"]
 START = "Este  es  el  principio  de  las  antiguas  historias  aquí"
@@ -228,7 +228,7 @@ def stage2():
     for n, c in enumerate(chap, 1):
         a = starts[n - 1]
         b = starts[n] if n < len(chap) else len(paras)
-        head = {"work": "popol-vuh", "version": "ximenez", "book": "popol-vuh", "chapter": n, "title": c["title"]}
+        head = {"work": "popol-vuh-full", "version": "ximenez", "book": "popol-vuh-full", "chapter": n, "title": c["title"]}
         lines = [json.dumps(head, ensure_ascii=False, separators=(",", ":"))[:-1] + ',"verses":[']
         vs = [json.dumps({"v": str(k), "t": p}, ensure_ascii=False, separators=(",", ":")) for k, p in enumerate(paras[a:b], 1)]
         lines.append(",\n".join(vs))
@@ -247,9 +247,9 @@ def write_en(n):
     verses = [ln.strip() for ln in src.read_text(encoding="utf-8").splitlines() if ln.strip()]
     if len(verses) != n_es:
         raise SystemExit(f"chapter {n}: {len(verses)} English verses, {n_es} Spanish")
-    dest = ROOT / "data" / "texts" / "popol-vuh" / "ai-popol" / "popol-vuh"
+    dest = ROOT / "data" / "texts" / "popol-vuh-full" / "ai-popol" / "popol-vuh-full"
     dest.mkdir(parents=True, exist_ok=True)
-    head = {"work": "popol-vuh", "version": "ai-popol", "book": "popol-vuh", "chapter": n, "title": chap[n - 1]["en"]}
+    head = {"work": "popol-vuh-full", "version": "ai-popol", "book": "popol-vuh-full", "chapter": n, "title": chap[n - 1]["en"]}
     lines = [json.dumps(head, ensure_ascii=False, separators=(",", ":"))[:-1] + ',"verses":[']
     lines.append(",\n".join(json.dumps({"v": str(k), "t": t}, ensure_ascii=False, separators=(",", ":")) for k, t in enumerate(verses, 1)))
     lines.append("]}")

@@ -72,7 +72,8 @@
     { "id": "mean", "name": "The Doctrine of the Mean", "versification": "mean" },
     { "id": "vendidad", "name": "Vendidad", "versification": "vendidad" },
     { "id": "yashts", "name": "Yashts", "versification": "yashts" },
-    { "id": "yasna", "name": "Yasna", "versification": "yasna" }
+    { "id": "yasna", "name": "Yasna", "versification": "yasna" },
+    { "id": "popol-vuh-full", "name": "Popol Vuh (full text)", "versification": "popol-vuh-full" }
   ],
   "versions": [
     {
@@ -1521,6 +1522,39 @@
       "sourceUrl": "https://archive.org/details/complete-SBE-avesta-three-volumes-in-one",
       "licensed": false,
       "versification": "yasna"
+    },
+    {
+      "id": "ai-popol",
+      "work": "popol-vuh-full",
+      "abbr": "AI",
+      "name": "Popol Vuh (AI translation from Ximénez's Spanish)",
+      "language": "en",
+      "kind": "ai",
+      "dir": "ltr",
+      "year": 2026,
+      "translator": "AI translation (Claude, Anthropic) from Francisco Ximénez's Spanish",
+      "license": "Verses Across (free to read and share with credit)",
+      "attribution": "AI translation made for Verses Across from Ximénez's public-domain Spanish (ed. Scherzer, Vienna 1857). Machine translation of a translation: compare with the Spanish.",
+      "sourceUrl": "https://archive.org/details/lashistoriasdelo00sche",
+      "licensed": false,
+      "versification": "popol-vuh-full"
+    },
+    {
+      "id": "ximenez",
+      "work": "popol-vuh-full",
+      "abbr": "Ximénez",
+      "name": "Las historias del origen de los indios (Francisco Ximénez)",
+      "language": "es",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1857,
+      "yearNote": "translated c. 1701–1703; printed 1857",
+      "translator": "Francisco Ximénez",
+      "license": "Public Domain",
+      "attribution": "Francisco Ximénez, Las historias del origen de los indios de esta provincia de Guatemala, ed. C. Scherzer (Vienna, 1857), public domain; archive.org scans, OCR corrected, Scherzer's notes left out; chapters as in Brasseur de Bourbourg (1861).",
+      "sourceUrl": "https://archive.org/details/lashistoriasdelo00sche",
+      "licensed": false,
+      "versification": "popol-vuh-full"
     }
   ],
   "religions": [
@@ -2222,7 +2256,8 @@
           "id": "mesoamerican",
           "name": "Mesoamerican",
           "items": [
-            { "id": "popol-vuh", "name": "Popol Vuh (K'iche' Maya)", "work": "popol-vuh", "chapters": 4, "chapterName": "Popol Vuh" }
+            { "id": "popol-vuh-full", "name": "Popol Vuh (K'iche' Maya), full text", "work": "popol-vuh-full", "chapters": 46, "chapterName": "Popol Vuh" },
+            { "id": "popol-vuh", "name": "Popol Vuh, Spence's retelling", "work": "popol-vuh", "chapters": 4, "chapterName": "Popol Vuh (Spence), Book" }
           ]
         }
       ]

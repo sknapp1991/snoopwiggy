@@ -236,6 +236,10 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   Yashts (SBE 23, 1883), and L. H. Mills' Yasna (SBE 31, 1887), all public domain; text from the proofread
   transcription in archive.org's "complete-SBE-avesta-three-volumes-in-one" (Public Domain Mark), checked
   against scans; footnotes left out. The Gathic chapters of the Yasna point to the Gathas.
+- **Popol Vuh, full text** — Francisco Ximénez's Spanish (c. 1701–1703; ed. Scherzer, Vienna 1857, public
+  domain; archive.org scans, OCR corrected, Scherzer's notes left out; chapters as in Brasseur de Bourbourg,
+  1861) and an **AI translation** of it into English made for this site (marked "AI translation"; free to
+  share with credit).
 - **Popol Vuh** — Lewis Spence's 1908 retelling of its four books (#56550), public domain; not a full
   translation, and his commentary is left out.
 - **Classics from Project Gutenberg** (`scripts/import-classics.ts`, all public domain), chapter = the

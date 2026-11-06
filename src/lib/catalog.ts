@@ -56,6 +56,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   yashts: ["darmesteter-yt"],
   yasna: ["mills-yasna"],
   "popol-vuh": ["spence"],
+  "popol-vuh-full": ["ai-popol", "ximenez"],
   iliad: ["butler-il"],
   odyssey: ["butler-od"],
   hesiod: ["evelyn-white"],
