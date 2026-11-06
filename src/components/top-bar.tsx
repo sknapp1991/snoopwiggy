@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
-import { chapterTitle } from "@/lib/catalog";
+import { chapterTitle, findBook, readHref } from "@/lib/catalog";
+import { toast } from "@/lib/ui-store";
 import { useEffect, useRef, useState } from "react";
-import { ChatIcon, CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, PaletteIcon, SearchIcon, SlidersIcon } from "./icons";
+import { ChatIcon, CloseIcon, ShareIcon, LanguagesIcon, LibraryIcon, MenuIcon, PaletteIcon, SearchIcon, SlidersIcon } from "./icons";
 import { HighlightModeToggle } from "./highlight-mode";
 import { XrefToggle } from "./xref-panel";
 import { closePanel, togglePanel, useUi } from "@/lib/ui-store";
@@ -101,8 +102,8 @@ export function TopBar({
           <ChapterSwipeControl />
           <SaveOffline />
         </TopPopover>
-        <TopPopover label="Chat" title="Chat with other readers (coming soon)" icon={<ChatIcon />}>
-          <ChatComingSoon />
+        <TopPopover label="Read together" title="Read together: send a link to this exact spot" icon={<ShareIcon />}>
+          <ReadTogether />
         </TopPopover>
         <ViewToggle />
         <FontSizeControl />
@@ -150,7 +151,7 @@ export function TopBar({
             <LanguageColors />
             <ChapterSwipeControl />
             <SaveOffline />
-            <ChatComingSoon />
+            <ReadTogether />
             <div className="space-y-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Versions &amp; languages</h3>
               <VersionChooser />
@@ -253,13 +254,54 @@ function TopPopover({ label, title, icon, children }: { label: string; title: st
 }
 
 /** Placeholder for a future chat between readers. */
-function ChatComingSoon() {
+/** The verse at the top of the reading area (what a friend should land on), if any. */
+function topVerse(): string | undefined {
+  const els = document.querySelectorAll<HTMLElement>("[data-v]");
+  for (const el of els) {
+    const r = el.getBoundingClientRect();
+    if (r.height && r.bottom > 120) return el.dataset.v;
+  }
+}
+
+/**
+ * Read together: a link that opens this chapter, in these versions, at the verse on screen. The friend
+ * taps it and is at the same place; the talking happens in whatever app you send it with.
+ */
+function ReadTogether() {
+  const { ref, versions } = useReaderState();
+  const share = async () => {
+    const v = topVerse();
+    const url = window.location.origin + readHref(ref, versions, v && v !== "1" ? v : undefined);
+    const where = `${chapterTitle(findBook(ref.work, ref.book), ref.chapter, ref.book)}${v && v !== "1" ? `:${v}` : ""}`;
+    const text = `Read ${where} with me on Verses Across`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Read together", text, url });
+        return;
+      } catch (e) {
+        if ((e as DOMException)?.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}: ${url}`);
+      toast("Link copied — paste it in a message to a friend");
+    } catch {
+      window.prompt("Copy this link:", url);
+    }
+  };
   return (
-    <div className="space-y-1.5 rounded-lg border border-dashed border-line p-3 text-sm">
+    <div className="space-y-2 text-sm">
       <p className="flex items-center gap-2 font-semibold">
-        <ChatIcon width={16} height={16} className="text-accent" /> Chat with other readers <span className="rounded-full bg-accent-soft px-2 text-xs font-medium text-accent">Coming soon</span>
+        <ShareIcon width={16} height={16} className="text-accent" /> Read together
       </p>
-      <p className="text-muted">Talk about a passage with a friend, a study group, or an open room. We’re planning it carefully so it stays kind and safe.</p>
+      <p className="text-muted">Send a friend a link to this exact spot: the same chapter, the same versions side by side, at the verse you’re on.</p>
+      <button type="button" onClick={share} className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 font-medium text-accent-ink">
+        <ShareIcon width={16} height={16} /> Share this page
+      </button>
+      <p className="flex items-center gap-1.5 text-xs text-faint">
+        <ChatIcon width={12} height={12} /> Chatting inside the site may come later.
+      </p>
     </div>
   );
 }
+
