@@ -1,0 +1,138 @@
+[
+ {
+  "work": "iliad",
+  "id": "iliad",
+  "chapters": 24
+ },
+ {
+  "work": "odyssey",
+  "id": "odyssey",
+  "chapters": 24
+ },
+ {
+  "work": "hesiod",
+  "id": "works-days",
+  "name": "Works and Days",
+  "chapters": 1
+ },
+ {
+  "work": "hesiod",
+  "id": "theogony",
+  "name": "Theogony",
+  "chapters": 1
+ },
+ {
+  "work": "hesiod",
+  "id": "homeric-hymns",
+  "name": "The Homeric Hymns",
+  "chapters": 33
+ },
+ {
+  "work": "aeneid",
+  "id": "aeneid",
+  "chapters": 12
+ },
+ {
+  "work": "metamorphoses",
+  "id": "metamorphoses",
+  "chapters": 7
+ },
+ {
+  "work": "republic",
+  "id": "republic",
+  "chapters": 10
+ },
+ {
+  "work": "nicomachean",
+  "id": "nicomachean",
+  "chapters": 10
+ },
+ {
+  "work": "pensees",
+  "id": "pensees",
+  "chapters": 14
+ },
+ {
+  "work": "discourse-method",
+  "id": "discourse-method",
+  "chapters": 6
+ },
+ {
+  "work": "spinoza-ethics",
+  "id": "spinoza-ethics",
+  "chapters": 5
+ },
+ {
+  "work": "emerson-essays",
+  "id": "emerson-essays",
+  "chapters": 12
+ },
+ {
+  "work": "on-liberty",
+  "id": "on-liberty",
+  "chapters": 5
+ },
+ {
+  "work": "russell-problems",
+  "id": "russell-problems",
+  "chapters": 15
+ },
+ {
+  "work": "zarathustra",
+  "id": "zarathustra",
+  "chapters": 80
+ },
+ {
+  "work": "beyond-good-evil",
+  "id": "beyond-good-evil",
+  "chapters": 9
+ },
+ {
+  "work": "wisdom-of-life",
+  "id": "wisdom-of-life",
+  "chapters": 4
+ },
+ {
+  "work": "seneca-morals",
+  "id": "seneca-morals",
+  "chapters": 57
+ },
+ {
+  "work": "montaigne",
+  "id": "montaigne-1",
+  "name": "Essays, Book I",
+  "chapters": 57
+ },
+ {
+  "work": "montaigne",
+  "id": "montaigne-2",
+  "name": "Essays, Book II",
+  "chapters": 36
+ },
+ {
+  "work": "montaigne",
+  "id": "montaigne-3",
+  "name": "Essays, Book III",
+  "chapters": 13
+ },
+ {
+  "work": "the-crowd",
+  "id": "the-crowd",
+  "chapters": 13
+ },
+ {
+  "work": "varieties",
+  "id": "varieties",
+  "chapters": 14
+ },
+ {
+  "work": "freud-intro",
+  "id": "freud-intro",
+  "chapters": 28
+ },
+ {
+  "work": "jung-unconscious",
+  "id": "jung-unconscious",
+  "chapters": 23
+ }
+]

@@ -39,6 +39,7 @@ EMBED = {
     "kojiki": "chamberlain", "jaina": "jacobi", "chinese-myths": "werner", "yoruba": "ogumefu",
     "zhuangzi": "giles", "navaho": "matthews", "sioux": "mclaughlin",
     "gathas": "mills", "popol-vuh": "spence",
+    "iliad": "butler-il", "odyssey": "butler-od", "hesiod": "evelyn-white", "aeneid": "dryden", "metamorphoses": "riley", "republic": "jowett-rep", "nicomachean": "chase", "seneca-morals": "lestrange", "montaigne": "cotton", "pensees": "trotter", "discourse-method": "veitch", "spinoza-ethics": "elwes", "emerson-essays": "emerson", "on-liberty": "mill", "wisdom-of-life": "saunders", "zarathustra": "common", "beyond-good-evil": "zimmern", "russell-problems": "russell", "varieties": "james", "freud-intro": "hall", "jung-unconscious": "hinkle", "the-crowd": "le-bon",
 }
 SAME_K = 6  # results kept from the verse's own religion
 OTHER_K = 3  # … and from each other religion

@@ -229,6 +229,20 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   (#10056, the only part on Gutenberg).
 - **Popol Vuh** — Lewis Spence's 1908 retelling of its four books (#56550), public domain; not a full
   translation, and his commentary is left out.
+- **Classics from Project Gutenberg** (`scripts/import-classics.ts`, all public domain), chapter = the
+  book's own book/chapter/section, verse = paragraph, footnotes and back matter left out:
+  Greek & Roman — Homer's Iliad and Odyssey (Samuel Butler), Hesiod and the Homeric Hymns
+  (Evelyn-White), Virgil's Aeneid (Dryden), Ovid's Metamorphoses I–VII (Riley). Philosophy — Plato's
+  Republic (Jowett), Aristotle's Nicomachean Ethics (Chase), Seneca's Morals (L'Estrange), Montaigne's
+  Essays (Cotton), Pascal's Pensées (Trotter), Descartes' Discourse on Method (Veitch), Spinoza's
+  Ethics (Elwes), Emerson's Essays, Mill's On Liberty, Schopenhauer's Wisdom of Life (Saunders),
+  Nietzsche's Zarathustra (Common) and Beyond Good and Evil (Zimmern), Russell's Problems of Philosophy.
+  Psychology — William James' Varieties of Religious Experience, Freud's General Introduction to
+  Psychoanalysis (Hall), Jung's Psychology of the Unconscious (Hinkle), Le Bon's The Crowd.
+  Not included because they are still under copyright: Jung's Archetypes and the Collective
+  Unconscious, Frankl's Man's Search for Meaning.
+- **The Quran in Spanish** — Julio Cortés, from the Tanzil Project's translations, which allow
+  non-commercial use with credit.
 
 Not yet included (shown as "coming soon"): the rest of the Avesta (avesta.org forbids copying;
 sacred-texts has no zipped file for SBE 4/23/31), the Great Learning and Doctrine of the Mean, the

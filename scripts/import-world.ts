@@ -731,7 +731,32 @@ async function popolVuh() {
   report("popol-vuh", books.length, total);
 }
 
+/**
+ * The Quran in Spanish — Julio Cortés, from the Tanzil Project's translations (non-commercial use with
+ * credit: fine for this free site). data/raw/quran/tanzil-trans/es.cortes.txt, "sura|aya|text" lines;
+ * Tanzil's numbering is the site's (Hafs), so it lines up with the Arabic and Pickthall.
+ */
+async function quranSpanish() {
+  const { readFile } = await import("node:fs/promises");
+  const txt = await readFile(path.join(ROOT, "data", "raw", "quran", "tanzil-trans", "es.cortes.txt"), "utf8");
+  const bySura = new Map<number, Verse[]>();
+  for (const line of txt.split(/\r?\n/)) {
+    const m = /^(\d+)\|(\d+)\|(.+)$/.exec(line);
+    if (!m) continue;
+    const list = bySura.get(Number(m[1])) ?? bySura.set(Number(m[1]), []).get(Number(m[1]))!;
+    list.push({ v: m[2], t: m[3].trim() });
+  }
+  await resetVersion("quran", "cortes");
+  let total = 0;
+  for (const [sura, verses] of bySura) {
+    await writeChapter("quran", "cortes", "quran", sura, verses);
+    total += verses.length;
+  }
+  report("quran es", bySura.size, total);
+}
+
 const ALL: Record<string, () => Promise<unknown>> = {
+  quranSpanish,
   popolVuh,
   gathas,
   mencius,
