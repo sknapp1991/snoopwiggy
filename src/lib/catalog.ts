@@ -42,6 +42,7 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   "hume-dialogues": ["hume"],
   "age-of-reason": ["paine"],
   kojiki: ["chamberlain"],
+  nihongi: ["aston"],
   jaina: ["jacobi"],
   "chinese-myths": ["werner"],
   yoruba: ["ogumefu"],

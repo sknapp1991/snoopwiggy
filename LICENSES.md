@@ -232,6 +232,8 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
 - **The Great Learning** and **The Doctrine of the Mean** — the Chinese in Zhu Xi's arrangement (Wikisource,
   四書章句集註, his notes left out) and James Legge's English (The Chinese Classics vol. 1, 2nd ed. 1893,
   Wikisource transcription), all public domain.
+- **Nihongi** — W. G. Aston's translation (1896, public domain), from the proofread Wikisource
+  transcription; footnotes and marginal references left out, marginal years put at the start of paragraphs.
 - **The Avesta beyond the Gathas** — James Darmesteter's Vendidad (Sacred Books of the East 4, 1880) and
   Yashts (SBE 23, 1883), and L. H. Mills' Yasna (SBE 31, 1887), all public domain; text from the proofread
   transcription in archive.org's "complete-SBE-avesta-three-volumes-in-one" (Public Domain Mark), checked

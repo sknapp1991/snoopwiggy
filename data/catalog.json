@@ -77,7 +77,8 @@
     { "id": "kant-groundwork", "name": "Groundwork of the Metaphysics of Morals", "versification": "kant-groundwork" },
     { "id": "kant-practical", "name": "Critique of Practical Reason", "versification": "kant-practical" },
     { "id": "kant-pure", "name": "Critique of Pure Reason", "versification": "kant-pure" },
-    { "id": "perpetual-peace", "name": "Perpetual Peace", "versification": "perpetual-peace" }
+    { "id": "perpetual-peace", "name": "Perpetual Peace", "versification": "perpetual-peace" },
+    { "id": "nihongi", "name": "Nihongi (Nihon Shoki)", "versification": "nihongi" }
   ],
   "versions": [
     {
@@ -1623,6 +1624,22 @@
       "sourceUrl": "https://www.gutenberg.org/ebooks/50922",
       "licensed": false,
       "versification": "perpetual-peace"
+    },
+    {
+      "id": "aston",
+      "work": "nihongi",
+      "abbr": "Aston",
+      "name": "Nihongi: Chronicles of Japan (W. G. Aston, 1896)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1896,
+      "translator": "William George Aston",
+      "license": "Public Domain",
+      "attribution": "W. G. Aston, Nihongi: Chronicles of Japan from the Earliest Times to A.D. 697 (1896), public domain; Wikisource transcription, footnotes left out.",
+      "sourceUrl": "https://en.wikisource.org/wiki/Index:Nihongi_by_Aston.djvu",
+      "licensed": false,
+      "versification": "nihongi"
     }
   ],
   "religions": [
@@ -2283,6 +2300,7 @@
           "name": "Ancient Chronicles",
           "items": [
             { "id": "kojiki", "name": "Kojiki", "work": "kojiki", "chapters": 180, "chapterName": "Kojiki, Section" },
+            { "id": "nihongi", "name": "Nihongi (Chronicles of Japan)", "work": "nihongi", "chapters": 30, "chapterName": "Nihongi, Book" },
             { "id": "nihongi", "name": "Nihongi", "status": "coming-soon" }
           ]
         }
