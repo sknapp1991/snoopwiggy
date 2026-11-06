@@ -60,9 +60,10 @@ export default function AboutPage() {
         <Section title="The texts and recordings">
           <p>
             The scriptures are not ours. Every text is public domain or shared under an open licence by its translators
-            and publishers, and each one is credited, with a link to its source, at the bottom of every chapter. One text,
-            the William Davidson Talmud (via Sefaria), is licensed for non-commercial use only. Please respect each
-            text&rsquo;s own licence if you copy it.
+            and publishers, and each one is credited, with a link to its source, at the bottom of every chapter. A few are
+            shared for non-commercial use only: the William Davidson Talmud (via Sefaria) and the Bah&aacute;&rsquo;&iacute;
+            writings (&copy; Bah&aacute;&rsquo;&iacute; International Community). Please respect each text&rsquo;s own
+            licence if you copy it.
           </p>
           <p>
             The texts are shown as published. We change formatting only, never wording, and no text is written by AI.
@@ -93,9 +94,13 @@ export default function AboutPage() {
               your browser data deletes them.
             </li>
             <li>
-              When you ask the AI companion a question, the question and the passage you&rsquo;re reading are sent to an AI
-              service (such as Google Gemini) to get an answer. Don&rsquo;t include personal information you want to keep
-              private.
+              When you ask the AI companion a question, the question and the passage you&rsquo;re reading are sent to the AI
+              service you picked to get an answer: Google Gemini, or OpenAI&rsquo;s open model (GPT-OSS) run by Cloudflare.
+              Don&rsquo;t include personal information you want to keep private.
+            </li>
+            <li>
+              Cross references (&ldquo;similar verses&rdquo;) are worked out in advance and stored with the app; looking
+              them up sends nothing about you anywhere.
             </li>
             <li>
               Like every website, our host (Cloudflare) briefly handles standard technical data such as your IP address, to
