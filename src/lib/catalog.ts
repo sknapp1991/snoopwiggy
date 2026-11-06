@@ -35,6 +35,12 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   australian: ["parker"],
   "hidden-words": ["bahai-hw"],
   aqdas: ["bahai-aqdas"],
+  ggs: ["khalsa", "ggs-gurmukhi"],
+  lucretius: ["leonard"],
+  meditations: ["long"],
+  enchiridion: ["higginson"],
+  "hume-dialogues": ["hume"],
+  "age-of-reason": ["paine"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

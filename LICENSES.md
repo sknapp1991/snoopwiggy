@@ -206,8 +206,15 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   copyright notice and source attached); text via Gutenberg #16941 and #16523. Allowed here because the
   site is free with no ads; the notice is shown with the text.
 
-Not yet included (shown as "coming soon"): the Guru Granth Sahib in English (the usual translation, by
-Sant Singh Khalsa, has no stated licence), the Kojiki, Jaina Agamas, Avesta and Yoruba Legends (public
+- **Sri Guru Granth Sahib** (Sikhism) — Gurmukhi (public domain) and Dr. Sant Singh Khalsa's English,
+  from Open Granth's corpus, which takes both from the Shabad OS database. Khalsa's translation has no
+  formal licence but has been shared freely for decades; included on the owners' decision (Nov 2026) for
+  this free, non-commercial site, with credit. Book = raag section, chapter = ang (titled "Ang N").
+- **Philosophy & Secular Thought** — all public domain, from Project Gutenberg: Lucretius tr. Leonard
+  (#785), Marcus Aurelius tr. Long (#15877), Epictetus tr. Higginson (#45109), Hume's *Dialogues* (#4583),
+  Paine's *Age of Reason* (#3743).
+
+Not yet included (shown as "coming soon"): the Kojiki, Jaina Agamas, Avesta and Yoruba Legends (public
 domain, but only on sacred-texts.com), and English tafsir (the Royal Aal al-Bayt translations are "all
 rights reserved").
 

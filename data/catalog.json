@@ -23,7 +23,13 @@
     { "id": "analects", "name": "Analects of Confucius", "versification": "analects" },
     { "id": "australian", "name": "Australian Legendary Tales", "versification": "australian" },
     { "id": "hidden-words", "name": "The Hidden Words", "versification": "hidden-words" },
-    { "id": "aqdas", "name": "The Kitáb-i-Aqdas", "versification": "aqdas" }
+    { "id": "aqdas", "name": "The Kitáb-i-Aqdas", "versification": "aqdas" },
+    { "id": "ggs", "name": "Sri Guru Granth Sahib", "versification": "ggs" },
+    { "id": "lucretius", "name": "On the Nature of Things", "versification": "lucretius" },
+    { "id": "meditations", "name": "Meditations", "versification": "meditations" },
+    { "id": "enchiridion", "name": "The Enchiridion", "versification": "enchiridion" },
+    { "id": "hume-dialogues", "name": "Dialogues Concerning Natural Religion", "versification": "hume-dialogues" },
+    { "id": "age-of-reason", "name": "The Age of Reason", "versification": "age-of-reason" }
   ],
   "versions": [
     {
@@ -575,6 +581,122 @@
       "sourceUrl": "https://www.bahai.org/library/authoritative-texts/bahaullah/kitab-i-aqdas/",
       "licensed": false,
       "versification": "aqdas"
+    },
+    {
+      "id": "ggs-gurmukhi",
+      "work": "ggs",
+      "abbr": "Gurmukhi",
+      "name": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (Gurmukhi)",
+      "language": "pa",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1708,
+      "translator": "The Sikh Gurus and Bhagats (original text)",
+      "license": "Public Domain",
+      "attribution": "Gurmukhi text from the Shabad OS database via Open Granth.",
+      "sourceUrl": "https://github.com/opengranth/open-granth",
+      "licensed": false,
+      "versification": "ggs",
+      "licenseNote": "One line (pankti) per verse; chapters are the 1430 angs (pages)."
+    },
+    {
+      "id": "khalsa",
+      "work": "ggs",
+      "abbr": "Khalsa",
+      "name": "Sri Guru Granth Sahib (Dr. Sant Singh Khalsa)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1995,
+      "translator": "Dr. Sant Singh Khalsa",
+      "license": "Freely distributed (no formal licence)",
+      "licenseNote": "The translator's English, shared freely online for decades; used here on a free, non-commercial site with credit.",
+      "attribution": "English translation by Dr. Sant Singh Khalsa, via the Shabad OS database and Open Granth.",
+      "sourceUrl": "https://github.com/opengranth/open-granth",
+      "licensed": false,
+      "versification": "ggs"
+    },
+    {
+      "id": "leonard",
+      "work": "lucretius",
+      "abbr": "Leonard",
+      "name": "On the Nature of Things (William Ellery Leonard)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1916,
+      "translator": "William Ellery Leonard",
+      "license": "Public Domain",
+      "attribution": "Lucretius, tr. William Ellery Leonard (1916), public domain; Project Gutenberg #785.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/785",
+      "licensed": false,
+      "versification": "lucretius",
+      "licenseNote": "Leonard's section headings are left out; verse = verse paragraph."
+    },
+    {
+      "id": "long",
+      "work": "meditations",
+      "abbr": "Long",
+      "name": "Meditations (George Long)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1862,
+      "translator": "George Long",
+      "license": "Public Domain",
+      "attribution": "Marcus Aurelius, tr. George Long (1862), public domain; Project Gutenberg #15877.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/15877",
+      "licensed": false,
+      "versification": "meditations"
+    },
+    {
+      "id": "higginson",
+      "work": "enchiridion",
+      "abbr": "Higginson",
+      "name": "The Enchiridion (Thomas W. Higginson)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1865,
+      "translator": "Thomas Wentworth Higginson",
+      "license": "Public Domain",
+      "attribution": "Epictetus, tr. Thomas W. Higginson (1865), public domain; Project Gutenberg #45109.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/45109",
+      "licensed": false,
+      "versification": "enchiridion",
+      "licenseNote": "This edition numbers 51 sections (others count 52 or 53)."
+    },
+    {
+      "id": "hume",
+      "work": "hume-dialogues",
+      "abbr": "Hume",
+      "name": "Dialogues Concerning Natural Religion (1779)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1779,
+      "translator": "David Hume (written in English)",
+      "license": "Public Domain",
+      "attribution": "David Hume (1779), public domain; Project Gutenberg #4583.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/4583",
+      "licensed": false,
+      "versification": "hume-dialogues"
+    },
+    {
+      "id": "paine",
+      "work": "age-of-reason",
+      "abbr": "Paine",
+      "name": "The Age of Reason (1794–95)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1794,
+      "translator": "Thomas Paine (written in English)",
+      "license": "Public Domain",
+      "attribution": "Thomas Paine (1794–95), public domain; Project Gutenberg #3743.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/3743",
+      "licensed": false,
+      "versification": "age-of-reason"
     }
   ],
   "religions": [
@@ -1095,7 +1217,43 @@
           "id": "ggs",
           "name": "Guru Granth Sahib",
           "items": [
-            { "id": "ggs", "name": "Sri Guru Granth Sahib", "status": "coming-soon" }
+            { "id": "opening-banis-japji-so-dar-sohila", "name": "Opening Banis (Japji, So Dar, Sohila)", "work": "ggs", "chapters": 13 },
+            { "id": "siree-raag", "name": "Siree Raag", "work": "ggs", "chapters": 80 },
+            { "id": "raag-maajh", "name": "Raag Maajh", "work": "ggs", "chapters": 57 },
+            { "id": "raag-gauree", "name": "Raag Gauree", "work": "ggs", "chapters": 196 },
+            { "id": "raag-aasaa", "name": "Raag Aasaa", "work": "ggs", "chapters": 142 },
+            { "id": "raag-gujri", "name": "Raag Gujri", "work": "ggs", "chapters": 38 },
+            { "id": "raag-dayv-gandhaaree", "name": "Raag Dayv Gandhaaree", "work": "ggs", "chapters": 10 },
+            { "id": "raag-bihaagraa", "name": "Raag Bihaagraa", "work": "ggs", "chapters": 20 },
+            { "id": "raag-vadhans", "name": "Raag Vadhans", "work": "ggs", "chapters": 38 },
+            { "id": "raag-sorath", "name": "Raag Sorath", "work": "ggs", "chapters": 65 },
+            { "id": "raag-dhanaasree", "name": "Raag Dhanaasree", "work": "ggs", "chapters": 36 },
+            { "id": "raag-jaithsree", "name": "Raag Jaithsree", "work": "ggs", "chapters": 15 },
+            { "id": "raag-todee", "name": "Raag Todee", "work": "ggs", "chapters": 8 },
+            { "id": "raag-bairaaree", "name": "Raag Bairaaree", "work": "ggs", "chapters": 2 },
+            { "id": "raag-tilang", "name": "Raag Tilang", "work": "ggs", "chapters": 7 },
+            { "id": "raag-soohee", "name": "Raag Soohee", "work": "ggs", "chapters": 67 },
+            { "id": "raag-bilaaval", "name": "Raag Bilaaval", "work": "ggs", "chapters": 64 },
+            { "id": "raag-gond", "name": "Raag Gond", "work": "ggs", "chapters": 17 },
+            { "id": "raag-raamkalee", "name": "Raag Raamkalee", "work": "ggs", "chapters": 99 },
+            { "id": "raag-nat-naaraayan", "name": "Raag Nat Naaraayan", "work": "ggs", "chapters": 9 },
+            { "id": "raag-maalee-gauraa", "name": "Raag Maalee Gauraa", "work": "ggs", "chapters": 5 },
+            { "id": "raag-maaroo", "name": "Raag Maaroo", "work": "ggs", "chapters": 118 },
+            { "id": "raag-tukhaari", "name": "Raag Tukhaari", "work": "ggs", "chapters": 11 },
+            { "id": "raag-kaydaaraa", "name": "Raag Kaydaaraa", "work": "ggs", "chapters": 7 },
+            { "id": "raag-bhairao", "name": "Raag Bhairao", "work": "ggs", "chapters": 43 },
+            { "id": "raag-basant", "name": "Raag Basant", "work": "ggs", "chapters": 29 },
+            { "id": "raag-saarang", "name": "Raag Saarang", "work": "ggs", "chapters": 57 },
+            { "id": "raag-malaar", "name": "Raag Malaar", "work": "ggs", "chapters": 40 },
+            { "id": "raag-kaanraa", "name": "Raag Kaanraa", "work": "ggs", "chapters": 25 },
+            { "id": "raag-kalyaan", "name": "Raag Kalyaan", "work": "ggs", "chapters": 8 },
+            { "id": "raag-prabhaatee", "name": "Raag Prabhaatee", "work": "ggs", "chapters": 25 },
+            { "id": "raag-jaijaavantee", "name": "Raag Jaijaavantee", "work": "ggs", "chapters": 1 },
+            { "id": "salok-sehshkritee-gaathaa-phunhay", "name": "Salok Sehshkritee, Gaathaa, Phunhay", "work": "ggs", "chapters": 11 },
+            { "id": "salok-kabeer-jee", "name": "Salok Kabeer Jee", "work": "ggs", "chapters": 14 },
+            { "id": "salok-fareed-jee", "name": "Salok Fareed Jee", "work": "ggs", "chapters": 7 },
+            { "id": "svaiyay-of-the-bhatts", "name": "Svaiyay (of the Bhatts)", "work": "ggs", "chapters": 25 },
+            { "id": "closing-saloks-and-raagmala", "name": "Closing Saloks and Raagmala", "work": "ggs", "chapters": 21 }
           ]
         }
       ]
@@ -1228,6 +1386,36 @@
           "name": "Mesoamerican",
           "items": [
             { "id": "popol-vuh", "name": "Popol Vuh (K'iche' Maya)", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secular",
+      "name": "Philosophy & Secular Thought",
+      "collections": [
+        {
+          "id": "ancient-philosophy",
+          "name": "Ancient Philosophy (Epicurean & Stoic)",
+          "items": [
+            { "id": "dnr", "name": "Lucretius, On the Nature of Things", "work": "lucretius", "chapters": 6, "chapterName": "On the Nature of Things, Book" },
+            { "id": "med", "name": "Marcus Aurelius, Meditations", "work": "meditations", "chapters": 12, "chapterName": "Meditations, Book" },
+            { "id": "ench", "name": "Epictetus, The Enchiridion", "work": "enchiridion", "chapters": 1, "chapterName": "Enchiridion" }
+          ]
+        },
+        {
+          "id": "freethought",
+          "name": "Skeptics & Freethinkers",
+          "items": [
+            {
+              "id": "dnr-hume",
+              "name": "Hume, Dialogues Concerning Natural Religion",
+              "work": "hume-dialogues",
+              "chapters": 12,
+              "chapterName": "Dialogues, Part"
+            },
+            { "id": "aor1", "name": "Paine, The Age of Reason, Part I", "work": "age-of-reason", "chapters": 17, "chapterName": "Age of Reason I, Chapter" },
+            { "id": "aor2", "name": "Paine, The Age of Reason, Part II", "work": "age-of-reason", "chapters": 3, "chapterName": "Age of Reason II, Chapter" }
           ]
         }
       ]

@@ -23,6 +23,7 @@ export const LANGUAGES: Language[] = [
   { code: "pi", name: "Pali", native: "Pāli", dir: "ltr" },
   { code: "sa", name: "Sanskrit", native: "संस्कृतम्", dir: "ltr" },
   { code: "zh", name: "Chinese", native: "中文", dir: "ltr" },
+  { code: "pa", name: "Punjabi (Gurmukhi)", native: "ਪੰਜਾਬੀ", dir: "ltr" },
 ];
 
 export function getLanguage(code: string): Language {

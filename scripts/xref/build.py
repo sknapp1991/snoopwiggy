@@ -34,6 +34,8 @@ EMBED = {
     "hyp": "sinh", "yoga-sutras": "johnston",
     "tao-te-ching": "legge-ttc", "analects": "legge-an", "australian": "parker",
     "hidden-words": "bahai-hw", "aqdas": "bahai-aqdas",
+    "ggs": "khalsa", "lucretius": "leonard", "meditations": "long", "enchiridion": "higginson",
+    "hume-dialogues": "hume", "age-of-reason": "paine",
 }
 SAME_K = 6  # results kept from the verse's own religion
 OTHER_K = 3  # … and from each other religion

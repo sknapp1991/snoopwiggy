@@ -12,7 +12,9 @@
  *   hidden      The Hidden Words — Bahá'u'lláh (Bahá'í Reference Library text), Gutenberg #16941
  *   aqdas       The Kitáb-i-Aqdas — Bahá'u'lláh (Bahá'í Reference Library text), Gutenberg #16523
  */
-import { cached, gutenbergBody, resetVersion, roman, writeChapter, type Verse } from "./lib/world";
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
+import { cached, gutenbergBody, resetVersion, ROOT, roman, writeChapter, type Verse } from "./lib/world";
 
 const GUT = (id: number) => `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`;
 const report = (name: string, chapters: number, verses: number) => console.log(`${name.padEnd(12)} ${chapters} chapters, ${verses} verses`);
@@ -207,7 +209,185 @@ async function aqdas() {
   report("aqdas", 1, verses.length);
 }
 
-const ALL: Record<string, () => Promise<unknown>> = { ttc, analects, australian, hidden, aqdas };
+/** Raag sections → books; the short opening prayers, the Svaiyay and the closing saloks are grouped. */
+const GGS_GROUP: Record<string, string> = {
+  Jap: "Opening Banis (Japji, So Dar, Sohila)",
+  "So Dar": "Opening Banis (Japji, So Dar, Sohila)",
+  "So Purakh": "Opening Banis (Japji, So Dar, Sohila)",
+  Sohila: "Opening Banis (Japji, So Dar, Sohila)",
+  "Salok Sehshkritee": "Salok Sehshkritee, Gaathaa, Phunhay",
+  "Gaathaa Fifth Mehl": "Salok Sehshkritee, Gaathaa, Phunhay",
+  "Phunhay Fifth Mehl": "Salok Sehshkritee, Gaathaa, Phunhay",
+  "Salok Vaaran Thay Vadheek": "Closing Saloks and Raagmala",
+  "Salok Ninth Mehl": "Closing Saloks and Raagmala",
+  Raagmala: "Closing Saloks and Raagmala",
+};
+const ggsBook = (raag: string) => GGS_GROUP[raag] ?? (raag.startsWith("Svaiyay") ? "Svaiyay (of the Bhatts)" : raag);
+const slug = (t: string) => t.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+/**
+ * Sri Guru Granth Sahib in Gurmukhi and Dr. Sant Singh Khalsa's English, from Open Granth's corpus
+ * (github.com/opengranth/open-granth, itself from the Shabad OS database). Book = raag section;
+ * chapter = one ang (page), titled "Ang 359"; verse = line (pankti). → data/ggs-books.json
+ */
+async function ggs() {
+  await resetVersion("ggs", "ggs-gurmukhi");
+  await resetVersion("ggs", "khalsa");
+  let total = 0;
+  const books: { id: string; name: string; chapters: number; first: number }[] = [];
+  const strip = (s: string) => s.replace(/^\*\*|\*\*$/g, "").trim();
+  for (let ang = 1; ang <= 1430; ang++) {
+    const name = `ang-${String(ang).padStart(4, "0")}.md`;
+    const md = await cached("ggs", name, `https://raw.githubusercontent.com/opengranth/open-granth/main/corpus/${name}`);
+    const raag = /^raag:\s*(.+)$/m.exec(md)?.[1].trim() ?? "";
+    const bookName = ggsBook(raag);
+    if (books[books.length - 1]?.name !== bookName) books.push({ id: slug(bookName), name: bookName, chapters: 0, first: ang });
+    const book = books[books.length - 1];
+    book.chapters++;
+    const body = md.replace(/^---[\s\S]*?\n---\n/, "");
+    const pa: Verse[] = [];
+    const en: Verse[] = [];
+    for (const block of body.split(/\n---\n/)) {
+      const lines = block
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith("<!--"));
+      const g = lines.find((l) => l.startsWith("**"));
+      if (!g) continue;
+      const rest = lines.filter((l) => !l.startsWith("**") && !(l.startsWith("*") && l.endsWith("*")));
+      const v = String(pa.length + 1);
+      pa.push({ v, t: strip(g) });
+      en.push({ v, t: rest.join(" ") || "—" });
+    }
+    await writeChapter("ggs", "ggs-gurmukhi", book.id, book.chapters, pa, undefined, `Ang ${ang}`);
+    await writeChapter("ggs", "khalsa", book.id, book.chapters, en, undefined, `Ang ${ang}`);
+    total += pa.length;
+  }
+  await writeFile(path.join(ROOT, "data", "ggs-books.json"), JSON.stringify(books, null, 1) + "\n");
+  report("ggs", 1430, total);
+  console.log(`  ${books.length} books → data/ggs-books.json`);
+}
+
+// ── Philosophy & secular thought ─────────────────────────────────────────────────────────────────
+
+/** Split a text at heading lines; returns each heading's capture and the text up to the next one. */
+function sections(text: string, head: RegExp) {
+  const re = new RegExp(head.source, head.flags.includes("g") ? head.flags : head.flags + "g");
+  const marks = [...text.matchAll(re)];
+  return marks.map((m, i) => ({ head: m[1] ?? m[0], body: text.slice(m.index! + m[0].length, i + 1 < marks.length ? marks[i + 1].index : undefined) }));
+}
+/** Footnote lines ("    [A] Xenophon…") and markers ("father,[B]") out. */
+const noNotes = (s: string) => s.replace(/^[ \t]+\[[A-Z0-9]+\][^\n]*(\n[ \t]+[^\n]+)*/gm, "").replace(/\[[A-Z]\]/g, "");
+
+/** Lucretius, On the Nature of Things — William Ellery Leonard (1916), Gutenberg #785. Books I–VI. */
+async function lucretius() {
+  const txt = gutenbergBody(await cached("secular", "pg785.txt", GUT(785)));
+  const books = sections(txt, /^BOOK ([IVX]+)\s*$/m);
+  await resetVersion("lucretius", "leonard");
+  let total = 0;
+  for (const b of books) {
+    // Paragraphs of verse; the section headings ("PROEM", "SUBSTANCE IS ETERNAL") are left out.
+    const list = paras(b.body)
+      .filter((p) => !/^[A-Z][A-Z\s,'’.-]+$/.test(p))
+      .map((t, i) => ({ v: String(i + 1), t }));
+    await writeChapter("lucretius", "leonard", "dnr", roman(b.head), list);
+    total += list.length;
+  }
+  report("lucretius", books.length, total);
+}
+
+/** Marcus Aurelius, Meditations — George Long (1862), Gutenberg #15877. 12 books, numbered sections. */
+async function meditations() {
+  const txt = gutenbergBody(await cached("secular", "pg15877.txt", GUT(15877)));
+  const start = txt.indexOf("THE THOUGHTS", txt.indexOf("THE THOUGHTS", txt.indexOf("INDEX OF TERMS")) + 1);
+  const at = start > 0 ? start : txt.lastIndexOf("THE THOUGHTS\n");
+  const end = txt.search(/^INDEXES\.\s*$/m);
+  const books = sections(txt.slice(at, end > at ? end : undefined), /^([IVX]+)\.\s*$/m);
+  await resetVersion("meditations", "long");
+  let total = 0;
+  for (const b of books) {
+    const verses: Verse[] = [];
+    for (const p of noNotes(b.body).split(/\n\s*\n/)) {
+      const t = unwrap(p);
+      if (!t) continue;
+      const m = /^(\d+)\.\s+([\s\S]*)$/.exec(t);
+      if (m) verses.push({ v: m[1], t: m[2] });
+      else if (!verses.length) verses.push({ v: "1", t });
+      else verses[verses.length - 1].t += ` ${t}`;
+    }
+    await writeChapter("meditations", "long", "med", roman(b.head), sequential(verses));
+    total += verses.length;
+  }
+  report("meditations", books.length, total);
+}
+
+/** Epictetus, The Enchiridion — Thomas W. Higginson (1865), Gutenberg #45109. 53 sections, one chapter. */
+async function enchiridion() {
+  const txt = gutenbergBody(await cached("secular", "pg45109.txt", GUT(45109)));
+  let body = txt.slice(txt.search(/^\s+THE ENCHIRIDION\s*$/m));
+  body = body.slice(0, body.search(/^\s+Footnotes\s*$/m));
+  // This edition's 51 sections ("XXIX[2]" carries a note mark).
+  const secs = sections(body, /^\s+([IVXL]+)(?:\[\d+\])?\s*$/m);
+  const verses = secs
+    .map((s) => ({ v: String(roman(s.head)), t: paras(noNotes(s.body)).join(" ").replace(/\[\d+\]/g, "").replace(/_/g, "") }))
+    .filter((v) => v.t);
+  await resetVersion("enchiridion", "higginson");
+  await writeChapter("enchiridion", "higginson", "ench", 1, sequential(verses));
+  report("enchiridion", 1, verses.length);
+}
+
+/** David Hume, Dialogues Concerning Natural Religion (1779), Gutenberg #4583. 12 parts. */
+async function hume() {
+  const txt = gutenbergBody(await cached("secular", "pg4583.txt", GUT(4583)));
+  const parts = sections(txt, /^PART (\d+)\s*$/m);
+  await resetVersion("hume-dialogues", "hume");
+  let total = 0;
+  for (const p of parts) {
+    const list = paras(p.body).map((t, i) => ({ v: String(i + 1), t }));
+    await writeChapter("hume-dialogues", "hume", "dnr-hume", Number(p.head), list);
+    total += list.length;
+  }
+  report("hume", parts.length, total);
+}
+
+/** Thomas Paine, The Age of Reason (1794–95), Gutenberg #3743. Part I and Part II as two books. */
+async function paine() {
+  const txt = gutenbergBody(await cached("secular", "pg3743.txt", GUT(3743)));
+  const heads = [...txt.matchAll(/^CHAPTER I\.\s*$/gm)].map((m) => m.index!);
+  if (heads.length < 2) throw new Error("Age of Reason: parts not found");
+  const partText = [txt.slice(heads[0], heads[1]), txt.slice(heads[1])];
+  await resetVersion("age-of-reason", "paine");
+  let total = 0;
+  for (const [k, t] of partText.entries()) {
+    const chs = sections(t, /^CHAPTER ([IVXL]+)\.\s*$/m);
+    for (const c of chs) {
+      // The chapter's title is its first line; then paragraphs.
+      const ps = paras(c.body.replace(/^[^\n]*\S[^\n]*\n/, ""));
+      const title = unwrap(c.body.trim().split("\n")[0]);
+      const list = ps
+        .filter((x, i) => !(i === 0 && x === title) && !/^(The End|END OF)/i.test(x))
+        .map((x, i) => ({ v: String(i + 1), t: x.replace(/_/g, "") }));
+      if (!list.length) continue;
+      await writeChapter("age-of-reason", "paine", k === 0 ? "aor1" : "aor2", roman(c.head), list, undefined, title);
+      total += list.length;
+    }
+  }
+  report("paine", 2, total);
+}
+
+const ALL: Record<string, () => Promise<unknown>> = {
+  ttc,
+  analects,
+  australian,
+  hidden,
+  aqdas,
+  ggs,
+  lucretius,
+  meditations,
+  enchiridion,
+  hume,
+  paine,
+};
 
 async function main() {
   const want = process.argv.slice(2);
