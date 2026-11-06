@@ -2300,8 +2300,7 @@
           "name": "Ancient Chronicles",
           "items": [
             { "id": "kojiki", "name": "Kojiki", "work": "kojiki", "chapters": 180, "chapterName": "Kojiki, Section" },
-            { "id": "nihongi", "name": "Nihongi (Chronicles of Japan)", "work": "nihongi", "chapters": 30, "chapterName": "Nihongi, Book" },
-            { "id": "nihongi", "name": "Nihongi", "status": "coming-soon" }
+            { "id": "nihongi", "name": "Nihongi (Chronicles of Japan)", "work": "nihongi", "chapters": 30, "chapterName": "Nihongi, Book" }
           ]
         }
       ]
