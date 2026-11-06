@@ -70,6 +70,8 @@ export type Settings = {
   highlightColor: string;
   /** Cross-reference mode: tapping a verse shows similar verses. Where to look: its own religion and/or others (religion ids). */
   xrefMode: boolean;
+  /** Desktop: width of the My Study / Search panel in px (null = default). */
+  panelWidth: number | null;
   xrefSame: boolean;
   xrefOthers: string[];
   /** Swipe sideways to change chapter: one finger, two fingers, or off. */
@@ -132,6 +134,7 @@ const DEFAULTS: Settings = {
   highlightMode: false,
   highlightColor: "yellow",
   xrefMode: false,
+  panelWidth: null,
   xrefSame: true,
   xrefOthers: [],
   chapterSwipe: "one",
@@ -178,6 +181,7 @@ function read(): Settings {
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       xrefMode: (p as { xrefMode?: unknown }).xrefMode === true,
+      panelWidth: typeof (p as { panelWidth?: unknown }).panelWidth === "number" ? (p as { panelWidth: number }).panelWidth : null,
       xrefSame: (p as { xrefSame?: unknown }).xrefSame !== false,
       xrefOthers: Array.isArray((p as { xrefOthers?: unknown }).xrefOthers) ? ((p as { xrefOthers: unknown[] }).xrefOthers.filter((x) => typeof x === "string") as string[]) : [],
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",

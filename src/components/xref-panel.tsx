@@ -16,22 +16,33 @@ import { CloseIcon, SparkIcon } from "./icons";
 
 type Hit = { work: string; book: string; chapter: number; v: string; score: number };
 
-// ── which verse the panel shows (set by tapping a verse while the mode is on) ──
-let current: (BookRef & { verse: string }) | null = null;
+// ── the verses the panel compares (tap verses while the mode is on: each tap adds or removes one) ──
+type Sel = BookRef & { verse: string };
+let selected: Sel[] = [];
+const EMPTY: Sel[] = [];
 const subs = new Set<() => void>();
-export function showXref(r: BookRef & { verse: string }) {
-  current = r;
+const emit = (next: Sel[]) => {
+  selected = next;
   subs.forEach((l) => l());
+};
+/** Tap a verse: add it to (or take it out of) the selection; a verse in another chapter starts a new one. */
+export function showXref(r: Sel) {
+  const sameChapter = selected.length && selected[0].work === r.work && selected[0].book === r.book && selected[0].chapter === r.chapter;
+  if (!sameChapter) return emit([r]);
+  const has = selected.some((x) => x.verse === r.verse);
+  emit(has ? selected.filter((x) => x.verse !== r.verse) : [...selected, r].sort((a, b) => parseInt(a.verse, 10) - parseInt(b.verse, 10)));
 }
-const useXrefVerse = () =>
+const useXrefSelection = () =>
   useSyncExternalStore(
     (l) => {
       subs.add(l);
       return () => subs.delete(l);
     },
-    () => current,
-    () => null,
+    () => selected,
+    () => EMPTY,
   );
+/** "John 3:16" or "John 3:16, 18, 20" */
+const selectionLabel = (sel: Sel[]) => (sel.length ? `${chapterTitle(findBook(sel[0].work, sel[0].book), sel[0].chapter, sel[0].book)}:${sel.map((x) => x.verse).join(", ")}` : "");
 
 const files = new Map<string, Promise<Record<string, [string, number][]>>>();
 function loadXref(work: string, book: string) {
@@ -104,16 +115,33 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
   const settings = useSettings();
   const wide = useMediaQuery(WIDE_QUERY, true);
   const ai = useAiChat();
-  const sel = useXrefVerse();
-  const verse = sel && sel.work === bookRef.work && sel.book === bookRef.book && sel.chapter === bookRef.chapter ? sel : null;
+  const all = useXrefSelection();
+  const sel = all.filter((x) => x.work === bookRef.work && x.book === bookRef.book && x.chapter === bookRef.chapter);
+  const verse = sel[0] ?? null;
   const [data, setData] = useState<{ k: string; hits: Hit[] } | null>(null);
-  const key = verse ? `${verse.work}/${verse.book}/${verse.chapter}:${verse.verse}` : "";
+  const key = sel.length ? `${verse!.work}/${verse!.book}/${verse!.chapter}:${sel.map((x) => x.verse).join(",")}` : "";
+
+  // Keep the chosen verses marked in the text.
+  useEffect(() => {
+    if (!settings.xrefMode) return;
+    const els = sel.flatMap((x) => [...document.querySelectorAll(`[data-v="${CSS.escape(x.verse)}"]`)]);
+    els.forEach((el) => el.classList.add("is-xref"));
+    return () => els.forEach((el) => el.classList.remove("is-xref"));
+    // sel's verses are in key
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, settings.xrefMode]);
 
   useEffect(() => {
     if (!verse) return;
     let live = true;
     loadXref(verse.work, verse.book).then((d) => {
-      if (live) setData({ k: key, hits: (d[`${verse.chapter}:${verse.verse}`] ?? []).map(([r, s]) => parseRef(r, s)) });
+      // Several verses: every match of any of them, each at its best score; the chosen verses themselves left out.
+      const best = new Map<string, number>();
+      const mine = new Set(sel.map((x) => `${x.work}/${x.book}/${x.chapter}:${x.verse}`));
+      for (const x of sel)
+        for (const [r, sc] of d[`${x.chapter}:${x.verse}`] ?? []) if (!mine.has(r) && sc > (best.get(r) ?? 0)) best.set(r, sc);
+      const hits = [...best].sort((a, b) => b[1] - a[1]).map(([r, sc]) => parseRef(r, sc));
+      if (live) setData({ k: key, hits });
     });
     return () => {
       live = false;
@@ -129,7 +157,10 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
     if (!hits) return [];
     const want = [...(settings.xrefSame && own ? [own.id] : []), ...others.map((r) => r.id).filter((id) => settings.xrefOthers.includes(id))];
     return want
-      .map((id) => ({ religion: catalog.religions.find((r) => r.id === id)!, hits: hits.filter((h) => religionOf(h.work, h.book)?.id === id) }))
+      .map((id) => ({
+        religion: catalog.religions.find((r) => r.id === id)!,
+        hits: hits.filter((h) => religionOf(h.work, h.book)?.id === id).slice(0, sel.length > 1 ? 8 : 6),
+      }))
       .filter((g) => g.religion);
     // others is derived from own
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,9 +173,9 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
   const compare = () => {
     if (!verse) return;
     const list = groups.flatMap((g) => g.hits.slice(0, 3).map(label));
-    askAboutVerse({ reference: label({ ...verse, v: verse.verse }), at: { ...verse }, texts: [] });
+    askAboutVerse({ reference: selectionLabel(sel), at: { ...verse }, texts: [] });
     void sendAi(
-      `Compare ${label({ ...verse, v: verse.verse })} with these similar passages${list.length ? `: ${list.join("; ")}` : ""}. What do they share, and where do they genuinely differ in meaning or context?`,
+      `Compare ${selectionLabel(sel)} with these similar passages${list.length ? `: ${list.join("; ")}` : ""}. What do they share, and where do they genuinely differ in meaning or context?`,
     );
   };
 
@@ -163,7 +194,7 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
           <XrefIcon />
         </span>
         <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">
-          Similar verses{verse ? <span className="font-normal text-muted"> · {label({ ...verse, v: verse.verse })}</span> : null}
+          Similar verses{verse ? <span className="font-normal text-muted"> · {selectionLabel(sel)}</span> : null}
         </h2>
         <button
           type="button"
@@ -174,8 +205,46 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
           <CloseIcon />
         </button>
       </header>
+      {sel.length > 0 && (
+        <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-line px-3 py-2 text-xs">
+          <span className="mr-1 font-semibold uppercase tracking-wide text-faint">Verses</span>
+          {sel.map((x) => (
+            <button
+              key={x.verse}
+              type="button"
+              onClick={() => showXref(x)}
+              title="Take this verse out"
+              className="flex min-h-8 items-center gap-1 rounded-full border border-accent bg-accent-soft pl-2.5 pr-1.5 font-medium text-accent"
+            >
+              {x.verse} <CloseIcon width={11} height={11} />
+            </button>
+          ))}
+          <span className="text-faint">· tap more verses to add them</span>
+          {sel.length > 1 && (
+            <button type="button" onClick={() => emit([])} className="ml-auto min-h-8 px-1 text-muted underline-offset-2 hover:text-ink hover:underline">
+              Clear
+            </button>
+          )}
+        </div>
+      )}
       <div className="shrink-0 space-y-1 border-b border-line px-3 py-2 text-xs">
-        <p className="font-semibold uppercase tracking-wide text-faint">Look in</p>
+        <div className="flex items-center gap-2">
+          <p className="font-semibold uppercase tracking-wide text-faint">Look in</p>
+          <button
+            type="button"
+            onClick={() => updateSettings({ xrefSame: true, xrefOthers: others.map((r) => r.id) })}
+            className="ml-auto min-h-7 px-1 text-muted underline-offset-2 hover:text-ink hover:underline"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => updateSettings({ xrefSame: true, xrefOthers: [] })}
+            className="min-h-7 px-1 text-muted underline-offset-2 hover:text-ink hover:underline"
+          >
+            Only {own?.name ?? "this one"}
+          </button>
+        </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {own && (
             <label className="flex min-h-8 cursor-pointer items-center gap-1.5">
@@ -193,7 +262,7 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
       </div>
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-2 text-sm">
         {!verse ? (
-          <p className="text-muted">Tap any verse to see the verses most like it. Tick other religions above to look across traditions.</p>
+          <p className="text-muted">Tap a verse (or several) to see the verses most like it. Tick other religions above to look across traditions.</p>
         ) : !hits ? (
           <p className="animate-pulse text-muted">Loading…</p>
         ) : !groups.length ? (

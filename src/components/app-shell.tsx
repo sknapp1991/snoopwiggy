@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useMediaQuery, useSettings, WIDE_QUERY } from "@/lib/settings";
+import { updateSettings, useMediaQuery, useSettings, WIDE_QUERY } from "@/lib/settings";
 import { Modal } from "./modal";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
@@ -32,6 +32,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useTabsSync();
   const { panel, toast } = useUi();
   const wide = useMediaQuery(WIDE_QUERY, true);
+  const { panelWidth } = useSettings();
   // "/" opens search (desktop keyboard shortcut).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,7 +60,27 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
         <main className="relative min-w-0 flex-1">{children}</main>
         {wide && panel && (
-          <aside aria-label={PANEL_LABEL[panel]} className="w-96 shrink-0 border-l border-line bg-panel">
+          <aside aria-label={PANEL_LABEL[panel]} style={{ width: panelWidth ?? 384 }} className="relative shrink-0 border-l border-line bg-panel">
+            {/* Drag the left edge to make the panel wider or narrower (double-click: back to the default). */}
+            <div
+              onPointerDown={(e) => {
+                e.preventDefault();
+                const startX = e.clientX;
+                const startW = panelWidth ?? 384;
+                const onMove = (ev: PointerEvent) =>
+                  updateSettings({ panelWidth: Math.round(Math.min(window.innerWidth * 0.6, Math.max(300, startW - (ev.clientX - startX)))) });
+                const onUp = () => {
+                  window.removeEventListener("pointermove", onMove);
+                  window.removeEventListener("pointerup", onUp);
+                };
+                window.addEventListener("pointermove", onMove);
+                window.addEventListener("pointerup", onUp);
+              }}
+              onDoubleClick={() => updateSettings({ panelWidth: null })}
+              title="Drag to resize (double-click to reset)"
+              aria-hidden
+              className="absolute inset-y-0 -left-1 z-10 w-2 cursor-ew-resize hover:bg-accent/30"
+            />
             <PanelBody panel={panel} />
           </aside>
         )}

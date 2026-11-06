@@ -475,6 +475,10 @@ function ColumnView({
 }) {
   const { drag, handlers } = useColumnDrag(onReorder);
   const n = cols.length;
+  // One version with a chosen column width: keep that width (centred) instead of filling the screen.
+  const { colWidth } = useSettings();
+  const wideScreen = useMediaQuery(WIDE_QUERY, true);
+  const fixedSingle = n === 1 && colWidth != null && wideScreen;
   const loading = rows.length === 0 && cols.some((c) => c.entry.status === "loading");
   const chapter = cols.find((c) => c.entry.status === "ok")?.entry;
   const chNum = chapter?.status === "ok" ? chapter.data.chapter : 0;
@@ -482,8 +486,8 @@ function ColumnView({
     <div
       role="table"
       aria-label="Parallel versions"
-      className="grid min-w-full"
-      style={{ gridTemplateColumns: `repeat(${n}, minmax(var(--colmin), 1fr))` }}
+      className={`grid min-w-full ${fixedSingle ? "justify-center" : ""}`}
+      style={{ gridTemplateColumns: fixedSingle ? "var(--colmin)" : `repeat(${n}, minmax(var(--colmin), 1fr))` }}
     >
       <div role="row" className="contents">
         {cols.map((c, i) => (

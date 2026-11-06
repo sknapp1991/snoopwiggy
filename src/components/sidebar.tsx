@@ -67,6 +67,24 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   }, [ref.work, ref.book]);
 
   const isOpen = (id: string) => toggled[id] ?? currentPath.has(id);
+  // Reading progress: chapters marked studied, per book ("work/book" → count).
+  const { items: studyItems } = useStudy();
+  const studiedPerBook = new Map<string, number>();
+  for (const [id, it] of studyItems)
+    if (id.startsWith("studied:")) {
+      const k = `${it.work}/${it.book}`;
+      studiedPerBook.set(k, (studiedPerBook.get(k) ?? 0) + 1);
+    }
+  const progressOf = (list: { work?: string; id: string; chapters?: number; status?: string }[]) => {
+    let done = 0;
+    let total = 0;
+    for (const i of list)
+      if (i.work && i.chapters && i.status !== "coming-soon") {
+        total += i.chapters;
+        done += Math.min(i.chapters, studiedPerBook.get(`${i.work}/${i.id}`) ?? 0);
+      }
+    return { done, total };
+  };
   const toggle = (id: string) => setToggled((t) => ({ ...t, [id]: !isOpen(id) }));
   // Expand all opens every religion and collection (not every book's chapter grid);
   // collapse all closes everything, including the current book.
@@ -170,6 +188,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   <TreeButton level={0} open={isOpen(rid)} onClick={() => toggle(rid)}>
                     <span className="font-semibold">{r.name}</span>
                     {!available && <Soon />}
+                    <Progress {...progressOf(r.collections.flatMap((c) => c.items))} />
                   </TreeButton>
                   {isOpen(rid) && (
                     <ul className="space-y-0.5">
@@ -196,6 +215,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                             <TreeButton level={1} open={isOpen(cid)} onClick={() => toggle(cid)}>
                               <span className="font-medium">{c.name}</span>
                               {soon && <Soon />}
+                              <Progress {...progressOf(c.items)} />
                             </TreeButton>
                             {isOpen(cid) && (
                               <ul className="space-y-0.5 pl-3">
@@ -240,6 +260,23 @@ function Soon() {
   return (
     <span className="ml-auto shrink-0 rounded-full border border-line px-2 py-0.5 text-[11px] font-medium text-faint">
       Coming soon
+    </span>
+  );
+}
+
+/**
+ * Quiet progress: shown only once something here is marked studied — a slim bar and the share,
+ * with the exact count on hover.
+ */
+function Progress({ done, total }: { done: number; total: number }) {
+  if (!done || !total) return null;
+  const pct = (done / total) * 100;
+  return (
+    <span className="ml-auto flex shrink-0 items-center gap-1.5 pl-2" title={`${done} of ${total} chapters studied`}>
+      <span className="h-1 w-12 overflow-hidden rounded-full bg-line" aria-hidden>
+        <span className="block h-full rounded-full bg-accent" style={{ width: `${Math.max(4, pct)}%` }} />
+      </span>
+      <span className="text-[11px] tabular-nums text-faint">{pct < 1 ? "<1" : Math.round(pct)}%</span>
     </span>
   );
 }

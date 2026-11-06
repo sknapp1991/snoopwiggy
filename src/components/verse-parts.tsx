@@ -97,6 +97,13 @@ export function VerseText({
       onPointerUp={g.onPointerUp}
       onPointerMove={g.onPointerMove}
       onPointerCancel={g.onPointerCancel}
+      // Right-click (desktop): the verse's options, as on the verse number — unless some text is
+      // selected, so the browser's own menu (Copy…) still works on a selection.
+      onContextMenu={(e) => {
+        if (window.getSelection()?.toString().trim()) return;
+        e.preventDefault();
+        a.openMenu(v);
+      }}
     >
       {children}
     </span>

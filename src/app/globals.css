@@ -129,6 +129,12 @@ dialog.sheet[open] {
 }
 
 /* Read-along: the verse being spoken */
+/* Verses chosen in cross-reference mode */
+.is-xref {
+  background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
 .is-reading {
   background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
   box-shadow: inset 3px 0 0 var(--accent);
