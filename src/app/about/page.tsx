@@ -10,7 +10,7 @@ const REPO = "https://github.com/sknapp1991/snoopwiggy";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-3">
+    <section id={title.toLowerCase().replace(/[^a-z]+/g, "-")} className="scroll-mt-4 space-y-3">
       <h2 className="font-serif text-xl font-semibold text-ink">{title}</h2>
       {children}
     </section>
@@ -105,6 +105,10 @@ export default function AboutPage() {
             <li>
               Like every website, our host (Cloudflare) briefly handles standard technical data such as your IP address, to
               deliver pages and to limit abuse.
+            </li>
+            <li>
+              The Android app is this same website in an app window, so everything above applies to it too. It asks for no
+              special permissions and collects nothing extra.
             </li>
           </ul>
         </Section>
