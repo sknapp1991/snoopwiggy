@@ -385,9 +385,18 @@
       "id": "talmud-he", "work": "talmud", "abbr": "Talmud", "name": "Talmud Bavli (Hebrew/Aramaic, Wikisource)",
       "language": "he", "kind": "native", "dir": "rtl", "year": 2012, "yearNote": "Vilna text, Wikisource edition",
       "translator": "Hebrew/Aramaic original",
-      "license": "CC BY-SA", "licenseNote": "Only Berakhot has a free English translation (Cohen, 1921).",
+      "license": "CC BY-SA",
       "attribution": "Talmud Bavli, Wikisource edition (CC BY-SA), via Sefaria.",
       "sourceUrl": "https://www.sefaria.org/texts/Talmud",
+      "licensed": false, "versification": "talmud"
+    },
+    {
+      "id": "davidson", "work": "talmud", "abbr": "Davidson", "name": "The William Davidson Talmud (English)",
+      "language": "en", "kind": "native", "dir": "ltr", "year": 2017, "yearNote": "Koren Noé Talmud, Sefaria edition",
+      "translator": "Rabbi Adin Even-Israel Steinsaltz (Koren Noé Talmud)",
+      "license": "CC BY-NC", "licenseNote": "Free for non-commercial use with credit; Verses Across is free, with no ads.",
+      "attribution": "The William Davidson digital edition of the Koren Noé Talmud, with commentary by Rabbi Adin Even-Israel Steinsaltz, CC BY-NC, via Sefaria.",
+      "sourceUrl": "https://www.sefaria.org/william-davidson-talmud",
       "licensed": false, "versification": "talmud"
     },
     {

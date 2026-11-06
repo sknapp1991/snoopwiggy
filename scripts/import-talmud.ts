@@ -1,9 +1,9 @@
 /**
  * Import the Babylonian Talmud (Talmud Bavli) from Sefaria's API — the 37 tractates of the six orders:
  *   - talmud-he  Hebrew/Aramaic text, "Wikisource Talmud Bavli" (CC BY-SA: credit + same licence)
+ *   - davidson   English, all tractates: the William Davidson Edition (Koren Noé Talmud, Rabbi Adin
+ *                Even-Israel Steinsaltz), CC BY-NC — fine here: Verses Across is free, with no ads
  *   - cohen      English for Berakhot only: A. Cohen, Cambridge University Press 1921 (public domain)
- * The complete modern English (William Davidson / Koren) is licensed for non-commercial use only, so
- * it isn't included; chapters carry a note saying so.
  *
  * Layout: chapter = daf (folio, 2, 3, …; the Talmud starts at 2a), verses = the segments of side a then
  * side b, numbered in order; each shows its traditional label ("2a:3") beside the text.
@@ -20,8 +20,7 @@ const RAW = path.join(ROOT, "data", "raw", "talmud");
 const OUT = path.join(ROOT, "data", "texts", "talmud");
 const HE = "hebrew|Wikisource Talmud Bavli";
 const EN = "english|Tractate Berakot by A. Cohen, Cambridge University Press, 1921";
-const NO_EN =
-  "No English for this tractate: the complete modern English translation is licensed for non-commercial use only. (Berakhot has A. Cohen's 1921 translation — add “Cohen” under Versions.)";
+const DAVIDSON = "english|William Davidson Edition - English";
 const ORDERS: [string, string, string][] = [
   ["Seder Zeraim", "zeraim", "Talmud · Zeraim (Seeds)"],
   ["Seder Moed", "moed", "Talmud · Moed (Appointed Times)"],
@@ -103,13 +102,21 @@ async function main() {
       const data = (await getJson(`https://www.sefaria.org/api/v3/texts/${encodeURIComponent(title.replace(/ /g, "_"))}?${q}`, `${id}.json`)) as {
         versions: { versionTitle: string; text: (string[] | null)[] }[];
       };
+      // The William Davidson English, cached in its own file (so the Hebrew download is reused).
+      const dv = (await getJson(
+        `https://www.sefaria.org/api/v3/texts/${encodeURIComponent(title.replace(/ /g, "_"))}?version=${encodeURIComponent(DAVIDSON)}`,
+        `${id}-davidson.json`,
+      )) as { versions: { versionTitle: string; text: (string[] | null)[] }[] };
+      const dav = byDaf(dv.versions.find((v) => v.versionTitle === DAVIDSON.split("|")[1])?.text ?? []);
       const he = byDaf(data.versions.find((v) => v.versionTitle === HE.split("|")[1])!.text);
       const en = withEn ? byDaf(data.versions.find((v) => v.versionTitle === EN.split("|")[1])!.text) : null;
       const last = Math.max(...he.keys());
       for (let daf = 1; daf <= last; daf++) {
         const hv = he.get(daf) ?? [];
-        const note = daf === 1 ? "The Talmud's pages begin at 2a." : !withEn && daf === 2 ? NO_EN : hv.length ? undefined : "No text on this page.";
+        const note = daf === 1 ? "The Talmud's pages begin at 2a." : hv.length ? undefined : "No text on this page.";
         await writeChapter("talmud-he", id, daf, hv, note);
+        const dvs = dav.get(daf) ?? [];
+        await writeChapter("davidson", id, daf, dvs, daf === 1 ? "The Talmud's pages begin at 2a." : dvs.length ? undefined : "No text on this page.");
         if (en) await writeChapter("cohen", id, daf, en.get(daf) ?? [], daf === 1 ? "The Talmud's pages begin at 2a." : en.get(daf)?.length ? undefined : "Not translated here.");
       }
       books.push({ id, name: title, collection: colId, collectionName: colName, chapters: last });

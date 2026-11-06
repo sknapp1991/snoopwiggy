@@ -145,8 +145,10 @@ each segment labelled "2a:3":
 - **Talmud** – Hebrew/Aramaic text, Wikisource edition, **CC BY-SA** (credit shown; shared under the
   same licence).
 - **Cohen** – English for Berakhot only: A. Cohen, Cambridge University Press 1921, public domain.
-- No English for the other tractates: the complete modern translation (William Davidson / Koren) is
-  CC BY-NC (non-commercial only), so it isn't used. Each tractate's first page says so.
+- **Davidson** – English for all 37 tractates: the William Davidson digital edition of the Koren Noé
+  Talmud (Rabbi Adin Even-Israel Steinsaltz), **CC BY-NC** via Sefaria — credit shown; allowed because
+  Verses Across is non-commercial (free forever, no ads). The bold literal translation and the
+  explanation woven into it are shown together as plain text.
 
 ## Hadith (Islam, added Nov 2026)
 
