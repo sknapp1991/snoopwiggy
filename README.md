@@ -32,14 +32,9 @@ Adding a version:
 
 Copy `.env.example` to `.env.local` (git-ignored). Phase 1 needs no keys. Phase 2 uses `GEMINI_API_KEY`.
 
-## Who made it
-
-Verses Across is made by **Skylar Knapp** and **Michael Knapp**. Skylar builds it. Michael tests every
-feature in his own daily study, and most of what the app does came from his testing and requests.
-
 ## Copyright and license
 
-Copyright © 2026 Skylar Knapp and Michael Knapp.
+Copyright © 2026 **Skylar Knapp** and **Michael Knapp**, co-owners of Verses Across.
 
 The **code** is free software under the [GNU Affero General Public License v3.0 or later](LICENSE). You may use,
 change and share it, but any version you share or run for others (including as a website) must stay

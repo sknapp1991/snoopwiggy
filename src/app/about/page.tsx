@@ -34,16 +34,11 @@ export default function AboutPage() {
           </p>
         </header>
 
-        <Section title="Who makes it">
-          <p>
-            Verses Across is made by <strong className="text-ink">Skylar Knapp</strong> and{" "}
-            <strong className="text-ink">Michael Knapp</strong>. Skylar builds it. Michael tests every feature in his own
-            daily study, and much of what the app does came from his testing and ideas.
-          </p>
-        </Section>
-
         <Section title="Copyright and license">
-          <p>Copyright © 2026 Skylar Knapp and Michael Knapp.</p>
+          <p>
+            Copyright © 2026 <strong className="text-ink">Skylar Knapp</strong> and{" "}
+            <strong className="text-ink">Michael Knapp</strong>, co-owners of Verses Across.
+          </p>
           <p>
             The app&rsquo;s code is free software under the{" "}
             <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer" className={a}>
