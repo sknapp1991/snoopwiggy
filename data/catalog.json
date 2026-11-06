@@ -69,7 +69,10 @@
     { "id": "second-treatise", "name": "Second Treatise of Government", "versification": "second-treatise" },
     { "id": "social-contract", "name": "The Social Contract", "versification": "social-contract" },
     { "id": "great-learning", "name": "The Great Learning", "versification": "great-learning" },
-    { "id": "mean", "name": "The Doctrine of the Mean", "versification": "mean" }
+    { "id": "mean", "name": "The Doctrine of the Mean", "versification": "mean" },
+    { "id": "vendidad", "name": "Vendidad", "versification": "vendidad" },
+    { "id": "yashts", "name": "Yashts", "versification": "yashts" },
+    { "id": "yasna", "name": "Yasna", "versification": "yasna" }
   ],
   "versions": [
     {
@@ -1470,6 +1473,54 @@
       "sourceUrl": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean",
       "licensed": false,
       "versification": "mean"
+    },
+    {
+      "id": "darmesteter",
+      "work": "vendidad",
+      "abbr": "Darmesteter",
+      "name": "Vendidad (James Darmesteter, 1880)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1880,
+      "translator": "James Darmesteter",
+      "license": "Public Domain",
+      "attribution": "Vendidad (James Darmesteter, 1880), Sacred Books of the East vol. 4, public domain; from the proofread transcription (J. B. Hare, 2001) as published on archive.org, footnotes left out.",
+      "sourceUrl": "https://archive.org/details/complete-SBE-avesta-three-volumes-in-one",
+      "licensed": false,
+      "versification": "vendidad"
+    },
+    {
+      "id": "darmesteter-yt",
+      "work": "yashts",
+      "abbr": "Darmesteter",
+      "name": "Yashts (James Darmesteter, 1883)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1883,
+      "translator": "James Darmesteter",
+      "license": "Public Domain",
+      "attribution": "Yashts (James Darmesteter, 1883), Sacred Books of the East vol. 23, public domain; from the proofread transcription (J. B. Hare, 2001) as published on archive.org, footnotes left out.",
+      "sourceUrl": "https://archive.org/details/complete-SBE-avesta-three-volumes-in-one",
+      "licensed": false,
+      "versification": "yashts"
+    },
+    {
+      "id": "mills-yasna",
+      "work": "yasna",
+      "abbr": "Mills",
+      "name": "Yasna (L. H. Mills, 1887)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1887,
+      "translator": "Lawrence Heyworth Mills",
+      "license": "Public Domain",
+      "attribution": "Yasna (L. H. Mills, 1887), Sacred Books of the East vol. 31, public domain; from the proofread transcription (J. B. Hare, 2001) as published on archive.org, footnotes left out.",
+      "sourceUrl": "https://archive.org/details/complete-SBE-avesta-three-volumes-in-one",
+      "licensed": false,
+      "versification": "yasna"
     }
   ],
   "religions": [
@@ -2062,7 +2113,10 @@
           "id": "avesta",
           "name": "Avesta",
           "items": [
-            { "id": "gathas", "name": "The Gathas of Zarathustra", "work": "gathas", "chapters": 17, "chapterName": "Gathas" }
+            { "id": "gathas", "name": "The Gathas of Zarathustra", "work": "gathas", "chapters": 17, "chapterName": "Gathas" },
+            { "id": "yasna", "name": "Yasna (the rest of the liturgy)", "work": "yasna", "chapters": 72, "chapterName": "Yasna" },
+            { "id": "yashts", "name": "The Yashts (hymns)", "work": "yashts", "chapters": 24, "chapterName": "Yasht" },
+            { "id": "vendidad", "name": "The Vendidad (law against the demons)", "work": "vendidad", "chapters": 22, "chapterName": "Vendidad, Fargard" }
           ]
         }
       ]

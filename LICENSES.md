@@ -232,6 +232,10 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
 - **The Great Learning** and **The Doctrine of the Mean** — the Chinese in Zhu Xi's arrangement (Wikisource,
   四書章句集註, his notes left out) and James Legge's English (The Chinese Classics vol. 1, 2nd ed. 1893,
   Wikisource transcription), all public domain.
+- **The Avesta beyond the Gathas** — James Darmesteter's Vendidad (Sacred Books of the East 4, 1880) and
+  Yashts (SBE 23, 1883), and L. H. Mills' Yasna (SBE 31, 1887), all public domain; text from the proofread
+  transcription in archive.org's "complete-SBE-avesta-three-volumes-in-one" (Public Domain Mark), checked
+  against scans; footnotes left out. The Gathic chapters of the Yasna point to the Gathas.
 - **Popol Vuh** — Lewis Spence's 1908 retelling of its four books (#56550), public domain; not a full
   translation, and his commentary is left out.
 - **Classics from Project Gutenberg** (`scripts/import-classics.ts`, all public domain), chapter = the

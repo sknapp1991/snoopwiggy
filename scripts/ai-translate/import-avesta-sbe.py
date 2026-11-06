@@ -93,6 +93,25 @@ FIXES = {   # file -> [(old paragraph prefix, new prefix)]: paragraph-number sli
     'sbe23/sbe2320.htm': [('496. Invoke', '49. Invoke')],
 }
 PRELUDE = []
+# (work, chapter, verse) -> [(old, new)]: stray footnote figures and scanning slips left in the transcription
+POST = {
+    ('vendidad', 1, '12'): [('Ahura Mazda) created', 'Ahura Mazda, created')],
+    ('vendidad', 2, '28'): [('two of ever), kind', 'two of every kind')],
+    ('vendidad', 11, '11'): [('most-healing -words', 'most-healing words')],
+    ('yashts', 1, '32'): [('Mâzainya fiends 6;', 'Mâzainya fiends;')],
+    ('yashts', 15, '2'): [('Airyana Vaêgah 1,', 'Airyana Vaêgah,')],
+    ('yasna', 52, '5'): [(' (For Y. LIII, see Gâthas, pp. 190-194.)', '')],
+    ('yasna', 62, '11'): [(' 12 = Y. III, 24, 25.', '')],
+    ('yasna', 71, '29'): [('Y. LX, II-13', 'Y. LX, 11-13')],
+}
+POST_ADD = {('yasna', 62): [('12', '(= Y. III, 24, 25.)')]}
+
+def post(work, ch, vs):
+    for v in vs:
+        for a, b in POST.get((work, ch, v[0]), ()):
+            assert a in v[1], (work, ch, v[0], a)
+            v[1] = v[1].replace(a, b)
+    return vs + [list(x) for x in POST_ADD.get((work, ch), ())]
 
 def verses(items, start_pred=None, stop_pred=None, fixes=()):
     out = []; pre = []; started = start_pred is None
@@ -130,6 +149,7 @@ def clean(t):
     return t
 
 def write(root, work, ver, book, ch, title, vs, note=None):
+    vs = post(work, ch, [[v, clean(t)] for v, t in vs])
     d = os.path.join(root, 'data', 'texts', work, ver, book); os.makedirs(d, exist_ok=True)
     head = {"work": work, "version": ver, "book": book, "chapter": ch, "title": title}
     if note: head["note"] = note
@@ -210,7 +230,7 @@ def do_yashts(src, root):
     for i in range(24):
         f = f'sbe23/sbe23{i + 6:02d}.htm'
         vs = verses(parse(os.path.join(src, f)), fixes=FIXES.get(f, ()))
-        write(root, 'yashts', 'darmesteter', 'yashts', i + 1, f'Yasht {ROMAN[i]} — {YASHT_TITLES[i]}', vs)
+        write(root, 'yashts', 'darmesteter-yt', 'yashts', i + 1, f'Yasht {ROMAN[i]} — {YASHT_TITLES[i]}', vs)
         print(f, i + 1, len(vs))
 
 def title_case(h):

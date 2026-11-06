@@ -40,7 +40,7 @@ EMBED = {
     "zhuangzi": "giles", "navaho": "matthews", "sioux": "mclaughlin",
     "gathas": "mills", "popol-vuh": "spence",
     "iliad": "butler-il", "odyssey": "butler-od", "hesiod": "evelyn-white", "aeneid": "dryden", "metamorphoses": "riley", "republic": "jowett-rep", "nicomachean": "chase", "seneca-morals": "lestrange", "montaigne": "cotton", "pensees": "trotter", "discourse-method": "veitch", "spinoza-ethics": "elwes", "emerson-essays": "emerson", "on-liberty": "mill", "wisdom-of-life": "saunders", "zarathustra": "common", "beyond-good-evil": "zimmern", "russell-problems": "russell", "varieties": "james", "freud-intro": "hall", "jung-unconscious": "hinkle", "the-crowd": "le-bon",
-    "mencius": "ai-men", "great-learning": "legge-gl", "mean": "legge-mean",
+    "mencius": "ai-men", "great-learning": "legge-gl", "mean": "legge-mean", "vendidad": "darmesteter", "yashts": "darmesteter-yt", "yasna": "mills-yasna",
     "plato-dialogues": "jowett-dial", "confessions": "pusey", "imitation": "benham", "leviathan": "hobbes", "second-treatise": "locke", "social-contract": "cole",
 }
 SAME_K = 6  # results kept from the verse's own religion
