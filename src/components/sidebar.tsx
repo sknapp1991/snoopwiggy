@@ -271,12 +271,15 @@ function Soon() {
 function Progress({ done, total }: { done: number; total: number }) {
   if (!done || !total) return null;
   const pct = (done / total) * 100;
+  const all = done >= total;
   return (
-    <span className="ml-auto flex shrink-0 items-center gap-1.5 pl-2" title={`${done} of ${total} chapters studied`}>
-      <span className="h-1 w-12 overflow-hidden rounded-full bg-line" aria-hidden>
-        <span className="block h-full rounded-full bg-accent" style={{ width: `${Math.max(4, pct)}%` }} />
+    <span className="ml-auto flex shrink-0 items-center gap-1.5 pl-2" title={`${done} of ${total} chapters studied (${pct < 1 ? "<1" : Math.round(pct)}%)`}>
+      <span className="h-1 w-10 overflow-hidden rounded-full bg-line" aria-hidden>
+        <span className={`block h-full rounded-full ${all ? "bg-green-600" : "bg-accent"}`} style={{ width: `${Math.max(4, pct)}%` }} />
       </span>
-      <span className="text-[11px] tabular-nums text-faint">{pct < 1 ? "<1" : Math.round(pct)}%</span>
+      <span className={`text-[11px] tabular-nums ${all ? "font-semibold text-green-700 dark:text-green-400" : "text-faint"}`}>
+        ✓ {all ? "All" : `${done.toLocaleString()}/${total.toLocaleString()}`}
+      </span>
     </span>
   );
 }
@@ -393,10 +396,12 @@ function BookRow({
         </span>
         {studied.size > 0 && (
           <span
-            className="shrink-0 rounded-full bg-accent-soft px-1.5 text-[11px] font-medium tabular-nums text-accent"
+            className={`shrink-0 rounded-full px-1.5 text-[11px] font-medium tabular-nums ${
+              studied.size >= chapters ? "bg-green-600/15 font-semibold text-green-700 dark:text-green-400" : "bg-accent-soft text-accent"
+            }`}
             title={`${studied.size} of ${chapters} chapters studied`}
           >
-            ✓ {studied.size === chapters ? "all" : studied.size}
+            ✓ {studied.size >= chapters ? "All" : `${studied.size}/${chapters}`}
           </span>
         )}
       </button>

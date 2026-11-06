@@ -572,6 +572,33 @@ export function useReadAlong({
       const v = fromVerse || (s.chapterKey === chapterKey ? s.verse : null) || items[startIndex()]?.v || "1";
       this.readFrom(v || "1", id);
     },
+    /** Several versions in turn: the recordings a version has for this chapter, and the one in use. */
+    mixRecordings(id: string) {
+      return allRecordings.filter((x) => x.version === id && hasChapter(x, bookRef.book, bookRef.chapter));
+    },
+    mixRecording(id: string) {
+      return recordingFor(id);
+    },
+    /** Several versions in turn: pick a version's voice ("rec:<id>" = a recording, else a device voice). */
+    setMixVoice(id: string, value: string) {
+      const s0 = getSettings();
+      const lang = cols.find((c) => c.version.id === id)?.version.language ?? "en";
+      const has = allRecordings.some((x) => x.version === id);
+      let voiceChanged = false;
+      if (value.startsWith("rec:")) updateSettings({ ttsRecorded: { ...s0.ttsRecorded, [id]: value.slice(4) } });
+      else {
+        voiceChanged = s0.ttsVoices[lang] !== value;
+        updateSettings({
+          ...(has ? { ttsRecorded: { ...s0.ttsRecorded, [id]: "device" } } : {}),
+          ttsVoices: { ...s0.ttsVoices, [lang]: value },
+        });
+      }
+      // Hear it straight away (also when paused), from the same verse.
+      const sp = getSpeech();
+      if (sp.status === "idle" || sp.chapterKey !== chapterKey) return forgetPaused();
+      if (voiceChanged) return restartSoon(); // the queue carries the voice: wait for it to be rebuilt
+      startAt(index >= 0 ? index : startIndex(), { until: null });
+    },
     /** Does this version have a recorded (screen-off) voice for this chapter? */
     hasRecording(id: string) {
       return allRecordings.some((r) => r.version === id && hasChapter(r, bookRef.book, bookRef.chapter));
@@ -1156,14 +1183,23 @@ function VersionBubbles({ ra, more, onMore }: { ra: ReadAlong; more: boolean; on
 /** Several versions in turn: a voice and a speed for each one, side by side. */
 function MixVoices({ ra }: { ra: ReadAlong }) {
   const settings = useSettings();
+  const recorded = ra.mixIds.map((id) => !!ra.mixRecording(id));
+  const partial = recorded.some(Boolean) && !recorded.every(Boolean);
   return (
     <div className="grid grid-cols-1 gap-2 sm:col-span-2 sm:grid-cols-2">
+      {partial && (
+        <p className="text-xs text-muted sm:col-span-2">
+          Recorded voices are used only when every version read in turn has one; for now all are read by this device’s voices.
+        </p>
+      )}
       {ra.mixIds.map((id) => {
         const v = ra.cols.find((c) => c.version.id === id)?.version;
         if (!v) return null;
         const lang = v.language;
         const { list } = voicesFor(ra.allVoices, lang);
         const chosen = pickVoice(ra.allVoices, lang, settings.ttsVoices[lang]);
+        const recs = ra.mixRecordings(id);
+        const rec = ra.mixRecording(id);
         const rate = settings.ttsRates[lang] ?? settings.ttsRate;
         return (
           <div key={id} className="space-y-1.5 rounded-lg border border-line bg-raised/60 p-2">
@@ -1172,18 +1208,29 @@ function MixVoices({ ra }: { ra: ReadAlong }) {
             </p>
             <div className="flex gap-2">
               <select
-                aria-label={`${getLanguage(lang).name} voice`}
-                value={chosen?.voiceURI ?? ""}
-                disabled={!list.length}
-                onChange={(e) => ra.setLangVoice(lang, e.target.value)}
+                aria-label={`${v.abbr} voice`}
+                value={rec ? `rec:${rec.id}` : (chosen?.voiceURI ?? "")}
+                disabled={!list.length && !recs.length}
+                onChange={(e) => ra.setMixVoice(id, e.target.value)}
                 className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-raised px-2"
               >
-                {!list.length && <option value="">Browser default</option>}
-                {list.map((x) => (
-                  <option key={x.voiceURI} value={x.voiceURI}>
-                    {x.name}
-                  </option>
-                ))}
+                {recs.length > 0 && (
+                  <optgroup label="Recorded · keeps playing with the screen off">
+                    {recs.map((r) => (
+                      <option key={r.id} value={`rec:${r.id}`}>
+                        {r.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label="This device’s voices">
+                  {!list.length && <option value="">Browser default</option>}
+                  {list.map((x) => (
+                    <option key={x.voiceURI} value={x.voiceURI}>
+                      {x.name}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
               <select
                 aria-label={`${getLanguage(lang).name} speed`}
