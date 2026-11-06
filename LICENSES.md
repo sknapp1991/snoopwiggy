@@ -1,9 +1,15 @@
 # Text licences
 
-Every text in Verses Across is public domain or carries a licence that allows commercial use. Nothing
-non-commercial (CC-BY-NC) or copyrighted is included. Each version also lives in `data/catalog.json`
-(name, year, translator, licence, source URL), and its attribution is shown under the text in the reader.
-Licences were checked on the eBible.org details page and catalog on 2026-11-03.
+Every text in Verses Across is public domain or carries an open licence. Each version also lives in
+`data/catalog.json` (name, year, translator, licence, source URL), which is the complete list, and its
+attribution is shown under the text in the reader. The table below covers the Bibles. Licences were
+checked on the eBible.org details page and catalog on 2026-11-03.
+
+**One non-commercial text:** the William Davidson Talmud (English, via Sefaria) is **CC BY-NC**. That is
+fine because Verses Across is free, with no ads and no purchases. If that ever changes, this text must
+be removed or licensed first. Every other text allows commercial use.
+
+These licences cover the texts only. The app's own code is under the AGPL (see `LICENSE` and `README.md`).
 
 | Version | Language | Year | Translator / text | Licence | Source |
 |---|---|---|---|---|---|

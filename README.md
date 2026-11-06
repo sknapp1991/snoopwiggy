@@ -31,3 +31,22 @@ Adding a version:
 ## Environment
 
 Copy `.env.example` to `.env.local` (git-ignored). Phase 1 needs no keys. Phase 2 uses `GEMINI_API_KEY`.
+
+## Who made it
+
+Verses Across is made by **Skylar Knapp** and **Michael Knapp**. Skylar builds it. Michael tests every
+feature in his own daily study, and most of what the app does came from his testing and requests.
+
+## Copyright and license
+
+Copyright © 2026 Skylar Knapp and Michael Knapp.
+
+The **code** is free software under the [GNU Affero General Public License v3.0 or later](LICENSE). You may use,
+change and share it, but any version you share or run for others (including as a website) must stay
+open source under the same license.
+
+The **scripture texts and recordings** are not ours and are not covered by this license. Each one is
+public domain or carries its own licence, listed in `LICENSES.md` and `data/catalog.json`.
+
+**Name and logo:** "Verses Across" and the Verses Across logo are not covered by the license. If you share
+a modified version, please give it a different name and logo, so nobody mistakes it for this project.

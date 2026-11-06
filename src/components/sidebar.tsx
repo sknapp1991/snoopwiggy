@@ -224,6 +224,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             })}
           </ul>
         )}
+        {!q && (
+          <p className="px-2 pb-2 pt-6 text-xs leading-relaxed text-faint">
+            © 2026 Skylar Knapp and Michael Knapp ·{" "}
+            <Link href="/about" onClick={onNavigate} className="underline underline-offset-2 hover:text-muted">
+              About, terms &amp; privacy
+            </Link>
+          </p>
+        )}
       </div>
     </nav>
   );
