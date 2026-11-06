@@ -4,7 +4,7 @@
  * Each column loads independently, so a slow column (e.g. an AI translation in Phase 2)
  * shows its own loading state without blocking the others.
  */
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { createContext, createElement, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import type { Chapter } from "./schema";
 
 export type ChapterEntry =
@@ -67,6 +67,20 @@ export function loadChapter(key: string, { retry = false } = {}) {
     .finally(emit);
 }
 
+/**
+ * Chapters the server already loaded for this page (so the first HTML has the text, for search engines and
+ * a faster first paint). The reader uses them instead of fetching; anything else loads as usual.
+ */
+const SeedCtx = createContext<Map<string, ChapterEntry> | null>(null);
+
+export function ChapterSeed({ chapters, children }: { chapters: Chapter[]; children: ReactNode }) {
+  const map = useMemo(
+    () => new Map(chapters.map((c) => [chapterKey(c.work, c.version, c.book, c.chapter), { status: "ok", data: c } as ChapterEntry])),
+    [chapters],
+  );
+  return createElement(SeedCtx.Provider, { value: map }, children);
+}
+
 function subscribe(l: () => void) {
   listeners.add(l);
   return () => listeners.delete(l);
@@ -74,14 +88,20 @@ function subscribe(l: () => void) {
 
 export function useChapters(keys: string[]): ChapterEntry[] {
   const v = useSyncExternalStore(subscribe, () => version, () => 0);
+  const seed = useContext(SeedCtx);
   const joined = keys.join("|");
   useEffect(() => {
-    if (joined) joined.split("|").forEach((k) => loadChapter(k));
-  }, [joined]);
+    if (!joined) return;
+    for (const k of joined.split("|")) {
+      const s = seed?.get(k);
+      if (s && !cache.has(k)) cache.set(k, s);
+      else loadChapter(k);
+    }
+  }, [joined, seed]);
   return useMemo(
-    () => (joined ? joined.split("|") : []).map((k) => cache.get(k) ?? { status: "loading" as const }),
+    () => (joined ? joined.split("|") : []).map((k) => cache.get(k) ?? seed?.get(k) ?? { status: "loading" as const }),
     // `v` changes whenever any entry changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [joined, v],
+    [joined, v, seed],
   );
 }

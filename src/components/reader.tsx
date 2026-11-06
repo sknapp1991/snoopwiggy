@@ -6,6 +6,7 @@ import { alignVerses, type AlignedRow } from "@/lib/align";
 import { adjacentChapters, catalog, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
+import { joinAbbrs, seoChapterName } from "@/lib/seo-shared";
 import type { Verse, Version } from "@/lib/schema";
 import {
   FONT_MAX,
@@ -331,6 +332,15 @@ export function ReaderView() {
     return () => window.removeEventListener("keydown", onKey);
   }, [prev, next, versions, router]);
 
+  // The tab names the versions actually shown (the page's own title names the defaults when the address has
+  // no ?v= and the reader uses this person's saved versions instead).
+  const tabTitle = book
+    ? `${seoChapterName(book, ref.chapter)} – ${joinAbbrs(versions.map(getVersion).filter((v): v is Version => !!v))} · Verses Across`
+    : "";
+  useEffect(() => {
+    if (tabTitle) document.title = tabTitle;
+  }, [tabTitle]);
+
   if (!valid || !book) return <NotFound />;
 
   const title = chapterTitle(book, ref.chapter);
@@ -359,7 +369,6 @@ export function ReaderView() {
         column ? "snap-x snap-mandatory desk:snap-none" : ""
       }`}
     >
-      <title>{`${title} · Verses Across`}</title>
       <div ref={content}>
       <div className={column ? "sticky left-0 w-[100cqw]" : ""}>
         <FirstTips />

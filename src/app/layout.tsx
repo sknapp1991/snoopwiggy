@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   title: { default: "Verses Across", template: "%s · Verses Across" },
   description: "Read the world's scriptures side by side, in many languages. Free on phone and desktop.",
   applicationName: "Verses Across",
+  // The home page's main address; chapter pages and About set their own.
+  alternates: { canonical: "/" },
   // Link previews (texts, chats, social): the image comes from app/opengraph-image.png.
   openGraph: {
     type: "website",

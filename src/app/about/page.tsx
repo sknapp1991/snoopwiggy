@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About, terms and privacy",
   description: "Who makes Verses Across, the terms of use, privacy, and credits for every text.",
+  alternates: { canonical: "/about" },
 };
 
 const REPO = "https://github.com/sknapp1991/snoopwiggy";
