@@ -7,7 +7,8 @@ import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { catalog, chapterTitle, DEFAULT_VERSIONS, findBook, readHref } from "@/lib/catalog";
 import { fetchBook } from "@/lib/chapter-store";
-import { exportJson, formatStamp, highlightBg, HIGHLIGHTS, importJson, removeItem, useStudy, type StudyItem, type StudyKind } from "@/lib/study";
+import { downloadBackup, lastBackup } from "@/lib/backup";
+import { formatStamp, highlightBg, HIGHLIGHTS, importJson, removeItem, useStudy, type StudyItem, type StudyKind } from "@/lib/study";
 import { closePanel, toast } from "@/lib/ui-store";
 import { CalendarIcon, CloseIcon, ClockIcon, NoteIcon, StarIcon, MarkerIcon, CheckSquareIcon } from "./icons";
 import { PlansPanel } from "./plans-panel";
@@ -87,14 +88,8 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
     return l.sort((a, b) => (sort === "old" ? a.updatedAt - b.updatedAt : b.updatedAt - a.updatedAt));
   }, [inTab, rel, bk, sort]);
 
-  const download = () => {
-    const blob = new Blob([exportJson()], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `versesacross-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  };
+  const download = () => downloadBackup();
+  const last = lastBackup();
   const restore = async (f: File) => {
     try {
       const n = await importJson(await f.text());
@@ -234,7 +229,10 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="space-y-1 border-t border-line px-4 py-2 text-xs text-faint">
-        <p>Saved on this device only. Make a backup to move it to another device.</p>
+        <p>
+          Saved on this device only; clearing the browser’s data erases it. A backup keeps it safe and moves it to another device.
+          {last ? ` Last backup: ${new Date(last).toLocaleDateString()}.` : " No backup yet."}
+        </p>
         <div className="flex gap-2">
           <button type="button" onClick={download} className="min-h-10 flex-1 rounded-lg border border-line text-sm text-ink hover:border-faint">
             Back up

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { BackupNudge } from "./backup-nudge";
 import { updateSettings, useMediaQuery, useSettings, WIDE_QUERY } from "@/lib/settings";
 import { Modal } from "./modal";
 import { Sidebar } from "./sidebar";
@@ -52,6 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh flex-col">
+      <BackupNudge />
       <TopBar onOpenLibrary={() => setDrawerOpen(true)} sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} />
       <TabBar />
       <div className="flex min-h-0 flex-1">
