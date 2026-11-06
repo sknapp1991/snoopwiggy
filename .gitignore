@@ -65,3 +65,6 @@ next-env.d.ts
 /.cache-audio/
 /public/audio/
 /.cache-audio-samples/
+
+# cross references (scripts/xref/build.py), uploaded to R2
+/.cache-xref/

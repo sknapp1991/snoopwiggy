@@ -4,6 +4,7 @@ import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
 import { CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
 import { HighlightModeToggle } from "./highlight-mode";
+import { XrefToggle } from "./xref-panel";
 import { togglePanel, useUi } from "@/lib/ui-store";
 import { openSearch } from "./search-panel";
 import { ChapterSwipeControl, SavedSetups, FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
@@ -80,6 +81,8 @@ export function TopBar({
         <LibraryIcon />
       </button>
 
+      <XrefToggle />
+
       <AiButton />
 
       {/* Desktop controls */}
@@ -128,6 +131,7 @@ export function TopBar({
               </div>
             </div>
             <HighlightModeToggle full />
+            <XrefToggle full />
             <WidthControl />
             <LanguageColors />
             <ChapterSwipeControl />

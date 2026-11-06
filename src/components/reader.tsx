@@ -26,6 +26,7 @@ import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./ve
 import { StudiedBox } from "./studied-box";
 import { FloatingNav } from "./floating-nav";
 import { HighlightModeBar } from "./highlight-mode";
+import { showXref, XrefPanel } from "./xref-panel";
 import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
 import { openVerseMenu, toast } from "@/lib/ui-store";
@@ -112,7 +113,8 @@ export function ReaderView() {
     openMenu: (v, focus) => openVerseMenu({ ...ref, verse: v, focus }),
     textTap(v, version) {
       const r = { ...ref, verse: v };
-      if (settings.highlightMode) {
+      if (settings.xrefMode) showXref(r);
+      else if (settings.highlightMode) {
         const cur = getItem("highlight", r)?.color;
         setHighlight(r, cur === settings.highlightColor ? null : settings.highlightColor);
       } else if (ra.speech.open && ra.supported) ra.readFrom(v, version); // read in the language tapped
@@ -309,6 +311,7 @@ export function ReaderView() {
     )}
     {ra.speech.open && <ReadAlongBar ra={ra} />}
     <HighlightModeBar raised={ra.speech.open} />
+    <XrefPanel bookRef={ref} versions={versions} raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
     </>
   );

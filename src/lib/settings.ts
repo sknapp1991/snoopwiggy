@@ -68,6 +68,10 @@ export type Settings = {
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
   highlightColor: string;
+  /** Cross-reference mode: tapping a verse shows similar verses. Where to look: its own religion and/or others (religion ids). */
+  xrefMode: boolean;
+  xrefSame: boolean;
+  xrefOthers: string[];
   /** Swipe sideways to change chapter: one finger, two fingers, or off. */
   chapterSwipe: "one" | "two" | "off";
   /** Floating ‹ › chapter buttons (fade while scrolling). */
@@ -127,6 +131,9 @@ const DEFAULTS: Settings = {
   ttsVerseStop: false,
   highlightMode: false,
   highlightColor: "yellow",
+  xrefMode: false,
+  xrefSame: true,
+  xrefOthers: [],
   chapterSwipe: "one",
   floatingNav: true,
   setups: [],
@@ -170,6 +177,9 @@ function read(): Settings {
       ttsVerseStop: p.ttsVerseStop === true,
       highlightMode: p.highlightMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
+      xrefMode: (p as { xrefMode?: unknown }).xrefMode === true,
+      xrefSame: (p as { xrefSame?: unknown }).xrefSame !== false,
+      xrefOthers: Array.isArray((p as { xrefOthers?: unknown }).xrefOthers) ? ((p as { xrefOthers: unknown[] }).xrefOthers.filter((x) => typeof x === "string") as string[]) : [],
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
       floatingNav: p.floatingNav !== false,
       setups: Array.isArray(p.setups)
