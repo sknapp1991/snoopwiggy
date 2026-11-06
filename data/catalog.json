@@ -33,7 +33,10 @@
     { "id": "kojiki", "name": "Kojiki", "versification": "kojiki" },
     { "id": "jaina", "name": "Jaina Sutras", "versification": "jaina" },
     { "id": "chinese-myths", "name": "Myths and Legends of China", "versification": "chinese-myths" },
-    { "id": "yoruba", "name": "Yoruba Legends", "versification": "yoruba" }
+    { "id": "yoruba", "name": "Yoruba Legends", "versification": "yoruba" },
+    { "id": "zhuangzi", "name": "Zhuangzi", "versification": "zhuangzi" },
+    { "id": "navaho", "name": "Navaho Legends", "versification": "navaho" },
+    { "id": "sioux", "name": "Myths and Legends of the Sioux", "versification": "sioux" }
   ],
   "versions": [
     {
@@ -768,6 +771,57 @@
       "sourceUrl": "https://www.globalgreyebooks.com/yoruba-legends-ebook.html",
       "licensed": false,
       "versification": "yoruba"
+    },
+    {
+      "id": "giles",
+      "work": "zhuangzi",
+      "abbr": "Giles",
+      "name": "Chuang Tzŭ (Herbert A. Giles)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1889,
+      "translator": "Herbert A. Giles",
+      "license": "Public Domain",
+      "attribution": "Translated by Herbert A. Giles (1889), public domain; Project Gutenberg #59709.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/59709",
+      "licensed": false,
+      "versification": "zhuangzi",
+      "licenseNote": "Giles' commentary notes and chapter summaries are left out."
+    },
+    {
+      "id": "matthews",
+      "work": "navaho",
+      "abbr": "Matthews",
+      "name": "Navaho Legends (Washington Matthews)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1897,
+      "translator": "Washington Matthews, from Navajo tellers",
+      "license": "Public Domain",
+      "attribution": "Collected and translated by Washington Matthews (1897), public domain; Project Gutenberg #60165.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/60165",
+      "licensed": false,
+      "versification": "navaho",
+      "licenseNote": "Recorded by a US Army surgeon and ethnologist in the 1880s; his paragraph numbers are shown (§). Notes are left out."
+    },
+    {
+      "id": "mclaughlin",
+      "work": "sioux",
+      "abbr": "McLaughlin",
+      "name": "Myths and Legends of the Sioux (Marie L. McLaughlin)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1916,
+      "translator": "Marie L. McLaughlin",
+      "license": "Public Domain",
+      "attribution": "Marie L. McLaughlin (1916), public domain; Project Gutenberg #341.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/341",
+      "licensed": false,
+      "versification": "sioux",
+      "licenseNote": "Told by a writer of Dakota and European descent who grew up among the Sioux."
     }
   ],
   "religions": [
@@ -1381,7 +1435,7 @@
           "name": "Taoist Classics",
           "items": [
             { "id": "ttc", "name": "Tao Te Ching", "work": "tao-te-ching", "chapters": 81, "chapterName": "Tao Te Ching" },
-            { "id": "zhuangzi", "name": "Zhuangzi", "status": "coming-soon" }
+            { "id": "zhuangzi", "name": "Zhuangzi", "work": "zhuangzi", "chapters": 33, "chapterName": "Zhuangzi" }
           ]
         },
         {
@@ -1451,7 +1505,8 @@
           "id": "native-american",
           "name": "Native American",
           "items": [
-            { "id": "native-american", "name": "Native American sacred stories", "status": "coming-soon" }
+            { "id": "navaho", "name": "Navaho Legends", "work": "navaho", "chapters": 6, "chapterName": "Navaho Legends" },
+            { "id": "sioux", "name": "Myths and Legends of the Sioux", "work": "sioux", "chapters": 31, "chapterName": "Sioux Legend" }
           ]
         },
         {

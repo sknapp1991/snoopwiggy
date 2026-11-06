@@ -546,7 +546,107 @@ async function yoruba() {
   report("yoruba", ch, total);
 }
 
+/**
+ * Zhuangzi — Herbert A. Giles, "Chuang Tzŭ: Mystic, Moralist, and Social Reformer" (1889), Gutenberg
+ * #59709. 33 chapters; Giles' indented commentary and chapter "Argument" summaries are left out.
+ */
+async function zhuangzi() {
+  const all = gutenbergBody(await cached("zhuangzi", "pg59709.txt", GUT(59709)));
+  const txt = all.slice(0, all.search(/^_INDEX_\s*$/m)); // the index, errata and transcriber's notes follow
+  const chs = sections(txt, /^CHAPTER ([IVXL]+)\.\s*$/m);
+  await resetVersion("zhuangzi", "giles");
+  let total = 0;
+  for (const c of chs) {
+    const blocks = c.body.split(/\n\s*\n/);
+    const title = unwrap(blocks.find((b) => b.trim()) ?? "").replace(/\.$/, "");
+    const verses = blocks
+      .slice(blocks.findIndex((b) => b.trim()) + 1)
+      .filter((b) => b.trim() && !/^[ \t]/.test(b) && !/^\s*_Argument_/.test(b)) // Giles' notes are indented
+      .map((b) => unwrap(b).replace(/_/g, "").replace(/\[\d+\]/g, ""))
+      .filter((t) => t && !/^(FOOTNOTES?|INDEX)\b/.test(t))
+      // A paragraph cut by an indented note ("He who goes to Mang-ts'ang," … "taking three meals…") is one.
+      .reduce<string[]>((acc, t) => {
+        const prev = acc[acc.length - 1];
+        if (prev && (!/[.!?"'’”:)]$/.test(prev) || /^[a-z]/.test(t))) acc[acc.length - 1] = `${prev} ${t}`;
+        else acc.push(t);
+        return acc;
+      }, []);
+    if (!verses.length) continue;
+    await writeChapter("zhuangzi", "giles", "zhuangzi", roman(c.head), numbered(verses), undefined, titleCase(title));
+    total += verses.length;
+  }
+  report("zhuangzi", chs.length, total);
+}
+
+/** Navaho Legends — Washington Matthews (1897), Gutenberg #60165: the Origin Legend's four parts and two more legends. */
+async function navaho() {
+  const txt = gutenbergBody(await cached("navaho", "pg60165.txt", GUT(60165)));
+  const start = txt.search(/^LEGENDS\.\s*$/m);
+  const body = txt.slice(start, txt.indexOf("\nNOTES.", start));
+  const heads = [
+    [/^I\. THE STORY OF THE EMERGENCE\.\s*$/m, "The Origin Legend: The Story of the Emergence"],
+    [/^II\. EARLY EVENTS IN THE FIFTH WORLD\.\s*$/m, "The Origin Legend: Early Events in the Fifth World"],
+    [/^III\. THE WAR GODS\.\s*$/m, "The Origin Legend: The War Gods"],
+    [/^IV\. GROWTH OF THE NAVAHO NATION\.\s*$/m, "The Origin Legend: Growth of the Navaho Nation"],
+    [/^NATI'NESTHANI\.\s*$/m, "Nati'nesthani"],
+    [/^THE GREAT SHELL OF KINTYÉL\.\s*$/m, "The Great Shell of Kintyél"],
+  ] as const;
+  const at = heads.map(([re]) => body.search(re));
+  if (at.some((x) => x < 0)) throw new Error(`Navaho: heading missing (${at})`);
+  await resetVersion("navaho", "matthews");
+  let total = 0;
+  for (const [k, [, title]] of heads.entries()) {
+    const chunk = body.slice(body.indexOf("\n", at[k]), at[k + 1] ?? undefined);
+    // Matthews numbers his paragraphs straight through the book ("136."): kept as the verse label.
+    const verses: Verse[] = [];
+    for (const p of paras(chunk)) {
+      const t = p.replace(/\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+      if (!t || /^[A-Z .'`-]+$/.test(t)) continue; // stray headings
+      const m = /^(\d+)\.\s+(.*)$/.exec(t);
+      if (m) verses.push({ v: String(verses.length + 1), t: m[2], n: `§${m[1]}` });
+      else if (verses.length) verses[verses.length - 1].t += ` ${t}`;
+      else verses.push({ v: "1", t });
+    }
+    await writeChapter("navaho", "matthews", "navaho", k + 1, verses, undefined, title);
+    total += verses.length;
+  }
+  report("navaho", heads.length, total);
+}
+
+/** Myths and Legends of the Sioux — Marie L. McLaughlin (1916), Gutenberg #341. One story per chapter. */
+async function sioux() {
+  const raw = gutenbergBody(await cached("sioux", "pg341.txt", GUT(341)));
+  // The transcriber's list of corrections at the end is not part of the book.
+  const cut = raw.search(/^\s*Note: I have made the following changes/m);
+  const txt = cut >= 0 ? raw.slice(0, cut) : raw;
+  // Story titles are lines in capitals after the introduction ("THE PET RABBIT"); a title may wrap.
+  const first = txt.search(/^THE PET RABBIT\s*$/m);
+  const lines = txt.slice(first).split("\n");
+  const stories: { title: string; body: string[] }[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].trim();
+    const isTitle = /^[A-Z][A-Z ,.'-]{5,}$/.test(l) && (i === 0 || !lines[i - 1].trim());
+    if (isTitle) {
+      // A wrapped title ("…THE NAME OF THE LONE" / "WARRIOR").
+      let title = l;
+      while (/^[A-Z][A-Z ,.'-]+$/.test(lines[i + 1]?.trim() ?? "") && lines[i + 1].trim()) title += ` ${lines[++i].trim()}`;
+      stories.push({ title, body: [] });
+    } else if (stories.length) stories[stories.length - 1].body.push(lines[i]);
+  }
+  await resetVersion("sioux", "mclaughlin");
+  let total = 0;
+  for (const [k, s] of stories.entries()) {
+    const verses = paras(s.body.join("\n")).map((t, i) => ({ v: String(i + 1), t }));
+    await writeChapter("sioux", "mclaughlin", "sioux", k + 1, verses, undefined, titleCase(s.title));
+    total += verses.length;
+  }
+  report("sioux", stories.length, total);
+}
+
 const ALL: Record<string, () => Promise<unknown>> = {
+  zhuangzi,
+  navaho,
+  sioux,
   kojiki,
   yoruba,
   chineseMyths,

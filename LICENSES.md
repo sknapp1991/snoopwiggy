@@ -219,11 +219,14 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   from sacred-texts' zipped text files (kj/sbe22/sbe45/mlc.txt.gz), downloaded by hand in a browser
   (the site turns scripts away) into data/raw. Footnotes and page numbers are left out.
 - **Yoruba Legends** (M. I. Ogumefu, 1929, public domain) — from Global Grey's free EPUB edition.
+- **Zhuangzi** (Herbert A. Giles, 1889; Gutenberg #59709, his notes left out), **Navaho Legends**
+  (Washington Matthews, 1897; #60165) and **Myths and Legends of the Sioux** (Marie L. McLaughlin,
+  1916; #341) — public domain.
 
 Not yet included (shown as "coming soon"): the Avesta (avesta.org forbids copying; sacred-texts has no
-zipped file for SBE 31), Zhuangzi, Mencius, Nihongi, Native American and Mayan texts, and English
-tafsir (the Royal Aal al-Bayt translations are "all rights reserved"; permission was asked for by email
-on 2026-11-06).
+zipped file for SBE 4/23/31; Wikisource's transcription is incomplete), Mencius in English (only Book I
+is on Gutenberg), Nihongi and the Popol Vuh (no clean public-domain translation found yet), and English
+tafsir (permission asked of the Royal Aal al-Bayt Institute by email on 2026-11-06).
 
 ## Recorded audio (audio v2)
 

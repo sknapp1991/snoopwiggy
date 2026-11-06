@@ -45,6 +45,9 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   jaina: ["jacobi"],
   "chinese-myths": ["werner"],
   yoruba: ["ogumefu"],
+  zhuangzi: ["giles"],
+  navaho: ["matthews"],
+  sioux: ["mclaughlin"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };
