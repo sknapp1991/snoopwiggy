@@ -58,8 +58,8 @@ export type Settings = {
   ttsContinue: boolean;
   /** Keep the screen on while reading aloud (speech stops on most phones when the screen locks). */
   ttsKeepAwake: boolean;
-  /** While listening, move the version being read to the front (off: columns stay where they are). */
-  ttsMoveFirst: boolean;
+  /** Keep going from a book's last chapter into the next book (with ttsContinue). */
+  ttsContinueBook: boolean;
   /** Listen to several versions: each verse in turn ("verse") or each whole chapter in turn ("chapter"). */
   ttsMix: string[];
   ttsMixOrder: "verse" | "chapter";
@@ -121,7 +121,7 @@ const DEFAULTS: Settings = {
   ttsRecorded: {},
   ttsContinue: true,
   ttsKeepAwake: true,
-  ttsMoveFirst: false,
+  ttsContinueBook: true,
   ttsMix: [],
   ttsMixOrder: "verse",
   ttsVerseStop: false,
@@ -164,7 +164,7 @@ function read(): Settings {
       ttsRecorded: p.ttsRecorded && typeof p.ttsRecorded === "object" ? p.ttsRecorded : {},
       ttsContinue: p.ttsContinue !== false,
       ttsKeepAwake: p.ttsKeepAwake !== false,
-      ttsMoveFirst: (p as { ttsMoveFirst?: unknown }).ttsMoveFirst === true,
+      ttsContinueBook: (p as { ttsContinueBook?: unknown }).ttsContinueBook !== false,
       ttsMix: Array.isArray(p.ttsMix) ? p.ttsMix.filter((x): x is string => typeof x === "string") : [],
       ttsMixOrder: p.ttsMixOrder === "chapter" ? "chapter" : "verse",
       ttsVerseStop: p.ttsVerseStop === true,

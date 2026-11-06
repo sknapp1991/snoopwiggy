@@ -10,7 +10,8 @@ import type { AlignedRow } from "@/lib/align";
 import { chapterTitle, findBook, readHref, type BookRef } from "@/lib/catalog";
 import type { ChapterEntry } from "@/lib/chapter-store";
 import { getLanguage } from "@/lib/languages";
-import { getSettings, TTS_RATE_MAX, TTS_RATE_MIN, updateSettings, useSettings } from "@/lib/settings";
+import { getSettings, TTS_RATE_MAX, TTS_RATE_MIN, updateSettings, useMediaQuery, useSettings } from "@/lib/settings";
+import { useColumnDrag } from "./use-column-drag";
 import {
   close,
   getSpeech,
@@ -58,6 +59,15 @@ const findStart = (items: SpeechItem[], v: string) => {
   return i >= 0 ? i : items.findIndex((it) => parseInt(it.v, 10) >= parseInt(v, 10));
 };
 
+/** Keep reading into `to` after `from` ends? (Next chapter; into another book only if that is on too.) */
+function mayContinue(from: BookRef, to: BookRef | undefined): to is BookRef {
+  const s = getSettings();
+  return !!to && s.ttsContinue && (to.book === from.book || s.ttsContinueBook);
+}
+/** Phones and tablets only: a desktop screen doesn't need keeping awake. */
+const isTouch = () => typeof matchMedia !== "undefined" && matchMedia("(pointer: coarse)").matches;
+const keepAwake = () => getSettings().ttsKeepAwake && isTouch();
+
 export type ReadAlong = ReturnType<typeof useReadAlong>;
 
 export function useReadAlong({
@@ -67,6 +77,7 @@ export function useReadAlong({
   next,
   versions,
   scroller,
+  setVersions,
 }: {
   cols: Col[];
   rows: AlignedRow[];
@@ -74,6 +85,8 @@ export function useReadAlong({
   next?: BookRef;
   versions: string[];
   scroller: RefObject<HTMLDivElement | null>;
+  /** Reorder the columns (dragging the versions in the player moves the columns too). */
+  setVersions: (ids: string[]) => void;
 }) {
   const speech = useSpeech();
   const settings = useSettings();
@@ -119,12 +132,11 @@ export function useReadAlong({
   const items = mixed ? mixItems : single;
 
   const onDone = () => {
-    const s = getSettings();
     if (getSpeech().until) {
       setSpeech({ until: null }); // a verse range finished: stop here
       return;
     }
-    if (s.ttsContinue && next) {
+    if (mayContinue(bookRef, next)) {
       setSpeech({ continuePending: true, status: "playing" });
       router.push(readHref(next, versions), { scroll: false });
     }
@@ -167,7 +179,7 @@ export function useReadAlong({
           version: version.id,
           chapterKey,
           onDone,
-          keepAwake: getSettings().ttsKeepAwake,
+          keepAwake: keepAwake(),
         });
       // Every version has a recording of this chapter: play those (keeps going with the phone locked).
       const recs = mixIds.map((id) => recordingFor(id));
@@ -191,7 +203,7 @@ export function useReadAlong({
           getNext: async () => {
             const s = getSettings();
             const at = adjacentChapters(bookRef).next;
-            if (!s.ttsContinue || !at) return null;
+            if (!mayContinue(bookRef, at)) return null;
             const sp = specs(at);
             if (!sp.every(Boolean)) return null;
             const rates: Record<string, number> = {};
@@ -240,7 +252,7 @@ export function useReadAlong({
       version: tc.version.id,
       chapterKey,
       onDone,
-      keepAwake: getSettings().ttsKeepAwake,
+      keepAwake: keepAwake(),
     });
     const rec = overrides && "voice" in overrides ? null : recordingFor(tc.version.id);
     if (rec) {
@@ -259,10 +271,8 @@ export function useReadAlong({
         onDone,
         // Screen off: go straight into the next chapter's recording, then move the page along.
         getNext: async () => {
-          if (!getSettings().ttsContinue) return null;
-          let at: BookRef | undefined = bookRef;
-          for (let hop = 0; hop < 1 && at; hop++) at = adjacentChapters(at).next;
-          if (!at || !hasChapter(rec, at.book, at.chapter)) return null;
+          const at = adjacentChapters(bookRef).next;
+          if (!mayContinue(bookRef, at) || !hasChapter(rec, at.book, at.chapter)) return null;
           const timing = await loadTiming(timingUrl(rec, at.book, at.chapter));
           return {
             url: audioUrl(rec, at.book, at.chapter),
@@ -332,7 +342,7 @@ export function useReadAlong({
   useEffect(() => {
     if (speech.engine === "recorded") return;
     if (!speech.continuePending || speech.chapterKey === chapterKey || !items.length || !version) return;
-    play({ items, start: 0, lang, voice, rate: getSettings().ttsRate, version: version.id, chapterKey, onDone, keepAwake: getSettings().ttsKeepAwake });
+    play({ items, start: 0, lang, voice, rate: getSettings().ttsRate, version: version.id, chapterKey, onDone, keepAwake: keepAwake() });
     // onDone is recreated each render; the latest one is captured here on purpose
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speech.continuePending, speech.chapterKey, speech.engine, chapterKey, items, version, lang, voice]);
@@ -414,20 +424,31 @@ export function useReadAlong({
     ready: items.length > 0,
     /** One entry per verse (for the verse picker), whatever is being read. */
     verseList: single,
-    mixMode: settings.ttsMix.length > 0,
     mixed,
     mixIds,
-    /** Turn "several versions" on (starting with the one being read) or off. */
-    setMixMode(on: boolean) {
-      updateSettings({ ttsMix: on && version ? [version.id] : [] });
-      if (getSpeech().status === "playing") restartSoon();
+    /** The versions to hear, in column order (one, or several read in turn). */
+    selected: mixed ? mixIds : version ? [version.id] : [],
+    /** Tap a version: add it to those heard (2+ = read in turn) or take it out (at least one stays). */
+    select(id: string) {
+      const cur = mixed ? mixIds : version ? [version.id] : [];
+      const playing = getSpeech().status === "playing";
+      if (cur.includes(id)) {
+        if (cur.length === 1) return;
+        const rest = cur.filter((x) => x !== id);
+        updateSettings({ ttsMix: rest.length >= 2 ? rest : [] });
+        if (rest.length === 1 || getSpeech().version === id) setSpeech({ version: rest[0] });
+      } else {
+        updateSettings({ ttsMix: [...cur, id] });
+      }
+      if (playing) restartSoon();
     },
-    /** Add / remove a version from those read in turn. */
-    toggleMix(id: string) {
-      const cur = getSettings().ttsMix.filter((x) => cols.some((c) => c.version.id === x));
-      const nextMix = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
-      updateSettings({ ttsMix: nextMix.length ? nextMix : [id] });
-      if (getSpeech().status === "playing") restartSoon();
+    /** Drag a version to another place: the columns move too (and so the order they're read in). */
+    reorder(from: number, to: number) {
+      const ids = cols.map((c) => c.version.id);
+      const [x] = ids.splice(from, 1);
+      ids.splice(to, 0, x);
+      setVersions(ids);
+      if (mixed && getSpeech().status === "playing") restartSoon();
     },
     setMixOrder(order: "verse" | "chapter") {
       updateSettings({ ttsMixOrder: order });
@@ -654,6 +675,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
   const [tucked, setTucked] = useState(false);
   const swipeStart = useRef<{ x: number; y: number; done: boolean } | null>(null);
   const settings = useSettings();
+  const touch = useMediaQuery("(pointer: coarse)", false);
   const { speech, version, lang } = ra;
   if (!speech.open || !version) return null;
   const playing = speech.status === "playing";
@@ -799,88 +821,9 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
           range with ▾.
         </p>
       )}
-      {ra.cols.length > 1 && ra.mixMode && (
-        <div className="mx-auto max-w-3xl space-y-1 px-3 pb-1.5">
-          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Versions read in turn">
-            {ra.cols.map((c) => {
-              const on = ra.mixIds.includes(c.version.id) || (!ra.mixed && settings.ttsMix.includes(c.version.id));
-              const n = ra.mixIds.indexOf(c.version.id);
-              return (
-                <button
-                  key={c.version.id}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => ra.toggleMix(c.version.id)}
-                  title={on ? "Tap to leave this version out" : "Tap to add this version"}
-                  className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs font-medium ${
-                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
-                  }`}
-                >
-                  {on ? (ra.mixed ? <span className="tabular-nums">{n + 1}.</span> : "✓") : "+"} {c.version.abbr}
-                </button>
-              );
-            })}
-            <button type="button" onClick={() => ra.setMixMode(false)} className="ml-auto shrink-0 rounded-full px-2 text-xs text-muted underline-offset-2 hover:text-ink hover:underline">
-              Just one
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-            {ra.mixed ? (
-              <>
-                <select
-                  aria-label="Order"
-                  value={settings.ttsMixOrder}
-                  onChange={(e) => ra.setMixOrder(e.target.value as "verse" | "chapter")}
-                  className="h-8 rounded-lg border border-line bg-raised px-1.5 text-xs text-ink"
-                >
-                  <option value="verse">Each verse in every version</option>
-                  <option value="chapter">Whole chapter in each, one after another</option>
-                </select>
-                <VerseStopPill />
-                <button
-                  type="button"
-                  aria-expanded={more}
-                  onClick={() => setMore((m) => !m)}
-                  className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs ${more ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-ink"}`}
-                >
-                  <GearIcon width={12} height={12} /> Voices &amp; speed
-                </button>
-              </>
-            ) : (
-              <span>Tap the versions to hear, in this order.</span>
-            )}
-          </div>
-        </div>
-      )}
-      {ra.cols.length > 1 && !ra.mixMode && (
-        <div className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-1.5 [scrollbar-width:none]" role="group" aria-label="Version to listen to">
-          {ra.cols.map((c) => {
-            const on = c.version.id === version.id;
-            return (
-              <button
-                key={c.version.id}
-                type="button"
-                aria-pressed={on}
-                onClick={() => ra.playVersion(c.version.id)}
-                title={ra.hasRecording(c.version.id) ? "Recorded voice (keeps playing with the screen off)" : "Device voice"}
-                className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs font-medium ${
-                  on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
-                }`}
-              >
-                {on && playing ? <PauseIcon width={12} height={12} /> : <PlayIcon width={12} height={12} />}
-                {c.version.abbr}
-                {ra.hasRecording(c.version.id) && <span aria-label="recorded voice" className={`h-1.5 w-1.5 rounded-full ${on ? "bg-accent-ink" : "bg-accent"}`} />}
-              </button>
-            );
-          })}
-          <button
-            type="button"
-            onClick={() => ra.setMixMode(true)}
-            title="Hear several versions in turn: verse 1 in English, then in Spanish, then verse 2…"
-            className="flex min-h-9 shrink-0 items-center gap-1 rounded-full border border-dashed border-line px-3 text-xs text-muted hover:text-ink"
-          >
-            + Hear another version too
-          </button>
+      {ra.cols.length > 1 && <VersionBubbles ra={ra} more={more} onMore={() => setMore((m) => !m)} />}
+      {ra.cols.length === 1 && (
+        <div className="mx-auto flex max-w-3xl px-3 pb-1.5">
           <VerseStopPill />
         </div>
       )}
@@ -988,116 +931,82 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
 
       {more && (
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-2 px-4 pb-3 pt-1 text-sm sm:grid-cols-2">
-          {ra.mixed && <MixVoices ra={ra} />}
-          {!ra.mixed && (
-          <>
-          <label className="flex min-h-11 items-center justify-between gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Listen to</span>
-            <select
-              value={version.id}
-              onChange={(e) => ra.setVersion(e.target.value)}
-              className="h-10 min-w-0 max-w-[60%] rounded-lg border border-line bg-raised px-2"
-            >
-              {ra.cols.map((c) => (
-                <option key={c.version.id} value={c.version.id}>
-                  {c.version.abbr} — {getLanguage(c.version.language).name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex min-h-11 items-center justify-between gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Speed</span>
-            <select
-              value={settings.ttsRate}
-              onChange={(e) => {
-                const rate = Math.min(TTS_RATE_MAX, Math.max(TTS_RATE_MIN, Number(e.target.value)));
-                updateSettings({ ttsRate: rate });
-                ra.restart({ rate });
-              }}
-              className="h-10 rounded-lg border border-line bg-raised px-2 tabular-nums"
-            >
-              {RATES.map((r) => (
-                <option key={r} value={r}>
-                  {r}×
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex min-h-11 items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Voice</span>
-            <select
-              value={ra.recording ? `rec:${ra.recording.id}` : (ra.voice?.voiceURI ?? "")}
-              disabled={!langVoices.length && !ra.recordings.length}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val.startsWith("rec:")) {
-                  ra.chooseRecording(val.slice(4));
-                  return;
-                }
-                if (ra.recordings.length) updateSettings({ ttsRecorded: { ...settings.ttsRecorded, [version.id]: "device" } });
-                const v = langVoices.find((x) => x.voiceURI === val) ?? null;
-                updateSettings({ ttsVoices: { ...settings.ttsVoices, [lang]: val } });
-                ra.restart({ voice: v });
-              }}
-              className="h-10 min-w-0 max-w-[75%] rounded-lg border border-line bg-raised px-2"
-            >
-              {ra.recordings.length > 0 && (
-                <optgroup label="Recorded · keeps playing with the screen off">
-                  {ra.recordings.map((r) => (
-                    <option key={r.id} value={`rec:${r.id}`}>
-                      {r.label}
-                      {r.chapters ? " (some chapters)" : ""}
+          {ra.mixed ? (
+            <MixVoices ra={ra} />
+          ) : (
+            <div className="flex min-h-11 items-center gap-2 sm:col-span-2">
+              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-faint">Voice</span>
+              <select
+                aria-label={`Voice for ${version.abbr}`}
+                value={ra.recording ? `rec:${ra.recording.id}` : (ra.voice?.voiceURI ?? "")}
+                disabled={!langVoices.length && !ra.recordings.length}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.startsWith("rec:")) {
+                    ra.chooseRecording(val.slice(4));
+                    return;
+                  }
+                  if (ra.recordings.length) updateSettings({ ttsRecorded: { ...settings.ttsRecorded, [version.id]: "device" } });
+                  const v = langVoices.find((x) => x.voiceURI === val) ?? null;
+                  updateSettings({ ttsVoices: { ...settings.ttsVoices, [lang]: val } });
+                  ra.restart({ voice: v });
+                }}
+                className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-raised px-2"
+              >
+                {ra.recordings.length > 0 && (
+                  <optgroup label="Recorded · keeps playing with the screen off">
+                    {ra.recordings.map((r) => (
+                      <option key={r.id} value={`rec:${r.id}`}>
+                        {r.label}
+                        {r.chapters ? " (some chapters)" : ""}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label="This device’s voices">
+                  {!langVoices.length && <option value="">Browser default</option>}
+                  {langVoices.map((v) => (
+                    <option key={v.voiceURI} value={v.voiceURI}>
+                      {v.name} ({v.lang}){v.localService ? " · on device" : " · online"}
                     </option>
                   ))}
                 </optgroup>
-              )}
-              <optgroup label="This device’s voices">
-                {!langVoices.length && <option value="">Browser default</option>}
-                {langVoices.map((v) => (
-                  <option key={v.voiceURI} value={v.voiceURI}>
-                    {v.name} ({v.lang}){v.localService ? " · on device" : " · online"}
+              </select>
+              <select
+                aria-label="Speed"
+                title="Speed"
+                value={settings.ttsRate}
+                onChange={(e) => {
+                  const rate = Math.min(TTS_RATE_MAX, Math.max(TTS_RATE_MIN, Number(e.target.value)));
+                  updateSettings({ ttsRate: rate });
+                  ra.restart({ rate });
+                }}
+                className="h-10 shrink-0 rounded-lg border border-line bg-raised px-2 tabular-nums"
+              >
+                {RATES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}×
                   </option>
                 ))}
-              </optgroup>
-            </select>
-          </label>
-          </>
+              </select>
+            </div>
           )}
-          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-              Keep screen on while listening
-              <span className="block font-normal normal-case tracking-normal">
-                Phones stop built-in voices when the screen locks; this keeps it awake (you can turn the brightness down).
+          {touch && (
+            <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+                Keep screen on while listening
+                <span className="block font-normal normal-case tracking-normal">
+                  Phones stop built-in voices when the screen locks; this keeps it awake (you can turn the brightness down).
+                </span>
               </span>
-            </span>
-            <input
-              type="checkbox"
-              checked={settings.ttsKeepAwake}
-              onChange={(e) => updateSettings({ ttsKeepAwake: e.target.checked })}
-              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
-            />
-          </label>
-          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Move the version I’m listening to first</span>
-            <input
-              type="checkbox"
-              checked={settings.ttsMoveFirst}
-              onChange={(e) => updateSettings({ ttsMoveFirst: e.target.checked })}
-              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
-            />
-          </label>
-          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-              Pause after each verse
-              <span className="block font-normal normal-case tracking-normal">Press ▶ (or tap the next verse) to hear the next one.</span>
-            </span>
-            <input
-              type="checkbox"
-              checked={settings.ttsVerseStop}
-              onChange={(e) => updateSettings({ ttsVerseStop: e.target.checked })}
-              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
-            />
-          </label>
+              <input
+                type="checkbox"
+                checked={settings.ttsKeepAwake}
+                onChange={(e) => updateSettings({ ttsKeepAwake: e.target.checked })}
+                className="h-5 w-5 shrink-0 accent-[var(--accent)]"
+              />
+            </label>
+          )}
           <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-faint">Continue into the next chapter</span>
             <input
@@ -1107,6 +1016,78 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               className="h-5 w-5 accent-[var(--accent)]"
             />
           </label>
+          <label className={`flex min-h-11 items-center justify-between gap-2 sm:col-span-2 ${settings.ttsContinue ? "cursor-pointer" : "opacity-50"}`}>
+            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+              Continue into the next book
+              <span className="block font-normal normal-case tracking-normal">At a book’s last chapter, go on to the next book (e.g. Genesis 50 → Exodus 1).</span>
+            </span>
+            <input
+              type="checkbox"
+              disabled={!settings.ttsContinue}
+              checked={settings.ttsContinue && settings.ttsContinueBook}
+              onChange={(e) => updateSettings({ ttsContinueBook: e.target.checked })}
+              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
+            />
+          </label>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The versions on screen as bubbles: tap to choose which you hear (one, or several read in turn);
+ * drag one to another place to reorder — the columns move with it.
+ */
+function VersionBubbles({ ra, more, onMore }: { ra: ReadAlong; more: boolean; onMore: () => void }) {
+  const settings = useSettings();
+  const { drag, handlers } = useColumnDrag(ra.reorder, "data-audiover");
+  return (
+    <div className="mx-auto max-w-3xl space-y-1 px-3 pb-1.5">
+      <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Versions to hear (drag to reorder)">
+        {ra.cols.map((c, i) => {
+          const on = ra.selected.includes(c.version.id);
+          const n = ra.selected.indexOf(c.version.id);
+          const rec = ra.hasRecording(c.version.id);
+          return (
+            <button
+              key={c.version.id}
+              type="button"
+              {...handlers(i)}
+              aria-pressed={on}
+              onClick={() => ra.select(c.version.id)}
+              title={`${on ? (ra.selected.length > 1 ? "Tap to leave this version out" : "Being read") : "Tap to hear this version too"} · drag to reorder (moves the columns too)${rec ? " · recorded voice: keeps playing with the screen off" : ""}`}
+              className={`flex min-h-9 shrink-0 touch-pan-x select-none items-center gap-1 rounded-full border px-3 text-xs font-medium ${
+                on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
+              } ${drag?.from === i ? "opacity-60" : ""} ${drag && drag.over === i && drag.from !== i ? "ring-2 ring-accent" : ""}`}
+            >
+              {on && ra.selected.length > 1 && <span className="tabular-nums">{n + 1}.</span>}
+              {c.version.abbr}
+              {rec && <span aria-label="recorded voice" className={`h-1.5 w-1.5 rounded-full ${on ? "bg-accent-ink" : "bg-accent"}`} />}
+            </button>
+          );
+        })}
+        <VerseStopPill />
+      </div>
+      {ra.mixed && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+          <select
+            aria-label="Order"
+            value={settings.ttsMixOrder}
+            onChange={(e) => ra.setMixOrder(e.target.value as "verse" | "chapter")}
+            className="h-8 rounded-lg border border-line bg-raised px-1.5 text-xs text-ink"
+          >
+            <option value="verse">Each verse in every version</option>
+            <option value="chapter">Whole chapter in each, one after another</option>
+          </select>
+          <button
+            type="button"
+            aria-expanded={more}
+            onClick={onMore}
+            className={`flex min-h-8 shrink-0 items-center gap-1 rounded-full border px-3 text-xs ${more ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-ink"}`}
+          >
+            <GearIcon width={12} height={12} /> Voices &amp; speed
+          </button>
         </div>
       )}
     </div>
@@ -1165,7 +1146,7 @@ function MixVoices({ ra }: { ra: ReadAlong }) {
   );
 }
 
-/** "Pause after each verse" on/off, right in the bar (also under ⚙). */
+/** "Pause after each verse" on/off, right in the bar. */
 function VerseStopPill() {
   const on = useSettings().ttsVerseStop;
   return (

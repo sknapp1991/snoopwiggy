@@ -29,7 +29,6 @@ import { HighlightModeBar } from "./highlight-mode";
 import { wordAt } from "./use-gestures";
 import { chapterMarks, getItem, highlightBg, setHighlight, toggle, useStudy } from "@/lib/study";
 import { openVerseMenu, toast } from "@/lib/ui-store";
-import { useSpeech } from "@/lib/speech";
 import { setReadingContext } from "@/lib/ai-chat";
 import { getPosition, savePosition } from "@/lib/reading-position";
 import { FirstTips } from "./first-tips";
@@ -40,18 +39,7 @@ import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./u
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 
 export function ReaderView() {
-  const { ref, entry: book, versions: userVersions, setVersions } = useReaderState();
-  // While listening, the version being read can be shown first (the saved order is unchanged).
-  const speechState = useSpeech();
-  const listenFirstOn = useSettings().ttsMoveFirst;
-  const listenFirst =
-    listenFirstOn && speechState.open && speechState.version && userVersions.includes(speechState.version)
-      ? speechState.version
-      : null;
-  const versions = useMemo(
-    () => (listenFirst ? [listenFirst, ...userVersions.filter((v) => v !== listenFirst)] : userVersions),
-    [listenFirst, userVersions],
-  );
+  const { ref, entry: book, versions, setVersions } = useReaderState();
   const view = useViewMode();
   const settings = useSettings();
   const { fontSize } = settings;
@@ -105,7 +93,7 @@ export function ReaderView() {
       if (to) router.push(readHref(to, versions));
     },
   });
-  const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller });
+  const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller, setVersions });
   const study = useStudy();
   const marks = useMemo(() => chapterMarks(study.items, ref.work, ref.book, ref.chapter), [study.items, ref.work, ref.book, ref.chapter]);
 

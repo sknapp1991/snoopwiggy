@@ -13,8 +13,10 @@ import {
   getReadingContext,
   minimizeAi,
   openAi,
+  PROVIDER_NAMES,
   sendAi,
   setAiBox,
+  setAiProvider,
   stopAi,
   useAiChat,
   type WinBox,
@@ -25,7 +27,9 @@ import { RefLink } from "./ref-link";
 
 import { findRefs } from "@/lib/refs";
 import { getItem, saveNote, type StudyRef } from "@/lib/study";
-import { CloseIcon, CopyIcon, MinusIcon, NoteIcon, SendIcon, SparkIcon, StopIcon, TrashIcon } from "./icons";
+import { buildShareText, shareText } from "@/lib/ai-share";
+import { CloseIcon, CopyIcon, MinusIcon, NoteIcon, SendIcon, ShareIcon, SparkIcon, StopIcon, TrashIcon } from "./icons";
+import { useReaderState } from "./use-reader-state";
 
 const SUGGESTIONS = [
   "Summarize this chapter",
@@ -83,6 +87,9 @@ export function AiWindow() {
   const scroller = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const showing = chat.ready && chat.open && !chat.minimized;
+  /** Choosing what to share: the answers ticked (by message index), or null when not sharing. */
+  const [picked, setPicked] = useState<Set<number> | null>(null);
+  const { versions: versionsHere } = useReaderState();
 
   // Position: saved box (kept inside the screen) or a default at the right.
   useEffect(() => {
@@ -226,6 +233,22 @@ export function AiWindow() {
             </div>
           ) : (
             <div key={i} className={`group relative mr-4 leading-relaxed ${m.error ? "text-red-700 dark:text-red-400" : ""}`}>
+              {picked && m.text && !m.error && (
+                <label className="mb-1 flex cursor-pointer items-center gap-2 rounded-md bg-accent-soft/60 px-2 py-1 text-xs font-medium text-accent">
+                  <input
+                    type="checkbox"
+                    checked={picked.has(i)}
+                    onChange={(e) => {
+                      const next = new Set(picked);
+                      if (e.target.checked) next.add(i);
+                      else next.delete(i);
+                      setPicked(next);
+                    }}
+                    className="h-4 w-4 accent-[var(--accent)]"
+                  />
+                  Share this question and answer
+                </label>
+              )}
               {m.text ? <Rich text={splitNext(m.text).body} preferWork={m.at?.work ?? ctx?.at.work} /> : <span className="animate-pulse text-muted">Thinking…</span>}
               {/* "Would you like to explore…": follow-ups under the latest answer */}
               {i === chat.messages.length - 1 && !chat.busy && !m.error && splitNext(m.text).next.length > 0 && (
@@ -261,6 +284,13 @@ export function AiWindow() {
                       <NoteIcon width={13} height={13} /> Save as note
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setPicked(new Set([i]))}
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-faint hover:bg-raised hover:text-ink"
+                  >
+                    <ShareIcon width={13} height={13} /> Send / share
+                  </button>
                 </span>
               )}
             </div>
@@ -268,7 +298,45 @@ export function AiWindow() {
         )}
       </div>
 
-      <div className="shrink-0 space-y-2 border-t border-line p-2">
+      {picked && (
+        <div className="shrink-0 space-y-2 border-t border-line bg-raised p-2 text-sm">
+          <p className="text-xs text-muted">
+            Tick the questions and answers to send. Verses the answers mention are written out at the end (P.S.).
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={!picked.size}
+              onClick={async () => {
+                const pairs = [...picked]
+                  .sort((a, b) => a - b)
+                  .map((i) => ({ question: chat.messages[i - 1]?.text, ref: chat.messages[i - 1]?.ref, answer: splitNext(chat.messages[i].text).body }));
+                const text = await buildShareText(pairs, { versionsHere, workHere: ctx?.at.work, reference: ctx?.reference });
+                const res = await shareText(text, ctx ? `${ctx.reference} — Verses Across` : "Verses Across");
+                if (res === "copied") toast("Copied — paste it into a message or email", 3500);
+                else if (res === "failed") toast("Couldn’t share");
+                if (res === "shared" || res === "copied") setPicked(null);
+              }}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-accent px-3 font-medium text-accent-ink disabled:opacity-40"
+            >
+              <ShareIcon width={16} height={16} /> Send {picked.size || ""} {picked.size === 1 ? "answer" : "answers"}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setPicked(new Set(chat.messages.flatMap((m, i) => (m.role === "model" && m.text && !m.error ? [i] : []))))
+              }
+              className="h-10 rounded-lg border border-line px-3 hover:border-faint"
+            >
+              All
+            </button>
+            <button type="button" onClick={() => setPicked(null)} className="h-10 rounded-lg px-3 text-muted hover:text-ink">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+      <div className={`shrink-0 space-y-2 border-t border-line p-2 ${picked ? "hidden" : ""}`}>
         {chat.attached && (
           <div className="flex items-start gap-2 rounded-lg border border-accent/40 bg-accent-soft px-2 py-1.5 text-xs">
             <div className="min-w-0 flex-1">
@@ -312,8 +380,27 @@ export function AiWindow() {
             </button>
           )}
         </div>
-        <p className="px-1 text-[11px] leading-snug text-faint">
-          Google Gemini (free). Answers can be wrong — check them against the text. Your question and the on-screen text are sent to Google.
+        <p className="flex flex-wrap items-center gap-x-1 px-1 text-[11px] leading-snug text-faint">
+          {chat.providers.length > 1 ? (
+            <select
+              aria-label="AI model"
+              value={chat.provider}
+              onChange={(e) => setAiProvider(e.target.value as typeof chat.provider)}
+              className="h-7 rounded border border-line bg-raised px-1 text-[11px] text-ink"
+            >
+              {chat.providers.map((p) => (
+                <option key={p} value={p}>
+                  {PROVIDER_NAMES[p].name} ({PROVIDER_NAMES[p].by.split(" (")[0].split(",")[0]})
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span>{PROVIDER_NAMES[chat.provider].name}</span>
+          )}
+          <span>
+            · free. Answers can be wrong — check them against the text. Your question and the on-screen text are sent to{" "}
+            {PROVIDER_NAMES[chat.provider].by}.
+          </span>
         </p>
       </div>
 

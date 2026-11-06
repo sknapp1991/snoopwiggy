@@ -6,16 +6,19 @@
  */
 import { useEffect, useRef, useState } from "react";
 
-export function useColumnDrag(onReorder: (from: number, to: number) => void) {
+/** `attr` marks the draggable items (default: column headers); several drag rows can coexist. */
+export function useColumnDrag(onReorder: (from: number, to: number) => void, attr = "data-colhead") {
   const [drag, setDrag] = useState<{ from: number; over: number } | null>(null);
   const st = useRef<{ from: number; x: number; y: number; active: boolean; timer: number; mouse: boolean } | null>(null);
   const cb = useRef(onReorder);
+  /** A drag just ended: swallow the click that follows (the items can be buttons). */
+  const dragged = useRef(false);
   useEffect(() => {
     cb.current = onReorder;
   });
 
   const indexAt = (x: number) => {
-    const heads = [...document.querySelectorAll<HTMLElement>("[data-colhead]")];
+    const heads = [...document.querySelectorAll<HTMLElement>(`[${attr}]`)];
     const i = heads.findIndex((h) => x < h.getBoundingClientRect().left + h.offsetWidth / 2);
     return i === -1 ? heads.length - 1 : i;
   };
@@ -41,15 +44,18 @@ export function useColumnDrag(onReorder: (from: number, to: number) => void) {
     if (s && (s.active || (s.mouse && x !== undefined && Math.abs(x - s.x) > 8))) {
       const to = indexAt(x ?? s.x);
       if (to !== s.from) cb.current(s.from, to);
+      dragged.current = true;
+      setTimeout(() => (dragged.current = false), 80);
     }
     st.current = null;
     setDrag(null);
   };
 
   const handlers = (i: number) => ({
-    "data-colhead": "",
+    [attr]: "",
     onPointerDown: (e: React.PointerEvent) => {
-      if (e.button !== 0 || (e.target as HTMLElement).closest("button, a")) return;
+      const hit = (e.target as HTMLElement).closest("button, a");
+      if (e.button !== 0 || (hit && hit !== e.currentTarget)) return;
       const s = { from: i, x: e.clientX, y: e.clientY, active: false, timer: 0, mouse: e.pointerType === "mouse" };
       st.current = s;
       if (!s.mouse) s.timer = window.setTimeout(() => start(i, s.x), 400);
@@ -76,6 +82,11 @@ export function useColumnDrag(onReorder: (from: number, to: number) => void) {
     },
     onPointerUp: (e: React.PointerEvent) => end(e.clientX),
     onPointerCancel: () => end(),
+    onClickCapture: (e: React.MouseEvent) => {
+      if (!dragged.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+    },
   });
 
   return { drag, handlers };

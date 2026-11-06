@@ -18,6 +18,8 @@
   // Recorded audio (audio v2), served by src/app/api/audio
   "r2_buckets": [{ "binding": "AUDIO", "bucket_name": "snoopwiggy-audio" }],
   // Built-in AI companion (src/app/api/ask): at most 8 questions a minute per visitor
+  // Second AI model for the companion: OpenAI gpt-oss via Workers AI (no key; free daily allowance)
+  "ai": { "binding": "AI" },
   "ratelimits": [{ "name": "ASK_LIMIT", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } }],
   "observability": { "enabled": true }
   // Worker name stays "snoopwiggy" (renaming re-creates the Worker). Custom domains attached in the dashboard:

@@ -131,3 +131,6 @@ export const ImageIcon = (p: P) => (
 export const CalendarIcon = (p: P) => (
   <svg {...base(p)}><rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
 );
+export const ShareIcon = (p: P) => (
+  <svg {...base(p)}><path d="M12 15V4M8 8l4-4 4 4" /><path d="M5 12v7a1 1 0 001 1h12a1 1 0 001-1v-7" /></svg>
+);

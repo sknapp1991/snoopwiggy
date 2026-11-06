@@ -1,15 +1,18 @@
 "use client";
 /**
  * A scripture reference inside an AI answer. Desktop: hover shows the verse in a small card; click
- * opens it in the reader (the AI window stays where it was). Phone / touch: tap shows the card (tap
- * another reference to switch, tap outside to close); "Open" in the card goes to the passage.
+ * opens it in the reader (the AI window stays where it was). Phone / touch: one tap shows the card (tap
+ * another reference to switch, tap outside to close); a second tap, or "Open" in the card, goes to the
+ * passage and lowers the AI sheet so the reader can be seen (✦ at the top brings it back).
  */
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { minimizeAi } from "@/lib/ai-chat";
 import { chapterTitle, DEFAULT_VERSIONS, findBook, getVersion, readHref } from "@/lib/catalog";
 import { fetchBook } from "@/lib/chapter-store";
 import type { FoundRef } from "@/lib/refs";
-import { useMediaQuery } from "@/lib/settings";
+import { useMediaQuery, WIDE_QUERY } from "@/lib/settings";
 import { useReaderState } from "./use-reader-state";
 
 /** Only one card at a time, across all references. */
@@ -17,6 +20,8 @@ let closeOpen: (() => void) | null = null;
 
 export function RefLink({ r }: { r: FoundRef }) {
   const touch = useMediaQuery("(hover: none)", false);
+  const wide = useMediaQuery(WIDE_QUERY, true);
+  const router = useRouter();
   const { ref: here, versions: current } = useReaderState();
   const versions = r.ref.work === here.work && current.length ? current : (DEFAULT_VERSIONS[r.ref.work] ?? []);
   // "#v30-35": the reader puts verse 30 at the top and marks the whole passage.
@@ -32,6 +37,16 @@ export function RefLink({ r }: { r: FoundRef }) {
     window.history.pushState(window.history.state, "", href.includes("#") ? href.slice(href.indexOf("#")) : "#v1");
     window.dispatchEvent(new Event("va-jump"));
     return true;
+  };
+  /** Go to the passage; on a phone the AI sheet covers the reader, so tuck it away. */
+  const open = (e: React.MouseEvent) => {
+    hide();
+    if (!wide) minimizeAi();
+    if (jumpHere(e)) return;
+    if (touch) {
+      e.preventDefault();
+      router.push(href, { scroll: false });
+    }
   };
   const [pos, setPos] = useState<{ left: number; top?: number; bottom?: number } | null>(null);
   const link = useRef<HTMLAnchorElement>(null);
@@ -85,9 +100,9 @@ export function RefLink({ r }: { r: FoundRef }) {
         scroll={false}
         onClick={(e) => {
           if (touch) {
+            if (pos) return open(e); // second tap: open it
             e.preventDefault();
-            if (pos) hide();
-            else show();
+            show();
           } else {
             hide();
             jumpHere(e);
@@ -122,12 +137,9 @@ export function RefLink({ r }: { r: FoundRef }) {
           <Link
             href={href}
             scroll={false}
-            onClick={(e) => {
-              hide();
-              jumpHere(e);
-            }}
+            onClick={open}
             className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink">
-            Open {r.label} →
+            Open {r.label} in the reader →
           </Link>
         </div>
       )}

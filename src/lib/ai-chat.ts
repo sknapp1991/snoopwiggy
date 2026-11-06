@@ -32,10 +32,18 @@ type Chat = {
   box: WinBox | null;
   /** Server has an AI key configured (null = not checked yet). */
   ready: boolean | null;
+  /** The models the server offers, and the one chosen here. */
+  providers: AiProvider[];
+  provider: AiProvider;
+};
+export type AiProvider = "gemini" | "openai";
+export const PROVIDER_NAMES: Record<AiProvider, { name: string; by: string }> = {
+  gemini: { name: "Gemini", by: "Google" },
+  openai: { name: "GPT-OSS", by: "OpenAI (the makers of ChatGPT), run by Cloudflare" },
 };
 
 const KEY = "gs:ai:v1";
-let chat: Chat = { open: false, minimized: false, busy: false, messages: [], attached: null, box: null, ready: null };
+let chat: Chat = { open: false, minimized: false, busy: false, messages: [], attached: null, box: null, ready: null, providers: [], provider: "gemini" };
 const SERVER = chat;
 let loaded = false;
 let readingCtx: ReadingContext | null = null;
@@ -43,8 +51,8 @@ const subs = new Set<() => void>();
 
 function persist() {
   try {
-    const { open, minimized, messages, box } = chat;
-    localStorage.setItem(KEY, JSON.stringify({ open, minimized, messages: messages.slice(-40), box }));
+    const { open, minimized, messages, box, provider } = chat;
+    localStorage.setItem(KEY, JSON.stringify({ open, minimized, messages: messages.slice(-40), box, provider }));
   } catch {
     /* private mode */
   }
@@ -71,13 +79,17 @@ function load() {
             .map((m) => (m.role === "model" && !m.text ? { ...m, text: "(no answer — the page was closed)", error: true } : m))
         : [],
       box: s.box ?? null,
+      provider: s.provider === "openai" ? "openai" : "gemini",
     };
   } catch {
     /* ignore */
   }
   fetch("/api/ask")
     .then((r) => (r.ok ? r.json() : { ready: false }))
-    .then((d: { ready?: boolean }) => set({ ready: !!d.ready }, false))
+    .then((d: { ready?: boolean; providers?: string[] }) => {
+      const providers = (d.providers ?? (d.ready ? ["gemini"] : [])).filter((p): p is AiProvider => p === "gemini" || p === "openai");
+      set({ ready: !!d.ready, providers, provider: providers.includes(chat.provider) ? chat.provider : (providers[0] ?? "gemini") }, false);
+    })
     .catch(() => set({ ready: false }, false));
 }
 
@@ -103,6 +115,7 @@ export const openAi = () => set({ open: true, minimized: false });
 export const minimizeAi = () => set({ minimized: true });
 export const closeAi = () => set({ open: false, minimized: false });
 export const setAiBox = (box: WinBox) => set({ box });
+export const setAiProvider = (provider: AiProvider) => set({ provider });
 export const detachVerse = () => set({ attached: null }, false);
 export const clearAiChat = () => set({ messages: [], attached: null });
 export function askAboutVerse(v: AttachedVerse) {
@@ -141,6 +154,7 @@ export async function sendAi(question: string) {
           ? { reference: ctx.reference, work: ctx.work, versions: ctx.versions, passage: ctx.passage().slice(0, 24000) }
           : null,
         verse: attached,
+        provider: chat.provider,
         // Earlier turns: text only, the newest last (the server trims further).
         messages: history.slice(-16).map((m) => ({ role: m.role, text: (m.ref ? `[About ${m.ref}] ` : "") + m.text.slice(0, 4000) })),
       }),
