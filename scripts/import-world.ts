@@ -674,6 +674,12 @@ async function gathas() {
  * Gutenberg #24178; and James Legge's English for Book I, Part I — the only part on Gutenberg
  * (#10056, "The Sayings of Mencius").
  */
+/** [start, end] of commentary passages inside the Gutenberg Mencius (3A:3 and 5A:7), removed whole. */
+const ZHU_XI_NOTES: [string, string][] = [
+  ["陽虎，陽貨，魯季氏家臣也。", "君子小人，每相反而已矣。"],
+  ["林氏曰：", "所論父不得而子之意。"],
+];
+
 async function mencius() {
   const zh = gutenbergBody(await cached("mencius", "pg24178.txt", GUT(24178)));
   const parts = sections(zh, /^卷之[一二三四五六七八九十]+(.+)$/m);
@@ -683,7 +689,13 @@ async function mencius() {
     const secs = p.body.split(/^\s*([一二三四五六七八九十廿卅]+)\s*$/m);
     const verses: Verse[] = [];
     for (let i = 1; i < secs.length; i += 2) {
-      const t = secs[i + 1].replace(/\s+/g, "").trim();
+      let t = secs[i + 1].replace(/\s+/g, "").trim();
+      // Two notes from Zhu Xi's commentary slipped into this edition's text; they aren't Mencius.
+      for (const [from, to] of ZHU_XI_NOTES) {
+        const x = t.indexOf(from);
+        const y = x < 0 ? -1 : t.indexOf(to, x);
+        if (y >= 0) t = t.slice(0, x) + t.slice(y + to.length);
+      }
       if (t) verses.push({ v: String(cn(secs[i])), t });
     }
     await writeChapter("mencius", "mencius-zh", "mencius", k + 1, sequential(verses), undefined, p.head.trim());
@@ -703,9 +715,9 @@ async function mencius() {
     else verses[verses.length - 1].t += ` ${t}`;
   }
   await resetVersion("mencius", "legge-men");
-  await writeChapter("mencius", "legge-men", "mencius", 1, verses, "Book I, Part I. The rest of Legge's translation is not yet available here.");
+  await writeChapter("mencius", "legge-men", "mencius", 1, verses, "Book I, Part I. The rest of Legge's translation is not available here; see the AI translation for the whole book.");
   for (let ch = 2; ch <= parts.length; ch++)
-    await writeChapter("mencius", "legge-men", "mencius", ch, [], "Only Book I, Part I is available in English so far; the Chinese is complete.");
+    await writeChapter("mencius", "legge-men", "mencius", ch, [], "Only Book I, Part I of Legge's translation is available; choose the AI translation for this chapter.");
   report("mencius en", 1, verses.length);
 }
 

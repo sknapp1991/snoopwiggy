@@ -67,7 +67,9 @@
     { "id": "imitation", "name": "The Imitation of Christ", "versification": "imitation" },
     { "id": "leviathan", "name": "Leviathan", "versification": "leviathan" },
     { "id": "second-treatise", "name": "Second Treatise of Government", "versification": "second-treatise" },
-    { "id": "social-contract", "name": "The Social Contract", "versification": "social-contract" }
+    { "id": "social-contract", "name": "The Social Contract", "versification": "social-contract" },
+    { "id": "great-learning", "name": "The Great Learning", "versification": "great-learning" },
+    { "id": "mean", "name": "The Doctrine of the Mean", "versification": "mean" }
   ],
   "versions": [
     {
@@ -1386,6 +1388,88 @@
       "sourceUrl": "https://www.gutenberg.org/ebooks/46333",
       "licensed": false,
       "versification": "social-contract"
+    },
+    {
+      "id": "ai-men",
+      "work": "mencius",
+      "abbr": "AI",
+      "name": "Mencius (AI translation from the Chinese)",
+      "language": "en",
+      "kind": "ai",
+      "dir": "ltr",
+      "year": 2026,
+      "translator": "AI translation (Claude, Anthropic) from the Classical Chinese",
+      "license": "Verses Across (free to read and share with credit)",
+      "attribution": "AI translation made for Verses Across from the public-domain Chinese text (Project Gutenberg #24178). Machine translation: compare with the Chinese and with Legge where available.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/24178",
+      "licensed": false,
+      "versification": "mencius"
+    },
+    {
+      "id": "great-learning-zh",
+      "work": "great-learning",
+      "abbr": "Chinese",
+      "name": "大學 (Classical Chinese)",
+      "language": "zh",
+      "kind": "native",
+      "dir": "ltr",
+      "year": -200,
+      "yearNote": "Warring States / early Han; arranged by Zhu Xi (12th century)",
+      "translator": "Original text (Zhu Xi's arrangement)",
+      "license": "Public Domain",
+      "attribution": "Chinese text from Wikisource, 大學章句, public domain; Zhu Xi's notes left out.",
+      "sourceUrl": "https://zh.wikisource.org/wiki/四書章句集註/大學章句",
+      "licensed": false,
+      "versification": "great-learning"
+    },
+    {
+      "id": "legge-gl",
+      "work": "great-learning",
+      "abbr": "Legge",
+      "name": "The Great Learning (James Legge, 1893)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1893,
+      "translator": "James Legge",
+      "license": "Public Domain",
+      "attribution": "James Legge, The Chinese Classics vol. 1 (2nd ed., 1893), public domain; transcription from Wikisource (names largely in pinyin there).",
+      "sourceUrl": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Great_Learning",
+      "licensed": false,
+      "versification": "great-learning"
+    },
+    {
+      "id": "mean-zh",
+      "work": "mean",
+      "abbr": "Chinese",
+      "name": "中庸 (Classical Chinese)",
+      "language": "zh",
+      "kind": "native",
+      "dir": "ltr",
+      "year": -200,
+      "yearNote": "Warring States / early Han; arranged by Zhu Xi (12th century)",
+      "translator": "Original text (Zhu Xi's arrangement)",
+      "license": "Public Domain",
+      "attribution": "Chinese text from Wikisource, 中庸章句, public domain; Zhu Xi's notes left out.",
+      "sourceUrl": "https://zh.wikisource.org/wiki/四書章句集註/中庸章句",
+      "licensed": false,
+      "versification": "mean"
+    },
+    {
+      "id": "legge-mean",
+      "work": "mean",
+      "abbr": "Legge",
+      "name": "The Doctrine of the Mean (James Legge, 1893)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1893,
+      "translator": "James Legge",
+      "license": "Public Domain",
+      "attribution": "James Legge, The Chinese Classics vol. 1 (2nd ed., 1893), public domain; transcription from Wikisource (names largely in pinyin there).",
+      "sourceUrl": "https://en.wikisource.org/wiki/The_Chinese_Classics/Volume_1/The_Doctrine_of_the_Mean",
+      "licensed": false,
+      "versification": "mean"
     }
   ],
   "religions": [
@@ -2028,8 +2112,8 @@
           "items": [
             { "id": "analects", "name": "Analects", "work": "analects", "chapters": 20, "chapterName": "Analects, Book" },
             { "id": "mencius", "name": "Mencius", "work": "mencius", "chapters": 14, "chapterName": "Mencius" },
-            { "id": "great-learning", "name": "The Great Learning", "status": "coming-soon" },
-            { "id": "mean", "name": "Doctrine of the Mean", "status": "coming-soon" }
+            { "id": "great-learning", "name": "The Great Learning", "work": "great-learning", "chapters": 11, "chapterName": "Great Learning" },
+            { "id": "mean", "name": "Doctrine of the Mean", "work": "mean", "chapters": 33, "chapterName": "Doctrine of the Mean" }
           ]
         }
       ]

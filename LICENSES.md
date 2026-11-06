@@ -225,8 +225,13 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
 - **The Gathas of Zarathustra** (Yasna 28–34, 43–51, 53; L. H. Mills, SBE 31, 1887, public domain) — read
   page by page from sacred-texts in a browser with the owner's go-ahead (Nov 2026; there is no zipped
   file); only the translation, without Mills' commentary or footnotes (data/raw/gathas).
-- **Mencius** — the complete Chinese (Gutenberg #24178) and James Legge's English for Book I, Part I only
-  (#10056, the only part on Gutenberg).
+- **Mencius** — the complete Chinese (Gutenberg #24178; two passages of Zhu Xi's commentary that slipped
+  into that edition are removed), James Legge's English for Book I, Part I only (#10056, the only part on
+  Gutenberg), and a complete **AI translation** from the Chinese made for this site (marked "AI translation"
+  in the reader; free to share with credit).
+- **The Great Learning** and **The Doctrine of the Mean** — the Chinese in Zhu Xi's arrangement (Wikisource,
+  四書章句集註, his notes left out) and James Legge's English (The Chinese Classics vol. 1, 2nd ed. 1893,
+  Wikisource transcription), all public domain.
 - **Popol Vuh** — Lewis Spence's 1908 retelling of its four books (#56550), public domain; not a full
   translation, and his commentary is left out.
 - **Classics from Project Gutenberg** (`scripts/import-classics.ts`, all public domain), chapter = the
