@@ -14,6 +14,7 @@ import { useReaderState } from "./use-reader-state";
 import { AiButton } from "./ai-window";
 import { SaveOffline } from "./offline";
 import { ListenTopButton } from "./audio-player";
+import { RedLetterToggle } from "./red-letter";
 
 export function TopBar({
   onOpenLibrary,
@@ -98,6 +99,7 @@ export function TopBar({
         </TopPopover>
         <TopPopover label="Display options" title="Saved setups, widths, swiping, offline" icon={<SlidersIcon />}>
           <SavedSetups />
+          <RedLetterToggle />
           <WidthControl />
           <ChapterSwipeControl />
           <SaveOffline />
@@ -147,6 +149,7 @@ export function TopBar({
             </div>
             <HighlightModeToggle full />
             <XrefToggle full />
+            <RedLetterToggle />
             <WidthControl />
             <LanguageColors />
             <ChapterSwipeControl />

@@ -68,3 +68,4 @@ next-env.d.ts
 
 # cross references (scripts/xref/build.py), uploaded to R2
 /.cache-xref/
+/public/redletter

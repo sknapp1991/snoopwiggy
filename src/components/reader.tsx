@@ -24,6 +24,7 @@ import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
 import { VerseQuick, type QuickAt } from "./verse-quick";
+import { RedLetterCtx, useRedLetter, VerseWords } from "./red-letter";
 import { StudiedBox } from "./studied-box";
 import { FloatingNav } from "./floating-nav";
 import { HighlightModeBar } from "./highlight-mode";
@@ -98,6 +99,7 @@ export function ReaderView() {
     },
   });
   const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller, setVersions });
+  const red = useRedLetter(ref.work, ref.book, versions);
   const study = useStudy();
   const marks = useMemo(() => chapterMarks(study.items, ref.work, ref.book, ref.chapter), [study.items, ref.work, ref.book, ref.chapter]);
 
@@ -271,6 +273,7 @@ export function ReaderView() {
 
       <ListenCtx.Provider value={ra}>
       <VerseCtx.Provider value={actions}>
+      <RedLetterCtx.Provider value={red}>
         {column ? (
           <ColumnView
             cols={cols}
@@ -286,6 +289,7 @@ export function ReaderView() {
         ) : (
           <StackedView cols={cols} rows={rows} marks={marks} />
         )}
+      </RedLetterCtx.Provider>
       </VerseCtx.Provider>
       </ListenCtx.Provider>
 
@@ -466,7 +470,9 @@ function Cell({ verse, version, chapter, box }: { verse: Verse | null; version: 
           ({verse.n})
         </span>
       )}
-      <span data-text>{verse.t}</span>
+      <span data-text>
+        <VerseWords t={verse.t} version={version.id} chapter={chapter} v={verse.v} />
+      </span>
     </VerseText>
   );
 }

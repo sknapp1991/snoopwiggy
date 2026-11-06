@@ -129,6 +129,14 @@ dialog.sheet[open] {
 }
 
 /* Read-along: the verse being spoken */
+/* Words of Jesus (red-letter toggle) */
+.red-letter {
+  color: #b91c1c;
+}
+.dark .red-letter {
+  color: #f87171;
+}
+
 /* Verses chosen in cross-reference mode */
 .is-xref {
   background: color-mix(in srgb, var(--accent-soft) 70%, transparent);

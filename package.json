@@ -25,7 +25,7 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "pack": "tsx scripts/pack-texts.ts && tsx scripts/build-search.ts",
+    "pack": "tsx scripts/pack-texts.ts && tsx scripts/build-search.ts && tsx scripts/build-redletter.ts",
     "search-index": "tsx scripts/build-search.ts",
     "dict": "tsx scripts/build-dict.ts",
     "predev": "npm run pack",

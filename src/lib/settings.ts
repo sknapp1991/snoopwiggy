@@ -73,6 +73,8 @@ export type Settings = {
   /** Desktop: width of the My Study / Search panel in px (null = default). */
   panelWidth: number | null;
   xrefSame: boolean;
+  /** Words of Jesus in red (versions that mark them). */
+  redLetter: boolean;
   xrefOthers: string[];
   /** Swipe sideways to change chapter: one finger, two fingers, or off. */
   chapterSwipe: "one" | "two" | "off";
@@ -136,6 +138,7 @@ const DEFAULTS: Settings = {
   xrefMode: false,
   panelWidth: null,
   xrefSame: true,
+  redLetter: false,
   xrefOthers: [],
   chapterSwipe: "one",
   floatingNav: true,
@@ -183,6 +186,7 @@ function read(): Settings {
       xrefMode: (p as { xrefMode?: unknown }).xrefMode === true,
       panelWidth: typeof (p as { panelWidth?: unknown }).panelWidth === "number" ? (p as { panelWidth: number }).panelWidth : null,
       xrefSame: (p as { xrefSame?: unknown }).xrefSame !== false,
+      redLetter: (p as { redLetter?: unknown }).redLetter === true,
       xrefOthers: Array.isArray((p as { xrefOthers?: unknown }).xrefOthers) ? ((p as { xrefOthers: unknown[] }).xrefOthers.filter((x) => typeof x === "string") as string[]) : [],
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
       floatingNav: p.floatingNav !== false,
