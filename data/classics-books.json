@@ -38,6 +38,36 @@
   "chapters": 7
  },
  {
+  "work": "metamorphoses",
+  "id": "metamorphoses-2",
+  "name": "Metamorphoses (Books VIII–XV)",
+  "chapters": 8
+ },
+ {
+  "work": "plato-dialogues",
+  "id": "apology",
+  "name": "Apology",
+  "chapters": 1
+ },
+ {
+  "work": "plato-dialogues",
+  "id": "symposium",
+  "name": "Symposium",
+  "chapters": 1
+ },
+ {
+  "work": "plato-dialogues",
+  "id": "phaedo",
+  "name": "Phaedo",
+  "chapters": 1
+ },
+ {
+  "work": "plato-dialogues",
+  "id": "phaedrus",
+  "name": "Phaedrus",
+  "chapters": 1
+ },
+ {
   "work": "republic",
   "id": "republic",
   "chapters": 10
@@ -114,6 +144,50 @@
   "id": "montaigne-3",
   "name": "Essays, Book III",
   "chapters": 13
+ },
+ {
+  "work": "confessions",
+  "id": "confessions",
+  "chapters": 13
+ },
+ {
+  "work": "imitation",
+  "id": "imitation-1",
+  "name": "The Imitation of Christ, Book I",
+  "chapters": 25
+ },
+ {
+  "work": "imitation",
+  "id": "imitation-2",
+  "name": "The Imitation of Christ, Book II",
+  "chapters": 12
+ },
+ {
+  "work": "imitation",
+  "id": "imitation-3",
+  "name": "The Imitation of Christ, Book III",
+  "chapters": 59
+ },
+ {
+  "work": "imitation",
+  "id": "imitation-4",
+  "name": "The Imitation of Christ, Book IV",
+  "chapters": 18
+ },
+ {
+  "work": "leviathan",
+  "id": "leviathan",
+  "chapters": 46
+ },
+ {
+  "work": "second-treatise",
+  "id": "second-treatise",
+  "chapters": 19
+ },
+ {
+  "work": "social-contract",
+  "id": "social-contract",
+  "chapters": 48
  },
  {
   "work": "the-crowd",

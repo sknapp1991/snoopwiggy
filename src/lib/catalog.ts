@@ -73,6 +73,12 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   "freud-intro": ["hall"],
   "jung-unconscious": ["hinkle"],
   "the-crowd": ["le-bon"],
+  "plato-dialogues": ["jowett-dial"],
+  confessions: ["pusey"],
+  imitation: ["benham"],
+  leviathan: ["hobbes"],
+  "second-treatise": ["locke"],
+  "social-contract": ["cole"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

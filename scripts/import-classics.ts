@@ -35,6 +35,10 @@ type Book = {
   label?: string;
   /** The numbering starts again at 1 for each part (Jung's two parts). */
   parts?: boolean;
+  /** This book comes from another Gutenberg file than the work's (e.g. a second volume). */
+  gid?: number;
+  /** Added to the chapter numbers in titles (Ovid's second volume starts at Book 8). */
+  offset?: number;
 };
 type Work = {
   work: string;
@@ -103,7 +107,7 @@ function chapters(txt: string, b: Book) {
     }
     const numeral = m[1] && /^(\d+|[IVXLC]+)$/.test(m[1]) ? (/^\d+$/.test(m[1]) ? Number(m[1]) : roman(m[1])) : null;
     const num = numeral ?? out.length + 1;
-    const prefix = b.label ? `${b.label} ${num}` : "";
+    const prefix = b.label ? `${b.label} ${num + (b.offset ?? 0)}` : "";
     const nice = title ? (isCaps(title) ? titleCase(title) : title).replace(/_/g, "") : "";
     out.push({ title: [prefix, nice].filter(Boolean).join(": "), verses: verses(body), num: numeral });
   });
@@ -135,7 +139,26 @@ const W: Work[] = [
     ],
   },
   { work: "aeneid", version: "dryden", gid: 228, books: [{ head: /^\s*BOOK ([IVXL]+)\s*$/m, label: "Book" }] },
-  { work: "metamorphoses", version: "riley", gid: 21765, books: [{ head: /^BOOK ([IVXL]+)\.\s*$/m, label: "Book" }] },
+  {
+    work: "metamorphoses",
+    version: "riley",
+    gid: 21765,
+    books: [
+      { head: /^BOOK ([IVXL]+)\.\s*$/m, label: "Book" },
+      { id: "metamorphoses-2", name: "Metamorphoses (Books VIII–XV)", gid: 26073, head: /^BOOK THE [A-Z]+\.\s*$/m, label: "Book", offset: 7 },
+    ],
+  },
+  {
+    work: "plato-dialogues",
+    version: "jowett-dial",
+    gid: 1656,
+    books: [
+      { id: "apology", name: "Apology", head: /^APOLOGY\s*$/m, minLen: 2000 },
+      { id: "symposium", name: "Symposium", gid: 1600, from: /^SYMPOSIUM\s*$/m, fromNth: 2, head: /^PERSONS OF THE DIALOGUE[^\n]*$/m },
+      { id: "phaedo", name: "Phaedo", gid: 1658, from: /^PHAEDO\s*$/m, fromNth: 2, head: /^PERSONS OF THE DIALOGUE[^\n]*$/m },
+      { id: "phaedrus", name: "Phaedrus", gid: 1636, from: /^PHAEDRUS\s*$/m, fromNth: 2, head: /^PERSONS OF THE DIALOGUE[^\n]*$/m },
+    ],
+  },
   // ── Philosophy ──
   { work: "republic", version: "jowett-rep", gid: 1497, books: [{ from: /^\s*PERSONS OF THE DIALOGUE/m, head: /^\s*BOOK ([IVXL]+)\.\s*$/m, label: "Book" }] },
   { work: "nicomachean", version: "chase", gid: 8438, books: [{ head: /^\s*BOOK ([IVXL]+)\s*$/m, label: "Book" }] },
@@ -164,6 +187,28 @@ const W: Work[] = [
       { id: "montaigne-3", name: "Essays, Book III", from: /^\s*BOOK THE THIRD\s*$/m, head: /^\s*CHAPTER\s+([IVXL]+)\.?\s*$/m, titleNext: true, minLen: 150 },
     ],
   },
+  { work: "confessions", version: "pusey", gid: 3296, books: [{ head: /^\s*BOOK ([IVXL]+)\s*$/m, label: "Book" }] },
+  {
+    work: "imitation",
+    version: "benham",
+    gid: 1653,
+    books: [1, 2, 3, 4].map((n) => ({
+      id: `imitation-${n}`,
+      name: `The Imitation of Christ, Book ${["I", "II", "III", "IV"][n - 1]}`,
+      from: new RegExp(`^THE ${["FIRST", "SECOND", "THIRD", "FOURTH"][n - 1]} BOOK\\s*$`, "m"),
+      to: n < 4 ? new RegExp(`^THE ${["SECOND", "THIRD", "FOURTH"][n - 1]} BOOK\\s*$`, "m") : undefined,
+      head: /^\s*CHAPTER ([IVXL]+)\.?\s+([^\n]+)$/m,
+      minLen: 150,
+    })),
+  },
+  { work: "leviathan", version: "hobbes", gid: 3207, books: [{ head: /^CHAPTER ([IVXL]+)\.\s*([^\n]*)$/m, label: "Chapter" }] },
+  { work: "second-treatise", version: "locke", gid: 7370, books: [{ head: /^CHAPTER\. ([IVXL]+)\.\s*$/m, titleNext: true, label: "Chapter" }] },
+  {
+    work: "social-contract",
+    version: "cole",
+    gid: 46333,
+    books: [{ from: /^THE SOCIAL CONTRACT\s*$/m, fromNth: 2, to: /^A DISCOURSE ON THE ARTS AND SCIENCES\s*$/m, head: /^\s*CHAPTER ([IVXL]+)\s*$/m, titleNext: true, parts: true, minLen: 300 }],
+  },
   // ── Psychology ──
   { work: "the-crowd", version: "le-bon", gid: 445, books: [{ head: /^\s*CHAPTER ([IVX]+)\.?\s*$/m, titleNext: true, parts: true, label: "Chapter" }] },
   { work: "varieties", version: "james", gid: 621, books: [{ head: /^\s*LECTURES? ([IVXL]+)(?:,? (?:AND )?[IVXL]+)*\.\s*([^\n]*)$/m }] },
@@ -176,9 +221,10 @@ async function main() {
   const items: { work: string; id: string; name?: string; chapters: number }[] = [];
   for (const w of W) {
     if (want.length && !want.includes(w.work)) continue;
-    const txt = gutenbergBody(await cached("classics", `pg${w.gid}.txt`, GUT(w.gid)));
+    const main = gutenbergBody(await cached("classics", `pg${w.gid}.txt`, GUT(w.gid)));
     await resetVersion(w.work, w.version);
     for (const b of w.books) {
+      const txt = b.gid ? gutenbergBody(await cached("classics", `pg${b.gid}.txt`, GUT(b.gid))) : main;
       const chs = chapters(txt, b);
       const id = b.id ?? w.work;
       for (const [k, c] of chs.entries()) await writeChapter(w.work, w.version, id, k + 1, c.verses, undefined, c.title || undefined);

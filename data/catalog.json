@@ -61,7 +61,13 @@
     { "id": "varieties", "name": "The Varieties of Religious Experience", "versification": "varieties" },
     { "id": "freud-intro", "name": "A General Introduction to Psychoanalysis", "versification": "freud-intro" },
     { "id": "jung-unconscious", "name": "Psychology of the Unconscious", "versification": "jung-unconscious" },
-    { "id": "the-crowd", "name": "The Crowd", "versification": "the-crowd" }
+    { "id": "the-crowd", "name": "The Crowd", "versification": "the-crowd" },
+    { "id": "plato-dialogues", "name": "Dialogues of Plato", "versification": "plato-dialogues" },
+    { "id": "confessions", "name": "Confessions", "versification": "confessions" },
+    { "id": "imitation", "name": "The Imitation of Christ", "versification": "imitation" },
+    { "id": "leviathan", "name": "Leviathan", "versification": "leviathan" },
+    { "id": "second-treatise", "name": "Second Treatise of Government", "versification": "second-treatise" },
+    { "id": "social-contract", "name": "The Social Contract", "versification": "social-contract" }
   ],
   "versions": [
     {
@@ -1284,6 +1290,102 @@
       "sourceUrl": "https://tanzil.net/trans/",
       "licensed": false,
       "versification": "hafs"
+    },
+    {
+      "id": "jowett-dial",
+      "work": "plato-dialogues",
+      "abbr": "Jowett",
+      "name": "Plato, Dialogues (Benjamin Jowett)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1871,
+      "translator": "Benjamin Jowett",
+      "license": "Public Domain",
+      "attribution": "Plato, Dialogues (Benjamin Jowett), public domain; Project Gutenberg #1656.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/1656",
+      "licensed": false,
+      "versification": "plato-dialogues"
+    },
+    {
+      "id": "pusey",
+      "work": "confessions",
+      "abbr": "Pusey",
+      "name": "Augustine, Confessions (E. B. Pusey)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1838,
+      "translator": "Edward Bouverie Pusey",
+      "license": "Public Domain",
+      "attribution": "Augustine, Confessions (E. B. Pusey), public domain; Project Gutenberg #3296.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/3296",
+      "licensed": false,
+      "versification": "confessions"
+    },
+    {
+      "id": "benham",
+      "work": "imitation",
+      "abbr": "Benham",
+      "name": "Thomas à Kempis, The Imitation of Christ (William Benham)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1874,
+      "translator": "William Benham",
+      "license": "Public Domain",
+      "attribution": "Thomas à Kempis, The Imitation of Christ (William Benham), public domain; Project Gutenberg #1653.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/1653",
+      "licensed": false,
+      "versification": "imitation"
+    },
+    {
+      "id": "hobbes",
+      "work": "leviathan",
+      "abbr": "Hobbes",
+      "name": "Hobbes, Leviathan (1651)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1651,
+      "translator": "Thomas Hobbes (written in English)",
+      "license": "Public Domain",
+      "attribution": "Hobbes, Leviathan (1651), public domain; Project Gutenberg #3207.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/3207",
+      "licensed": false,
+      "versification": "leviathan"
+    },
+    {
+      "id": "locke",
+      "work": "second-treatise",
+      "abbr": "Locke",
+      "name": "Locke, Second Treatise of Government (1690)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1690,
+      "translator": "John Locke (written in English)",
+      "license": "Public Domain",
+      "attribution": "Locke, Second Treatise of Government (1690), public domain; Project Gutenberg #7370.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/7370",
+      "licensed": false,
+      "versification": "second-treatise"
+    },
+    {
+      "id": "cole",
+      "work": "social-contract",
+      "abbr": "Cole",
+      "name": "Rousseau, The Social Contract (G. D. H. Cole)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1913,
+      "translator": "G. D. H. Cole",
+      "license": "Public Domain",
+      "attribution": "Rousseau, The Social Contract (G. D. H. Cole), public domain; Project Gutenberg #46333.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/46333",
+      "licensed": false,
+      "versification": "social-contract"
     }
   ],
   "religions": [
@@ -1388,7 +1490,14 @@
             { "id": "1en", "name": "1 Enoch", "work": "enoch", "chapters": 108 },
             { "id": "gth", "name": "Gospel of Thomas", "work": "thomas", "chapters": 1, "chapterName": "Gospel of Thomas" }
           ]
-        }
+        },
+        { "id": "christian-classics", "name": "Christian Classics", "items": [
+          { "id": "confessions", "name": "Augustine, Confessions", "work": "confessions", "chapters": 13, "chapterName": "Confessions, Book" },
+          { "id": "imitation-1", "name": "The Imitation of Christ, Book I", "work": "imitation", "chapters": 25, "chapterName": "Imitation of Christ I" },
+          { "id": "imitation-2", "name": "The Imitation of Christ, Book II", "work": "imitation", "chapters": 12, "chapterName": "Imitation of Christ II" },
+          { "id": "imitation-3", "name": "The Imitation of Christ, Book III", "work": "imitation", "chapters": 59, "chapterName": "Imitation of Christ III" },
+          { "id": "imitation-4", "name": "The Imitation of Christ, Book IV", "work": "imitation", "chapters": 18, "chapterName": "Imitation of Christ IV" }
+        ] }
       ]
     },
     {
@@ -2010,6 +2119,10 @@
         },
         { "id": "classical-philosophy", "name": "Classical Philosophy", "items": [
           { "id": "republic", "name": "Plato, The Republic", "work": "republic", "chapters": 10, "chapterName": "Republic" },
+          { "id": "apology", "name": "Plato, Apology", "work": "plato-dialogues", "chapters": 1, "chapterName": "Apology" },
+          { "id": "symposium", "name": "Plato, Symposium", "work": "plato-dialogues", "chapters": 1, "chapterName": "Symposium" },
+          { "id": "phaedo", "name": "Plato, Phaedo", "work": "plato-dialogues", "chapters": 1, "chapterName": "Phaedo" },
+          { "id": "phaedrus", "name": "Plato, Phaedrus", "work": "plato-dialogues", "chapters": 1, "chapterName": "Phaedrus" },
           { "id": "nicomachean", "name": "Aristotle, Nicomachean Ethics", "work": "nicomachean", "chapters": 10, "chapterName": "Ethics" },
           { "id": "seneca-morals", "name": "Seneca's Morals", "work": "seneca-morals", "chapters": 57, "chapterName": "Seneca" }
         ] },
@@ -2028,6 +2141,11 @@
           { "id": "zarathustra", "name": "Nietzsche, Thus Spake Zarathustra", "work": "zarathustra", "chapters": 80, "chapterName": "Zarathustra" },
           { "id": "beyond-good-evil", "name": "Nietzsche, Beyond Good and Evil", "work": "beyond-good-evil", "chapters": 9, "chapterName": "Beyond Good and Evil" },
           { "id": "russell-problems", "name": "Russell, The Problems of Philosophy", "work": "russell-problems", "chapters": 15, "chapterName": "Russell" }
+        ] },
+        { "id": "political-philosophy", "name": "Political Philosophy", "items": [
+          { "id": "leviathan", "name": "Hobbes, Leviathan", "work": "leviathan", "chapters": 46, "chapterName": "Leviathan" },
+          { "id": "second-treatise", "name": "Locke, Second Treatise of Government", "work": "second-treatise", "chapters": 19, "chapterName": "Second Treatise" },
+          { "id": "social-contract", "name": "Rousseau, The Social Contract", "work": "social-contract", "chapters": 48, "chapterName": "Social Contract" }
         ] }
       ]
     },
@@ -2063,7 +2181,8 @@
           "id": "ovid",
           "name": "Ovid",
           "items": [
-            { "id": "metamorphoses", "name": "Metamorphoses (Books I–VII)", "work": "metamorphoses", "chapters": 7, "chapterName": "Metamorphoses" }
+            { "id": "metamorphoses", "name": "Metamorphoses (Books I–VII)", "work": "metamorphoses", "chapters": 7, "chapterName": "Metamorphoses" },
+            { "id": "metamorphoses-2", "name": "Metamorphoses (Books VIII–XV)", "work": "metamorphoses", "chapters": 8, "chapterName": "Metamorphoses II" }
           ]
         }
       ]
