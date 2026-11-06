@@ -37,7 +37,7 @@ export function FirstTips() {
         <p className="font-semibold text-accent">Quick tips</p>
         <ul className="mt-1 grid gap-x-6 gap-y-0.5 text-ink/90 sm:grid-cols-2">
           <li>Tap a verse: highlight, note, copy, Ask AI</li>
-          <li>Tap a verse number: ★ favorite · double-tap: study later</li>
+          <li>Tap a verse number: favorite, highlight, listen and more · double-tap: study later</li>
           <li>Swipe sideways (or ‹ ›) for the next chapter</li>
           <li>🎧 Listen — then tap any verse to read from there</li>
           <li>Double-tap a word to search it everywhere</li>

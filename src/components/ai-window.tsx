@@ -156,6 +156,7 @@ export function AiWindow() {
     const start = { px: e.clientX, py: e.clientY, ...box };
     let cur = box;
     const onMove = (ev: PointerEvent) => {
+      window.getSelection()?.removeAllRanges(); // no text selected while dragging
       const dx = ev.clientX - start.px;
       const dy = ev.clientY - start.py;
       const next =

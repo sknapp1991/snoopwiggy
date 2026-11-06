@@ -296,6 +296,14 @@ export function useReadAlong({
   // Changing which versions are read in turn while playing: carry on from the same verse once the
   // new queue is built (next render).
   const restartRef = useRef<string | null>(null);
+  /**
+   * Something that changes what is heard (voice, versions, order, speed) changed while paused: don't resume
+   * the paused recording (it would carry on with the old settings); ▶ starts afresh from the same verse.
+   */
+  const forgetPaused = () => {
+    const s = getSpeech();
+    if (s.status === "paused" && s.engine === "recorded") setSpeech({ engine: "device" });
+  };
   const restartSoon = () => {
     restartRef.current = getSpeech().verse;
   };
@@ -432,6 +440,7 @@ export function useReadAlong({
     select(id: string) {
       const cur = mixed ? mixIds : version ? [version.id] : [];
       const playing = getSpeech().status === "playing";
+      if (!playing) forgetPaused();
       if (cur.includes(id)) {
         if (cur.length === 1) return;
         const rest = cur.filter((x) => x !== id);
@@ -449,19 +458,23 @@ export function useReadAlong({
       ids.splice(to, 0, x);
       setVersions(ids);
       if (mixed && getSpeech().status === "playing") restartSoon();
+      else forgetPaused();
     },
     setMixOrder(order: "verse" | "chapter") {
       updateSettings({ ttsMixOrder: order });
       if (getSpeech().status === "playing") restartSoon();
+      else forgetPaused();
     },
     /** Voice / speed for one language while several versions are read in turn (carries on from the same verse). */
     setLangVoice(language: string, voiceURI: string) {
       updateSettings({ ttsVoices: { ...getSettings().ttsVoices, [language]: voiceURI } });
-      if (getSpeech().status === "playing") restartSoon();
+      // A new voice is heard straight away (also when paused), from the same verse.
+      if (getSpeech().status !== "idle" && getSpeech().chapterKey === chapterKey) restartSoon();
     },
     setLangRate(language: string, rate: number) {
       updateSettings({ ttsRates: { ...getSettings().ttsRates, [language]: rate } });
       if (getSpeech().status === "playing") restartSoon();
+      else forgetPaused();
     },
     toggle() {
       const s = getSpeech();
@@ -503,7 +516,16 @@ export function useReadAlong({
     chooseRecording(id: string) {
       if (!version) return;
       updateSettings({ ttsRecorded: { ...getSettings().ttsRecorded, [version.id]: id } });
-      if (speech.status === "playing") startAt(index >= 0 ? index : 0);
+      this.switchVoice();
+    },
+    /**
+     * A different voice was picked: hear it straight away (also when paused), from the verse being read.
+     * Before, a paused recording resumed in the old voice, so the change seemed to do nothing.
+     */
+    switchVoice(overrides?: { voice?: SpeechSynthesisVoice | null }) {
+      const s = getSpeech();
+      if (s.status === "idle" || s.chapterKey !== chapterKey) return forgetPaused();
+      startAt(index >= 0 ? index : startIndex(), overrides);
     },
     recording: version ? recordingFor(version.id) : null,
     recordings: version ? allRecordings.filter((x) => x.version === version.id) : [],
@@ -742,6 +764,12 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
       const s = swipeStart.current;
       if (!s || s.done) return;
       const dy = e.clientY - s.y;
+      // Swipe up: open the options (same as ⚙).
+      if (dy < -45 && -dy > Math.abs(e.clientX - s.x) * 1.5) {
+        s.done = true;
+        if (!more) setMore(true);
+        return;
+      }
       if (dy > 45 && dy > Math.abs(e.clientX - s.x) * 1.5) {
         s.done = true;
         if (more || picker) {
@@ -993,7 +1021,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
                   if (ra.recordings.length) updateSettings({ ttsRecorded: { ...settings.ttsRecorded, [version.id]: "device" } });
                   const v = langVoices.find((x) => x.voiceURI === val) ?? null;
                   updateSettings({ ttsVoices: { ...settings.ttsVoices, [lang]: val } });
-                  ra.restart({ voice: v });
+                  ra.switchVoice({ voice: v });
                 }}
                 className="h-10 min-w-0 flex-1 rounded-lg border border-line bg-raised px-2"
               >
@@ -1089,7 +1117,8 @@ function VersionBubbles({ ra, more, onMore }: { ra: ReadAlong; more: boolean; on
               title={`${on ? (ra.selected.length > 1 ? "Tap to leave this version out" : "Being read") : "Tap to hear this version too"} · drag to reorder (moves the columns too)${rec ? " · recorded voice: keeps playing with the screen off" : ""}`}
               className={`flex min-h-9 shrink-0 touch-pan-x select-none items-center gap-1 rounded-full border px-3 text-xs font-medium ${
                 on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-muted hover:text-ink"
-              } ${drag?.from === i ? "opacity-60" : ""} ${drag && drag.over === i && drag.from !== i ? "ring-2 ring-accent" : ""}`}
+              } ${drag?.from === i ? "relative z-10 shadow-lg ring-2 ring-accent/60" : ""} ${drag && drag.over === i && drag.from !== i ? "ring-2 ring-accent ring-offset-1" : ""}`}
+              style={drag?.from === i ? { transform: `translateX(${drag.dx}px)` } : undefined}
             >
               {on && ra.selected.length > 1 && <span className="tabular-nums">{n + 1}.</span>}
               {c.version.abbr}

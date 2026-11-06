@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 
 /** `attr` marks the draggable items (default: column headers); several drag rows can coexist. */
 export function useColumnDrag(onReorder: (from: number, to: number) => void, attr = "data-colhead") {
-  const [drag, setDrag] = useState<{ from: number; over: number } | null>(null);
+  const [drag, setDrag] = useState<{ from: number; over: number; dx: number } | null>(null);
   const st = useRef<{ from: number; x: number; y: number; active: boolean; timer: number; mouse: boolean } | null>(null);
   const cb = useRef(onReorder);
   /** A drag just ended: swallow the click that follows (the items can be buttons). */
@@ -36,7 +36,7 @@ export function useColumnDrag(onReorder: (from: number, to: number) => void, att
     if (!st.current) return;
     st.current.active = true;
     navigator.vibrate?.(15);
-    setDrag({ from, over: indexAt(x) });
+    setDrag({ from, over: indexAt(x), dx: x - st.current.x });
   };
   const end = (x?: number) => {
     const s = st.current;
@@ -78,7 +78,8 @@ export function useColumnDrag(onReorder: (from: number, to: number) => void, att
         }
         return;
       }
-      setDrag({ from: i, over: indexAt(e.clientX) });
+      // dx: how far the item has moved, so it can follow the pointer while it is dragged.
+      setDrag({ from: i, over: indexAt(e.clientX), dx: e.clientX - s.x });
     },
     onPointerUp: (e: React.PointerEvent) => end(e.clientX),
     onPointerCancel: () => end(),

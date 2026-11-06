@@ -8,6 +8,7 @@
  */
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useUi } from "@/lib/ui-store";
 import { askAboutVerse, sendAi, useAiChat } from "@/lib/ai-chat";
 import { catalog, chapterTitle, DEFAULT_VERSIONS, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { fetchBook } from "@/lib/chapter-store";
@@ -111,10 +112,73 @@ function useVerseText(h: Hit | null) {
   return t?.k === k ? t.text : undefined;
 }
 
+/* ---------- window position / size (desktop), like the AI window ---------- */
+
+type Box = { x: number; y: number; w: number; h: number };
+/** Where the window was put (kept while the site is open). */
+let savedBox: Box | null = null;
+const MIN_W = 300;
+const MIN_H = 260;
+/** Keep the box on screen and left of the side panel (Search / My Study), so it never covers it. */
+function fitBox(b: Box, rightEdge: number): Box {
+  const vh = window.innerHeight;
+  const w = Math.min(Math.max(b.w, MIN_W), rightEdge - 16);
+  const h = Math.min(Math.max(b.h, MIN_H), vh - 16);
+  return { w, h, x: Math.min(Math.max(b.x, 8), rightEdge - w - 8), y: Math.min(Math.max(b.y, 8), vh - h - 8) };
+}
+
 export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; versions: string[]; raised: boolean }) {
   const settings = useSettings();
   const wide = useMediaQuery(WIDE_QUERY, true);
   const ai = useAiChat();
+  const { panel } = useUi();
+  const [box, setBox] = useState<Box | null>(null);
+  const [sheetH, setSheetH] = useState<number | null>(null);
+  const sidePanel = wide && panel ? (settings.panelWidth ?? 384) : 0;
+  // Desktop: the saved place (or the right-hand side), kept clear of the side panel.
+  useEffect(() => {
+    if (!wide || !settings.xrefMode) return;
+    const fit = () => {
+      const right = window.innerWidth - sidePanel;
+      const start = savedBox ?? { w: 380, h: window.innerHeight - 96, x: right - 380 - 16, y: 80 };
+      setBox(fitBox(start, right));
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [wide, settings.xrefMode, sidePanel]);
+  /** Drag the title bar to move it; the edges / corner to resize. */
+  const dragFrom = (e: React.PointerEvent, mode: "move" | "size" | "right" | "left" | "bottom") => {
+    if (!box || e.button !== 0 || (mode === "move" && (e.target as HTMLElement).closest("button"))) return;
+    e.preventDefault();
+    const start = { px: e.clientX, py: e.clientY, ...box };
+    const right = window.innerWidth - sidePanel;
+    const onMove = (ev: PointerEvent) => {
+      window.getSelection()?.removeAllRanges(); // no text selected while dragging
+      const dx = ev.clientX - start.px;
+      const dy = ev.clientY - start.py;
+      const next =
+        mode === "move"
+          ? { ...start, x: start.x + dx, y: start.y + dy }
+          : mode === "size"
+            ? { ...start, w: start.w + dx, h: start.h + dy }
+            : mode === "right"
+              ? { ...start, w: start.w + dx }
+              : mode === "bottom"
+                ? { ...start, h: start.h + dy }
+                : { ...start, x: start.x + Math.min(dx, start.w - MIN_W), w: Math.max(MIN_W, start.w - dx) };
+      savedBox = fitBox(next, right);
+      setBox(savedBox);
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  };
   const all = useXrefSelection();
   const sel = all.filter((x) => x.work === bookRef.work && x.book === bookRef.book && x.chapter === bookRef.chapter);
   const verse = sel[0] ?? null;
@@ -183,13 +247,54 @@ export function XrefPanel({ bookRef, versions, raised }: { bookRef: BookRef; ver
     <section
       aria-label="Cross references"
       data-no-swipe
-      className={`fixed z-30 flex flex-col border border-line bg-panel shadow-2xl ${
-        wide
-          ? "bottom-4 right-4 top-20 w-[min(380px,calc(100vw-32px))] rounded-xl"
-          : `inset-x-0 ${raised ? "bottom-28" : "bottom-0"} h-[55dvh] rounded-t-2xl pb-[env(safe-area-inset-bottom)]`
+      style={wide ? (box ? { left: box.x, top: box.y, width: box.w, height: box.h } : { visibility: "hidden" }) : sheetH ? { height: sheetH } : undefined}
+      className={`fixed z-30 flex flex-col overflow-hidden border border-line bg-panel shadow-2xl ${
+        wide ? "rounded-xl" : `inset-x-0 ${raised ? "bottom-28" : "bottom-0"} h-[55dvh] rounded-t-2xl pb-[env(safe-area-inset-bottom)]`
       }`}
     >
-      <header className="flex shrink-0 items-center gap-1 border-b border-line bg-raised py-1 pl-3 pr-1">
+      {wide ? (
+        <>
+          {/* Resize from the left, right and bottom edges, or the corner. */}
+          <div onPointerDown={(e) => dragFrom(e, "left")} aria-hidden className="absolute inset-y-8 left-0 z-10 w-1.5 cursor-ew-resize hover:bg-accent/30" />
+          <div onPointerDown={(e) => dragFrom(e, "right")} aria-hidden className="absolute inset-y-8 right-0 z-10 w-1.5 cursor-ew-resize hover:bg-accent/30" />
+          <div onPointerDown={(e) => dragFrom(e, "bottom")} aria-hidden className="absolute inset-x-8 bottom-0 z-10 h-1.5 cursor-ns-resize hover:bg-accent/30" />
+          <div
+            onPointerDown={(e) => dragFrom(e, "size")}
+            title="Drag to resize"
+            aria-hidden
+            className="absolute bottom-0 right-0 z-10 flex h-6 w-6 cursor-nwse-resize items-end justify-end p-1 text-faint hover:text-accent"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+              <path d="M11 4L4 11M11 8L8 11" />
+            </svg>
+          </div>
+        </>
+      ) : (
+        // Phone: drag the top edge to make the sheet taller or shorter.
+        <div
+          onPointerDown={(e) => {
+            const startY = e.clientY;
+            const startH = sheetH ?? window.innerHeight * 0.55;
+            const onMove = (ev: PointerEvent) =>
+              setSheetH(Math.min(window.innerHeight - 40, Math.max(window.innerHeight * 0.25, startH - (ev.clientY - startY))));
+            const onUp = () => {
+              window.removeEventListener("pointermove", onMove);
+              window.removeEventListener("pointerup", onUp);
+            };
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+          }}
+          aria-label="Drag to resize"
+          className="absolute inset-x-0 top-0 z-10 flex h-3 touch-none justify-center"
+        >
+          <span className="mt-1 h-1 w-10 rounded-full bg-line" />
+        </div>
+      )}
+      <header
+        onPointerDown={wide ? (e) => dragFrom(e, "move") : undefined}
+        title={wide ? "Drag to move" : undefined}
+        className={`flex shrink-0 items-center gap-1 border-b border-line bg-raised py-1 pl-3 pr-1 ${wide ? "cursor-move select-none" : "pt-3"}`}
+      >
         <span className="text-accent">
           <XrefIcon />
         </span>

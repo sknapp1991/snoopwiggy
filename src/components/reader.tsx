@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { alignVerses, type AlignedRow } from "@/lib/align";
 import { adjacentChapters, catalog, chapterTitle, findBook, getVersion, readHref, type BookRef } from "@/lib/catalog";
 import { chapterKey, loadChapter, useChapters, type ChapterEntry } from "@/lib/chapter-store";
@@ -23,6 +23,7 @@ import { useColumnDrag } from "./use-column-drag";
 import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
+import { VerseQuick, type QuickAt } from "./verse-quick";
 import { StudiedBox } from "./studied-box";
 import { FloatingNav } from "./floating-nav";
 import { HighlightModeBar } from "./highlight-mode";
@@ -70,6 +71,8 @@ export function ReaderView() {
   const allLoaded = entries.length > 0 && entries.every((e) => e.status === "ok");
   const content = useRef<HTMLDivElement>(null);
   const [hint, setHint] = useState<SwipeHint>(null);
+  const [quick, setQuick] = useState<QuickAt | null>(null);
+  const closeQuick = useCallback(() => setQuick(null), []);
   const [idle, setIdle] = useState(true);
   const chapterId = `${ref.work}/${ref.book}/${ref.chapter}`;
   useScrollIdle(scroller, (isIdle) => {
@@ -100,10 +103,9 @@ export function ReaderView() {
 
   const actions: VerseActions = {
     marks,
-    boxTap(v) {
-      const r = { ...ref, verse: v };
-      const on = toggle("favorite", r);
-      toast(on ? `★ ${verseReference(r)} added to favorites` : `Removed ${verseReference(r)} from favorites`);
+    boxTap(v, rect) {
+      if (!rect) return openVerseMenu({ ...ref, verse: v });
+      setQuick((q) => (q?.verse === v ? null : { verse: v, rect: { left: rect.left, top: rect.top, bottom: rect.bottom, width: rect.width } }));
     },
     boxDouble(v) {
       const r = { ...ref, verse: v };
@@ -313,6 +315,13 @@ export function ReaderView() {
     <HighlightModeBar raised={ra.speech.open} />
     <XrefPanel bookRef={ref} versions={versions} raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
+    <VerseQuick
+      at={quick}
+      bookRef={ref}
+      onClose={closeQuick}
+      onListen={ra.supported ? (v) => ra.readFrom(v) : undefined}
+      onMenu={(v, focus) => openVerseMenu({ ...ref, verse: v, focus })}
+    />
     </>
   );
 }
