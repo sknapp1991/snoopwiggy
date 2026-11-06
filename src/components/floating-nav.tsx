@@ -38,6 +38,31 @@ export function FloatingNav({ prev, next, versions, faint, raised }: { prev?: Bo
     }, 0);
     return () => clearTimeout(t);
   }, []);
+  // While the read-aloud bar is open, sit just above it, following it as it grows and shrinks.
+  const [barTop, setBarTop] = useState<number | null>(null);
+  useEffect(() => {
+    if (!raised) return;
+    let cur: HTMLElement | null = null;
+    let ro: ResizeObserver | null = null;
+    const find = () => {
+      const el = document.querySelector<HTMLElement>('[role="region"][aria-label="Read aloud"]');
+      if (el === cur) return;
+      cur = el;
+      ro?.disconnect();
+      ro = null;
+      if (!el) return setBarTop(null);
+      ro = new ResizeObserver(() => setBarTop(el.getBoundingClientRect().top));
+      ro.observe(el);
+    };
+    const mo = new MutationObserver(find);
+    mo.observe(document.body, { childList: true, subtree: true });
+    const t = setTimeout(find, 0);
+    return () => {
+      clearTimeout(t);
+      mo.disconnect();
+      ro?.disconnect();
+    };
+  }, [raised]);
   // Keep it on screen when the window changes size.
   useEffect(() => {
     const onResize = () => setPos((p) => (p ? { ...p } : p));
@@ -53,7 +78,8 @@ export function FloatingNav({ prev, next, versions, faint, raised }: { prev?: Bo
   // The default spot moves up above the read-aloud bar while it's open.
   const y = !custom && raised ? 0.78 : pos.y;
   const left = Math.min(W - pw - 6, Math.max(6, pos.x * W - pw / 2));
-  const top = Math.min(H - ph - 6, Math.max(6, y * H - ph / 2));
+  const above = !custom && raised && barTop != null ? barTop - ph - 10 : null;
+  const top = Math.min(H - ph - 6, Math.max(6, above ?? y * H - ph / 2));
 
   const startDrag = (e: React.PointerEvent) => {
     e.preventDefault();

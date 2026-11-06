@@ -79,6 +79,9 @@ dialog.sheet[open] {
 @keyframes sheet-in {
   from { transform: translateY(100%); }
 }
+@keyframes chip-in {
+  from { transform: translateY(16px) scale(0.92); opacity: 0; }
+}
 
 .reader-text {
   font-family: var(--font-serif);

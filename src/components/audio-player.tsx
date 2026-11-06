@@ -5,7 +5,7 @@
  * Spanish, listen in Spanish), speed and voice; optionally keep going into the next chapter.
  */
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import type { AlignedRow } from "@/lib/align";
 import { chapterTitle, findBook, readHref, type BookRef } from "@/lib/catalog";
 import type { ChapterEntry } from "@/lib/chapter-store";
@@ -759,6 +759,8 @@ export function ListenButton({ ra }: { ra: ReadAlong }) {
 
 const RATES = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
 
+type Swipe = { x: number; y: number; lastY: number; lastT: number; v: number; lock: "v" | "h" | null; more: boolean; picker: boolean };
+
 /** Player bar along the bottom of the reader. */
 export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
   const { more, tucked } = useBarUi();
@@ -766,7 +768,20 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
   const setTucked = (v: boolean) => barUi.set({ tucked: v });
   const [picker, setPicker] = useState(false);
   const [range, setRange] = useState<{ from: string; to: string } | null>(null);
-  const swipeStart = useRef<{ x: number; y: number; done: boolean } | null>(null);
+  const swipeStart = useRef<Swipe | null>(null);
+  const justSwiped = useRef(false);
+  // Finger offset while swiping up/down (null when not swiping): the options open and close with it.
+  const [drag, setDrag] = useState<number | null>(null);
+  const [leaving, setLeaving] = useState(false); // sliding down into the chip
+  const [moreH, setMoreH] = useState(0); // natural height of the options
+  const moreObs = useRef<ResizeObserver | null>(null);
+  const measureMore = useCallback((el: HTMLDivElement | null) => {
+    moreObs.current?.disconnect();
+    if (!el) return;
+    const ro = new ResizeObserver(() => setMoreH(el.offsetHeight));
+    ro.observe(el);
+    moreObs.current = ro;
+  }, []);
   const settings = useSettings();
   const touch = useMediaQuery("(pointer: coarse)", false);
   const { speech, version, lang } = ra;
@@ -780,42 +795,90 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
 
   const btn = "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink disabled:opacity-40";
 
-  // Swipe down: first closes the settings / verse picker, then tucks the bar away into a small chip
-  // (reading carries on); tap the chip to bring the bar back.
+  // The options can take up to ~60% of the screen; past that they scroll inside.
+  const cap = typeof window === "undefined" ? 480 : Math.round(window.innerHeight * 0.6);
+  const openH = Math.min(moreH, cap);
+  const scrolls = moreH > cap;
+  const tuck = () => {
+    setMore(false);
+    setPicker(false);
+    setLeaving(true);
+    setTimeout(() => {
+      setTucked(true);
+      setLeaving(false);
+    }, 220);
+  };
+
+  // Swiping follows the finger: up opens the options (same as the gear), down closes them, then
+  // slides the bar away into a small chip (reading carries on); tap the chip to bring the bar back.
+  // On release it settles open or closed by how far and how fast the swipe went.
   const swipe = {
     onPointerDown: (e: React.PointerEvent) => {
-      if ((e.target as HTMLElement).closest("select, input, textarea")) return;
-      swipeStart.current = { y: e.clientY, x: e.clientX, done: false };
+      const t = e.target as HTMLElement;
+      if (t.closest("select, input, textarea")) return;
+      if (scrolls && more && t.closest("[data-options]")) return; // that area scrolls instead
+      swipeStart.current = { x: e.clientX, y: e.clientY, lastY: e.clientY, lastT: e.timeStamp, v: 0, lock: null, more, picker };
     },
     onPointerMove: (e: React.PointerEvent) => {
       const s = swipeStart.current;
-      if (!s || s.done) return;
+      if (!s) return;
+      const dx = e.clientX - s.x;
       const dy = e.clientY - s.y;
-      // Swipe up: open the options (same as ⚙).
-      if (dy < -45 && -dy > Math.abs(e.clientX - s.x) * 1.5) {
-        s.done = true;
-        if (!more) setMore(true);
+      if (!s.lock) {
+        if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx) * 1.2) {
+          s.lock = "v";
+          try {
+            (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+          } catch {}
+        } else if (Math.abs(dx) > 8) s.lock = "h";
+      }
+      if (s.lock !== "v") return;
+      const dt = e.timeStamp - s.lastT;
+      if (dt > 0) s.v = s.v * 0.4 + ((e.clientY - s.lastY) / dt) * 0.6;
+      s.lastY = e.clientY;
+      s.lastT = e.timeStamp;
+      setDrag(dy);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const s = swipeStart.current;
+      swipeStart.current = null;
+      if (!s || s.lock !== "v") return;
+      justSwiped.current = true;
+      setTimeout(() => (justSwiped.current = false), 0);
+      const dy = e.clientY - s.y;
+      const fast = Math.abs(s.v) > 0.45;
+      setDrag(null);
+      if (s.picker && !s.more) {
+        if (dy > 30) setPicker(false);
         return;
       }
-      if (dy > 45 && dy > Math.abs(e.clientX - s.x) * 1.5) {
-        s.done = true;
-        if (more || picker) {
-          setMore(false);
-          setPicker(false);
-        } else setTucked(true);
+      if (s.more) {
+        if (dy > 0 && (dy > openH * 0.3 || (fast && s.v > 0))) setMore(false);
+        return;
       }
-    },
-    onPointerUp: () => {
-      swipeStart.current = null;
+      if (dy < 0 && (-dy > Math.min(60, openH * 0.3) || (fast && s.v < 0))) setMore(true);
+      else if (dy > 0 && (dy > 60 || (fast && s.v > 0))) tuck();
     },
     onPointerCancel: () => {
       swipeStart.current = null;
+      setDrag(null);
+    },
+    // A swipe that ends on a button shouldn't also press it.
+    onClickCapture: (e: React.MouseEvent) => {
+      if (justSwiped.current) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     },
   };
+  // Where the sheet is right now: the options' height, and how far the bar has slid down.
+  const shownH = drag == null ? (more ? openH : 0) : Math.max(0, Math.min(openH, (more ? openH : 0) - drag));
+  const slide = leaving ? "translateY(110%)" : drag != null && drag > 0 && !more && !picker ? `translateY(${drag}px)` : undefined;
+  const ease = drag == null ? "260ms cubic-bezier(0.2, 0.8, 0.2, 1)" : "0ms";
 
   if (tucked)
     return (
-      <div data-no-swipe className="absolute bottom-3 right-3 z-20 mb-[env(safe-area-inset-bottom)] flex items-center gap-1 rounded-full border border-line bg-panel/90 p-1 shadow-lg backdrop-blur">
+      <div data-no-swipe className="absolute bottom-3 right-3 z-20 mb-[env(safe-area-inset-bottom)] flex animate-[chip-in_200ms_ease-out] items-center gap-1 rounded-full border border-line bg-panel/90 p-1 shadow-lg backdrop-blur">
         <button type="button" onClick={ra.toggle} aria-label={playing ? "Pause" : "Play"} className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-ink">
           {playing ? <PauseIcon width={18} height={18} /> : <PlayIcon width={18} height={18} />}
         </button>
@@ -845,12 +908,13 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
       aria-label="Read aloud"
       data-no-swipe
       {...swipe}
-      className="absolute inset-x-0 bottom-0 z-20 touch-pan-x border-t border-line bg-panel/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur"
+      style={{ transform: slide, transition: `transform ${ease}` }}
+      className="absolute inset-x-0 bottom-0 z-20 animate-[sheet-in_220ms_ease-out] touch-none border-t border-line bg-panel/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur"
     >
       {/* Grab handle: swipe down to close the options, then to tuck the bar away */}
       <button
         type="button"
-        onClick={() => (more || picker ? (setMore(false), setPicker(false)) : setTucked(true))}
+        onClick={() => (more || picker ? (setMore(false), setPicker(false)) : tuck())}
         aria-label={more || picker ? "Close the options" : "Tuck the player away (it keeps reading)"}
         className="mx-auto flex h-4 w-16 items-center justify-center"
       >
@@ -902,11 +966,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         <button
           type="button"
           className={btn}
-          onClick={() => {
-            setMore(false);
-            setPicker(false);
-            setTucked(true);
-          }}
+          onClick={tuck}
           aria-label="Minimize the player (it keeps playing)"
           title="Minimize (keeps playing)"
         >
@@ -1028,8 +1088,14 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
         </p>
       )}
 
-      {more && (
-        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-2 px-4 pb-3 pt-1 text-sm sm:grid-cols-2">
+      <div
+        data-options
+        inert={!more}
+        aria-hidden={!more}
+        style={{ height: shownH, transition: `height ${ease}` }}
+        className={more && drag == null && scrolls ? "touch-pan-y overflow-y-auto overscroll-contain" : "overflow-hidden"}
+      >
+        <div ref={measureMore} className="mx-auto grid max-w-3xl grid-cols-1 gap-2 px-4 pb-3 pt-1 text-sm sm:grid-cols-2">
           {ra.mixed ? (
             <MixVoices ra={ra} />
           ) : (
@@ -1115,7 +1181,7 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
             )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
