@@ -222,11 +222,18 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
 - **Zhuangzi** (Herbert A. Giles, 1889; Gutenberg #59709, his notes left out), **Navaho Legends**
   (Washington Matthews, 1897; #60165) and **Myths and Legends of the Sioux** (Marie L. McLaughlin,
   1916; #341) — public domain.
+- **The Gathas of Zarathustra** (Yasna 28–34, 43–51, 53; L. H. Mills, SBE 31, 1887, public domain) — read
+  page by page from sacred-texts in a browser with the owner's go-ahead (Nov 2026; there is no zipped
+  file); only the translation, without Mills' commentary or footnotes (data/raw/gathas).
+- **Mencius** — the complete Chinese (Gutenberg #24178) and James Legge's English for Book I, Part I only
+  (#10056, the only part on Gutenberg).
+- **Popol Vuh** — Lewis Spence's 1908 retelling of its four books (#56550), public domain; not a full
+  translation, and his commentary is left out.
 
-Not yet included (shown as "coming soon"): the Avesta (avesta.org forbids copying; sacred-texts has no
-zipped file for SBE 4/23/31; Wikisource's transcription is incomplete), Mencius in English (only Book I
-is on Gutenberg), Nihongi and the Popol Vuh (no clean public-domain translation found yet), and English
-tafsir (permission asked of the Royal Aal al-Bayt Institute by email on 2026-11-06).
+Not yet included (shown as "coming soon"): the rest of the Avesta (avesta.org forbids copying;
+sacred-texts has no zipped file for SBE 4/23/31), the Great Learning and Doctrine of the Mean, the
+Nihongi (only rough scans of Aston's 1896 translation), and English tafsir (permission asked of the
+Royal Aal al-Bayt Institute by email on 2026-11-06).
 
 ## Recorded audio (audio v2)
 

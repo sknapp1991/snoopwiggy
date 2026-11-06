@@ -48,6 +48,9 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   zhuangzi: ["giles"],
   navaho: ["matthews"],
   sioux: ["mclaughlin"],
+  gathas: ["mills"],
+  mencius: ["legge-men", "mencius-zh"],
+  "popol-vuh": ["spence"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

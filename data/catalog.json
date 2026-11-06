@@ -36,7 +36,10 @@
     { "id": "yoruba", "name": "Yoruba Legends", "versification": "yoruba" },
     { "id": "zhuangzi", "name": "Zhuangzi", "versification": "zhuangzi" },
     { "id": "navaho", "name": "Navaho Legends", "versification": "navaho" },
-    { "id": "sioux", "name": "Myths and Legends of the Sioux", "versification": "sioux" }
+    { "id": "sioux", "name": "Myths and Legends of the Sioux", "versification": "sioux" },
+    { "id": "gathas", "name": "The Gathas of Zarathustra", "versification": "gathas" },
+    { "id": "mencius", "name": "Mencius", "versification": "mencius" },
+    { "id": "popol-vuh", "name": "Popol Vuh", "versification": "popol-vuh" }
   ],
   "versions": [
     {
@@ -822,6 +825,74 @@
       "licensed": false,
       "versification": "sioux",
       "licenseNote": "Told by a writer of Dakota and European descent who grew up among the Sioux."
+    },
+    {
+      "id": "mills",
+      "work": "gathas",
+      "abbr": "Mills",
+      "name": "The Gathas (L. H. Mills, Sacred Books of the East 31)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1887,
+      "translator": "Lawrence Heyworth Mills",
+      "license": "Public Domain",
+      "licenseNote": "Mills' commentary and footnotes are left out; his words in parentheses are his own additions to make the sense clear.",
+      "attribution": "Translated by L. H. Mills (Sacred Books of the East 31, 1887), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/zor/sbe31/index.htm",
+      "licensed": false,
+      "versification": "gathas"
+    },
+    {
+      "id": "legge-men",
+      "work": "mencius",
+      "abbr": "Legge",
+      "name": "The Sayings of Mencius (James Legge)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1895,
+      "translator": "James Legge",
+      "license": "Public Domain",
+      "licenseNote": "Only Book I, Part I is available in English so far; the Chinese beside it is complete.",
+      "attribution": "Translated by James Legge, public domain; Project Gutenberg #10056.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/10056",
+      "licensed": false,
+      "versification": "mencius"
+    },
+    {
+      "id": "mencius-zh",
+      "work": "mencius",
+      "abbr": "Chinese",
+      "name": "孟子 (Classical Chinese)",
+      "language": "zh",
+      "kind": "native",
+      "dir": "ltr",
+      "year": -300,
+      "yearNote": "c. 4th century BCE",
+      "translator": "Mencius and his disciples (original text)",
+      "license": "Public Domain",
+      "attribution": "Chinese text, Project Gutenberg #24178, public domain.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/24178",
+      "licensed": false,
+      "versification": "mencius"
+    },
+    {
+      "id": "spence",
+      "work": "popol-vuh",
+      "abbr": "Spence",
+      "name": "The Popol Vuh (Lewis Spence's retelling)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1908,
+      "translator": "Lewis Spence",
+      "license": "Public Domain",
+      "licenseNote": "A condensed retelling of the four books, not a full translation; Spence's commentary is left out.",
+      "attribution": "Lewis Spence, The Popol Vuh (1908), public domain; Project Gutenberg #56550.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/56550",
+      "licensed": false,
+      "versification": "popol-vuh"
     }
   ],
   "religions": [
@@ -1407,7 +1478,7 @@
           "id": "avesta",
           "name": "Avesta",
           "items": [
-            { "id": "gathas", "name": "Gathas of Zarathustra (Yasna)", "status": "coming-soon" }
+            { "id": "gathas", "name": "The Gathas of Zarathustra", "work": "gathas", "chapters": 17, "chapterName": "Gathas" }
           ]
         }
       ]
@@ -1456,7 +1527,7 @@
           "name": "The Four Books",
           "items": [
             { "id": "analects", "name": "Analects", "work": "analects", "chapters": 20, "chapterName": "Analects, Book" },
-            { "id": "mencius", "name": "Mencius", "status": "coming-soon" },
+            { "id": "mencius", "name": "Mencius", "work": "mencius", "chapters": 14, "chapterName": "Mencius" },
             { "id": "great-learning", "name": "The Great Learning", "status": "coming-soon" },
             { "id": "mean", "name": "Doctrine of the Mean", "status": "coming-soon" }
           ]
@@ -1513,7 +1584,7 @@
           "id": "mesoamerican",
           "name": "Mesoamerican",
           "items": [
-            { "id": "popol-vuh", "name": "Popol Vuh (K'iche' Maya)", "status": "coming-soon" }
+            { "id": "popol-vuh", "name": "Popol Vuh (K'iche' Maya)", "work": "popol-vuh", "chapters": 4, "chapterName": "Popol Vuh" }
           ]
         }
       ]

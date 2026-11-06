@@ -382,7 +382,7 @@ const titleCase = (s: string) =>
   s
     .toLowerCase()
     .replace(/(^|[\s(-])([a-z])/g, (_, a: string, b: string) => a + b.toUpperCase())
-    .replace(/(?<=\S\s)(The|And|Of|A|An|In|To|On|At|By|With|From)\b/g, (w) => w.toLowerCase());
+    .replace(/(?<=\S\s)(The|And|Of|A|An|In|To|On|At|By|With|From|For|As|Upon|Or|Is)\b/g, (w) => w.toLowerCase());
 
 /** Kojiki — Basil Hall Chamberlain (1882; 1919 reprint), sacred-texts kj.txt.gz. 180 sections. */
 async function kojiki() {
@@ -643,7 +643,98 @@ async function sioux() {
   report("sioux", stories.length, total);
 }
 
+/**
+ * The Gathas of Zarathustra (Yasna 28–34, 43–51, 53) — L. H. Mills (SBE 31, 1887). Read page by page
+ * from sacred-texts in a browser (only the "Translation" part of each page; Mills' commentary and
+ * footnotes left out) into data/raw/gathas/gathas-mills.json. Yasna 43 has no verse "11" in that
+ * transcription (its text runs on in verse 10).
+ */
+async function gathas() {
+  const { readFile } = await import("node:fs/promises");
+  const src = JSON.parse(await readFile(path.join(ROOT, "data", "raw", "gathas", "gathas-mills.json"), "utf8")) as {
+    gathas: { yasna: number; title: string; verses: Verse[] }[];
+  };
+  await resetVersion("gathas", "mills");
+  let total = 0;
+  for (const [k, g] of src.gathas.entries()) {
+    // Mills' heading, first sentence only ("SALVATION IS ANNOUNCED AS UNIVERSAL FOR BELIEVERS. REFLECTIONS …").
+    // Two pages lack a usable heading: they get the Gatha's traditional name.
+    const NAMED: Record<number, string> = { 47: "The Spenta Mainyu Gatha", 53: "The Vahishtoishti Gatha" };
+    const head = NAMED[g.yasna] ?? g.title.split(/\.\s/)[0].replace(/\.$/, "").replace(/\s*\(.*$/, "");
+    const title = `Yasna ${g.yasna}${head ? ` — ${titleCase(head)}` : ""}`;
+    const note = g.yasna === 43 ? "Verse 11 has no number in this transcription; its text is part of verse 10." : undefined;
+    await writeChapter("gathas", "mills", "gathas", k + 1, g.verses.map((v) => ({ v: v.v, t: v.t })), note, title);
+    total += g.verses.length;
+  }
+  report("gathas", src.gathas.length, total);
+}
+
+/**
+ * Mencius: the Chinese text, all seven books in two parts each (14 chapters; sections as verses),
+ * Gutenberg #24178; and James Legge's English for Book I, Part I — the only part on Gutenberg
+ * (#10056, "The Sayings of Mencius").
+ */
+async function mencius() {
+  const zh = gutenbergBody(await cached("mencius", "pg24178.txt", GUT(24178)));
+  const parts = sections(zh, /^卷之[一二三四五六七八九十]+(.+)$/m);
+  await resetVersion("mencius", "mencius-zh");
+  let vz = 0;
+  for (const [k, p] of parts.entries()) {
+    const secs = p.body.split(/^\s*([一二三四五六七八九十廿卅]+)\s*$/m);
+    const verses: Verse[] = [];
+    for (let i = 1; i < secs.length; i += 2) {
+      const t = secs[i + 1].replace(/\s+/g, "").trim();
+      if (t) verses.push({ v: String(cn(secs[i])), t });
+    }
+    await writeChapter("mencius", "mencius-zh", "mencius", k + 1, sequential(verses), undefined, p.head.trim());
+    vz += verses.length;
+  }
+  report("mencius zh", parts.length, vz);
+
+  const en = gutenbergBody(await cached("mencius", "pg10056.txt", GUT(10056)));
+  const a = en.indexOf("\nPart I\n", en.indexOf("THE SAYINGS OF MENCIUS\n\n\n\nBOOK I"));
+  const b = en.indexOf("[NOTE: _Books II, III, and IV are omitted_]", a);
+  // Legge's seven chapters of Book I, Part I each open with a new scene.
+  const NEW = /^(When )?Mencius(,)? (went to see|another day)|^King Hwuy of L.ang said|^The king Seuen/;
+  const verses: Verse[] = [];
+  for (const p of paras(en.slice(a + 8, b))) {
+    const t = p.replace(/\s?\[\d+\]/g, "");
+    if (!verses.length || NEW.test(t)) verses.push({ v: String(verses.length + 1), t });
+    else verses[verses.length - 1].t += ` ${t}`;
+  }
+  await resetVersion("mencius", "legge-men");
+  await writeChapter("mencius", "legge-men", "mencius", 1, verses, "Book I, Part I. The rest of Legge's translation is not yet available here.");
+  for (let ch = 2; ch <= parts.length; ch++)
+    await writeChapter("mencius", "legge-men", "mencius", ch, [], "Only Book I, Part I is available in English so far; the Chinese is complete.");
+  report("mencius en", 1, verses.length);
+}
+
+/**
+ * Popol Vuh — Lewis Spence's retelling of its four books (1908), Gutenberg #56550. Only the retelling;
+ * his commentary (from "Cosmogony of the Popol Vuh" on) is left out. Not a full translation.
+ */
+async function popolVuh() {
+  const txt = gutenbergBody(await cached("popol-vuh", "pg56550.txt", GUT(56550)));
+  const end = txt.search(/^COSMOGONY OF THE "POPOL VUH"\s*$/m);
+  const books = sections(txt.slice(0, end), /^THE (FIRST|SECOND|THIRD|FOURTH) BOOK\s*$/m);
+  const ORD2 = ["FIRST", "SECOND", "THIRD", "FOURTH"];
+  await resetVersion("popol-vuh", "spence");
+  let total = 0;
+  for (const b of books) {
+    const list = paras(b.body)
+      .filter((t) => !/^[A-Z][A-Z ,.'"-]+$/.test(t)) // the "Myth of Vukub-Cakix" sub-heading
+      .map((t, i) => ({ v: String(i + 1), t: t.replace(/\s?\[\d+\]/g, "") }));
+    const n = ORD2.indexOf(b.head) + 1;
+    await writeChapter("popol-vuh", "spence", "popol-vuh", n, list, undefined, `The ${titleCase(b.head)} Book`);
+    total += list.length;
+  }
+  report("popol-vuh", books.length, total);
+}
+
 const ALL: Record<string, () => Promise<unknown>> = {
+  popolVuh,
+  gathas,
+  mencius,
   zhuangzi,
   navaho,
   sioux,

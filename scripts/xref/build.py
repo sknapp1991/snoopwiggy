@@ -38,6 +38,7 @@ EMBED = {
     "hume-dialogues": "hume", "age-of-reason": "paine",
     "kojiki": "chamberlain", "jaina": "jacobi", "chinese-myths": "werner", "yoruba": "ogumefu",
     "zhuangzi": "giles", "navaho": "matthews", "sioux": "mclaughlin",
+    "gathas": "mills", "popol-vuh": "spence",
 }
 SAME_K = 6  # results kept from the verse's own religion
 OTHER_K = 3  # … and from each other religion
