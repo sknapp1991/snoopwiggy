@@ -1,6 +1,6 @@
 """Verses Across business card: front + back, print-ready PNG + PDF.
 
-  python scripts/make-business-card.py "%USERPROFILE%\Desktop\Verses Across business cards"
+  python scripts/make-business-card.py "~/Desktop/Verses Across business cards"
 
 Upload <out>/vistaprint-front.png and vistaprint-back.png to Vistaprint (standard 3.5 x 2 in, matte).
 Sizes: Vistaprint upload size 3.61 x 2.11 in (bleed included, safe area 3.36 x 1.86) and a generic
