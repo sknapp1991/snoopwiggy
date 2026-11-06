@@ -73,7 +73,11 @@
     { "id": "vendidad", "name": "Vendidad", "versification": "vendidad" },
     { "id": "yashts", "name": "Yashts", "versification": "yashts" },
     { "id": "yasna", "name": "Yasna", "versification": "yasna" },
-    { "id": "popol-vuh-full", "name": "Popol Vuh (full text)", "versification": "popol-vuh-full" }
+    { "id": "popol-vuh-full", "name": "Popol Vuh (full text)", "versification": "popol-vuh-full" },
+    { "id": "kant-groundwork", "name": "Groundwork of the Metaphysics of Morals", "versification": "kant-groundwork" },
+    { "id": "kant-practical", "name": "Critique of Practical Reason", "versification": "kant-practical" },
+    { "id": "kant-pure", "name": "Critique of Pure Reason", "versification": "kant-pure" },
+    { "id": "perpetual-peace", "name": "Perpetual Peace", "versification": "perpetual-peace" }
   ],
   "versions": [
     {
@@ -1555,6 +1559,70 @@
       "sourceUrl": "https://archive.org/details/lashistoriasdelo00sche",
       "licensed": false,
       "versification": "popol-vuh-full"
+    },
+    {
+      "id": "abbott-gw",
+      "work": "kant-groundwork",
+      "abbr": "Abbott",
+      "name": "Kant, Fundamental Principles of the Metaphysic of Morals (T. K. Abbott)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1873,
+      "translator": "Thomas Kingsmill Abbott",
+      "license": "Public Domain",
+      "attribution": "Kant, Fundamental Principles of the Metaphysic of Morals (T. K. Abbott), public domain; Project Gutenberg #5682; footnotes left out.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/5682",
+      "licensed": false,
+      "versification": "kant-groundwork"
+    },
+    {
+      "id": "abbott-cpr",
+      "work": "kant-practical",
+      "abbr": "Abbott",
+      "name": "Kant, The Critique of Practical Reason (T. K. Abbott)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1873,
+      "translator": "Thomas Kingsmill Abbott",
+      "license": "Public Domain",
+      "attribution": "Kant, The Critique of Practical Reason (T. K. Abbott), public domain; Project Gutenberg #5683; footnotes left out.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/5683",
+      "licensed": false,
+      "versification": "kant-practical"
+    },
+    {
+      "id": "meiklejohn",
+      "work": "kant-pure",
+      "abbr": "Meiklejohn",
+      "name": "Kant, The Critique of Pure Reason (J. M. D. Meiklejohn)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1855,
+      "translator": "J. M. D. Meiklejohn",
+      "license": "Public Domain",
+      "attribution": "Kant, The Critique of Pure Reason (J. M. D. Meiklejohn), public domain; Project Gutenberg #4280; footnotes left out.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/4280",
+      "licensed": false,
+      "versification": "kant-pure"
+    },
+    {
+      "id": "campbell-smith",
+      "work": "perpetual-peace",
+      "abbr": "Smith",
+      "name": "Kant, Perpetual Peace (M. Campbell Smith)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1903,
+      "translator": "Mary Campbell Smith",
+      "license": "Public Domain",
+      "attribution": "Kant, Perpetual Peace (M. Campbell Smith), public domain; Project Gutenberg #50922; footnotes left out.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/50922",
+      "licensed": false,
+      "versification": "perpetual-peace"
     }
   ],
   "religions": [
@@ -2305,7 +2373,10 @@
           { "id": "montaigne-3", "name": "Montaigne, Essays III", "work": "montaigne", "chapters": 13, "chapterName": "Montaigne III" },
           { "id": "pensees", "name": "Pascal, Pensées", "work": "pensees", "chapters": 14, "chapterName": "Pensées" },
           { "id": "discourse-method", "name": "Descartes, Discourse on Method", "work": "discourse-method", "chapters": 6, "chapterName": "Discourse" },
-          { "id": "spinoza-ethics", "name": "Spinoza, Ethics", "work": "spinoza-ethics", "chapters": 5, "chapterName": "Spinoza" }
+          { "id": "spinoza-ethics", "name": "Spinoza, Ethics", "work": "spinoza-ethics", "chapters": 5, "chapterName": "Spinoza" },
+          { "id": "kant-groundwork", "name": "Kant, Groundwork of the Metaphysics of Morals", "work": "kant-groundwork", "chapters": 4, "chapterName": "Groundwork" },
+          { "id": "kant-pure", "name": "Kant, Critique of Pure Reason", "work": "kant-pure", "chapters": 50, "chapterName": "Critique of Pure Reason" },
+          { "id": "kant-practical", "name": "Kant, Critique of Practical Reason", "work": "kant-practical", "chapters": 21, "chapterName": "Critique of Practical Reason" }
         ] },
         { "id": "modern-philosophy", "name": "Modern Philosophy", "items": [
           { "id": "emerson-essays", "name": "Emerson, Essays: First Series", "work": "emerson-essays", "chapters": 12, "chapterName": "Emerson" },
@@ -2318,7 +2389,8 @@
         { "id": "political-philosophy", "name": "Political Philosophy", "items": [
           { "id": "leviathan", "name": "Hobbes, Leviathan", "work": "leviathan", "chapters": 46, "chapterName": "Leviathan" },
           { "id": "second-treatise", "name": "Locke, Second Treatise of Government", "work": "second-treatise", "chapters": 19, "chapterName": "Second Treatise" },
-          { "id": "social-contract", "name": "Rousseau, The Social Contract", "work": "social-contract", "chapters": 48, "chapterName": "Social Contract" }
+          { "id": "social-contract", "name": "Rousseau, The Social Contract", "work": "social-contract", "chapters": 48, "chapterName": "Social Contract" },
+          { "id": "perpetual-peace", "name": "Kant, Perpetual Peace", "work": "perpetual-peace", "chapters": 8, "chapterName": "Perpetual Peace" }
         ] }
       ]
     },

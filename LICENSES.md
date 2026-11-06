@@ -250,7 +250,9 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   Essays (Cotton), Pascal's Pensées (Trotter), Descartes' Discourse on Method (Veitch), Spinoza's
   Ethics (Elwes), Emerson's Essays, Mill's On Liberty, Schopenhauer's Wisdom of Life (Saunders),
   Nietzsche's Zarathustra (Common) and Beyond Good and Evil (Zimmern), Russell's Problems of Philosophy;
-  Hobbes' Leviathan, Locke's Second Treatise of Government, Rousseau's Social Contract (Cole).
+  Hobbes' Leviathan, Locke's Second Treatise of Government, Rousseau's Social Contract (Cole);
+  Kant's Groundwork and Critique of Practical Reason (Abbott), Critique of Pure Reason (Meiklejohn) and
+  Perpetual Peace (M. Campbell Smith) — Kant's own footnotes are left out too.
   Christian classics — Augustine's Confessions (Pusey), Thomas à Kempis' Imitation of Christ (Benham).
   Psychology — William James' Varieties of Religious Experience, Freud's General Introduction to
   Psychoanalysis (Hall), Jung's Psychology of the Unconscious (Hinkle), Le Bon's The Crowd.
