@@ -9,6 +9,8 @@ import { useEffect, useState, useSyncExternalStore, type RefObject } from "react
 import { getVersion } from "@/lib/catalog";
 import { updateSettings, useSettings } from "@/lib/settings";
 import { APPROX, lexicon, loadTags, spans, TAGGED, type LexEntry } from "@/lib/strongs";
+import { getLanguage } from "@/lib/languages";
+import { hasWords, lookupWord, type WordCard } from "@/lib/words";
 import { CloseIcon } from "./icons";
 import { openSearch } from "./search-panel";
 
@@ -161,11 +163,79 @@ function useLex(nums: string[] | null) {
   return got?.key === key ? got.list : null;
 }
 
+/** The dictionary card for the picked word (undefined while loading, null = none). */
+function useDictionary(pick: WordPick | null) {
+  const [got, setGot] = useState<{ pick: WordPick; card: WordCard | null } | null>(null);
+  const lang = pick ? (getVersion(pick.version)?.language ?? "en") : "";
+  useEffect(() => {
+    if (!pick) return;
+    let live = true;
+    lookupWord(pick.word, lang).then((card) => live && setGot({ pick, card }));
+    return () => {
+      live = false;
+    };
+  }, [pick, lang]);
+  return got && got.pick === pick ? got.card : undefined;
+}
+
+const LEVEL_NOTE: Record<string, string> = {
+  A1: "beginner",
+  A2: "elementary",
+  B1: "intermediate",
+  B2: "upper intermediate",
+  C1: "advanced",
+  C2: "proficient",
+  archaic: "old-fashioned English",
+};
+
+function Dictionary({ card, lang }: { card: WordCard; lang: string }) {
+  const e = card.entry;
+  const tr = Object.entries(e.tr ?? {}).filter(([l]) => l !== lang);
+  return (
+    <div className="mt-2 space-y-1.5 text-sm">
+      {card.archaic && (
+        <p className="rounded-md bg-accent-soft px-2 py-1 text-accent">
+          Archaic for <strong>“{card.archaic}”</strong>
+        </p>
+      )}
+      <p className="flex flex-wrap items-baseline gap-x-2">
+        <span className="font-semibold">{card.head}</span>
+        {e.pos.length > 0 && <span className="italic text-muted">{e.pos.join(", ")}</span>}
+        {e.level && (
+          <span className="rounded-full border border-line px-2 text-xs text-muted" title={e.est ? "Estimated from how common the word is" : "From a learner word list (CEFR)"}>
+            {e.level === "archaic" ? "archaic" : `${e.level} · ${LEVEL_NOTE[e.level] ?? ""}${e.est ? " (est.)" : ""}`}
+          </span>
+        )}
+      </p>
+      {e.old && <p className="text-xs text-muted">In older texts: {e.old}</p>}
+      {e.defs.length > 0 && (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          {e.defs.map((d, i) => (
+            <li key={i}>{d}</li>
+          ))}
+        </ol>
+      )}
+      {e.syn && e.syn.length > 0 && <p className="text-xs text-muted">Similar: {e.syn.slice(0, 8).join(", ")}</p>}
+      {e.of && e.of.length > 0 && <p className="text-xs text-muted">Also a form of: {e.of.join(", ")}</p>}
+      {tr.length > 0 && (
+        <div className="flex flex-wrap gap-1 pt-0.5">
+          {tr.slice(0, 10).map(([l, words]) => (
+            <span key={l} className="rounded-full bg-raised px-2 py-0.5 text-xs" lang={l}>
+              <span className="text-faint">{getLanguage(l).name}:</span> {words.slice(0, 2).join(", ")}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function WordStudy({ scroller, rowsKey, versions, raised }: { scroller: RefObject<HTMLDivElement | null>; rowsKey: unknown; versions: string[]; raised: boolean }) {
   const { wordMode } = useSettings();
   const s = useWordState();
   useMatchHighlights(scroller, rowsKey);
   const lex = useLex(s?.nums ?? null);
+  const dict = useDictionary(s?.pick ?? null);
   useEffect(() => {
     if (!wordMode) closeWordStudy();
   }, [wordMode]);
@@ -209,7 +279,16 @@ export function WordStudy({ scroller, rowsKey, versions, raised }: { scroller: R
         </button>
       </div>
 
-      {bible && nums === null && <p className="mt-2 text-sm text-muted">Looking up…</p>}
+      {dict && <Dictionary card={dict} lang={getVersion(pick.version)?.language ?? "en"} />}
+      {dict === null && !bible && (
+        <p className="mt-2 text-sm text-muted">
+          {hasWords(getVersion(pick.version)?.language ?? "")
+            ? "No dictionary entry for this word (often a name)."
+            : `No dictionary for ${getLanguage(getVersion(pick.version)?.language ?? "en").name} yet.`}
+        </p>
+      )}
+      {bible && nums !== null && (nums.length > 0 || dict) && <p className="mt-3 border-t border-line pt-2 text-xs font-semibold uppercase tracking-wide text-faint">Original word</p>}
+      {(bible ? nums === null : dict === undefined) && <p className="mt-2 text-sm text-muted">Looking up…</p>}
       {bible && nums && nums.length === 0 && (
         <p className="mt-2 text-sm text-muted">
           {TAGGED.has(pick.version)

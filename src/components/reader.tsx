@@ -25,6 +25,7 @@ import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions 
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
 import { VerseQuick, type QuickAt } from "./verse-quick";
 import { pickWord, WordStudy } from "./word-study";
+import { LevelLegend, useLevelMarks } from "./reading-levels";
 import { RedLetterCtx, useRedLetter, VerseWords } from "./red-letter";
 import { StudiedBox } from "./studied-box";
 import { FloatingNav } from "./floating-nav";
@@ -101,6 +102,7 @@ export function ReaderView() {
   });
   const ra = useReadAlong({ cols, rows, bookRef: ref, next, versions, scroller, setVersions });
   const red = useRedLetter(ref.work, ref.book, versions);
+  useLevelMarks(scroller, `${rows.length}|${red.size}|${ref.book}|${ref.chapter}|${versions.join(",")}`);
   const study = useStudy();
   const marks = useMemo(() => chapterMarks(study.items, ref.work, ref.book, ref.chapter), [study.items, ref.work, ref.book, ref.chapter]);
 
@@ -321,6 +323,7 @@ export function ReaderView() {
     <HighlightModeBar raised={ra.speech.open} />
     <XrefPanel bookRef={ref} versions={versions} raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
+    <LevelLegend raised={ra.speech.open} />
     <WordStudy scroller={scroller} rowsKey={rows} versions={versions} raised={ra.speech.open} />
     <VerseQuick
       at={quick}

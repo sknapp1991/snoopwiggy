@@ -16,6 +16,7 @@ import { SaveOffline } from "./offline";
 import { ListenTopButton } from "./audio-player";
 import { RedLetterToggle } from "./red-letter";
 import { WordModeToggle } from "./word-study";
+import { LevelMarksControl } from "./reading-levels";
 
 export function TopBar({
   onOpenLibrary,
@@ -102,6 +103,7 @@ export function TopBar({
         <TopPopover label="Display options" title="Saved setups, widths, swiping, offline" icon={<SlidersIcon />}>
           <SavedSetups />
           <RedLetterToggle />
+          <LevelMarksControl />
           <WidthControl />
           <ChapterSwipeControl />
           <SaveOffline />
@@ -153,6 +155,7 @@ export function TopBar({
             <WordModeToggle full />
             <XrefToggle full />
             <RedLetterToggle />
+            <LevelMarksControl />
             <WidthControl />
             <LanguageColors />
             <ChapterSwipeControl />

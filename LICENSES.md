@@ -291,3 +291,20 @@ Royal Aal al-Bayt Institute by email on 2026-11-06).
 - **Strong's Hebrew and Greek dictionaries** — James Strong (1890/1894), public domain; XML editions by
   Ulrik Petersen and David Troidl, via github.com/openscriptures/strongs.
 - **Red-letter words of Jesus** — the \wj markup in eBible.org's USFM editions of the KJV, WEB and Louis Segond.
+
+## Word lookup and reading levels
+
+The word data in `data/words/` and `public/words/` is shared under **CC BY-SA 4.0**, because it is derived
+from the share-alike sources below.
+
+- **Definitions, word forms and translations** — from Wiktionary (https://www.wiktionary.org), extracted
+  with wiktextract / kaikki.org (Ylonen 2022), CC BY-SA 4.0. Changed: trimmed to words in our texts, shortened.
+- **Synonyms** — Open English WordNet (https://en-word.net), CC BY 4.0, based on Princeton WordNet 3.0
+  (WordNet License, © Princeton University).
+- **English reading levels A1–B2** — The CEFR-J Wordlist Version 1.5. Compiled by Yukio Tono, Tokyo
+  University of Foreign Studies. Retrieved from http://www.cefr-j.org/download.html (free for research and
+  commercial use with citation).
+- **English reading levels C1–C2** — Octanove Vocabulary Profile C1/C2 1.0, CC BY-SA 4.0.
+- **Estimated levels** (other words and other languages) — from word frequencies in wordfreq
+  (https://github.com/rspeer/wordfreq, Robyn Speer), CC BY-SA 4.0.
+- **Archaic English forms and older meanings** — written for Verses Across.

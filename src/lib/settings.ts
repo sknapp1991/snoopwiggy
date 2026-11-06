@@ -69,6 +69,8 @@ export type Settings = {
   highlightMode: boolean;
   /** Words mode: tap a word for its meaning and the same word across versions. */
   wordMode: boolean;
+  /** Reading levels: underline words from this CEFR level up ("archaic" = only old-fashioned words). */
+  levelMarks: "off" | "B1" | "B2" | "C1" | "archaic";
   highlightColor: string;
   /** Cross-reference mode: tapping a verse shows similar verses. Where to look: its own religion and/or others (religion ids). */
   xrefMode: boolean;
@@ -137,6 +139,7 @@ const DEFAULTS: Settings = {
   ttsVerseStop: false,
   highlightMode: false,
   wordMode: false,
+  levelMarks: "off",
   highlightColor: "yellow",
   xrefMode: false,
   panelWidth: null,
@@ -186,6 +189,7 @@ function read(): Settings {
       ttsVerseStop: p.ttsVerseStop === true,
       highlightMode: p.highlightMode === true,
       wordMode: (p as { wordMode?: unknown }).wordMode === true,
+      levelMarks: (["B1", "B2", "C1", "archaic"] as const).find((x) => x === (p as { levelMarks?: unknown }).levelMarks) ?? "off",
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       xrefMode: (p as { xrefMode?: unknown }).xrefMode === true,
       panelWidth: typeof (p as { panelWidth?: unknown }).panelWidth === "number" ? (p as { panelWidth: number }).panelWidth : null,
