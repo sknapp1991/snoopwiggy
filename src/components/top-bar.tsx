@@ -15,6 +15,7 @@ import { AiButton } from "./ai-window";
 import { SaveOffline } from "./offline";
 import { ListenTopButton } from "./audio-player";
 import { RedLetterToggle } from "./red-letter";
+import { WordModeToggle } from "./word-study";
 
 export function TopBar({
   onOpenLibrary,
@@ -93,6 +94,7 @@ export function TopBar({
       {/* Desktop controls */}
       <div className="hidden items-center gap-2 desk:flex">
         <HighlightModeToggle />
+        <WordModeToggle />
         <VersionsPopover count={versions.length} />
         <TopPopover label="Colours" title="Text and language colours" icon={<PaletteIcon />}>
           <LanguageColors />
@@ -148,6 +150,7 @@ export function TopBar({
               </div>
             </div>
             <HighlightModeToggle full />
+            <WordModeToggle full />
             <XrefToggle full />
             <RedLetterToggle />
             <WidthControl />

@@ -67,6 +67,8 @@ export type Settings = {
   ttsVerseStop: boolean;
   /** Highlight mode: tapping a verse paints it with this colour. */
   highlightMode: boolean;
+  /** Words mode: tap a word for its meaning and the same word across versions. */
+  wordMode: boolean;
   highlightColor: string;
   /** Cross-reference mode: tapping a verse shows similar verses. Where to look: its own religion and/or others (religion ids). */
   xrefMode: boolean;
@@ -134,6 +136,7 @@ const DEFAULTS: Settings = {
   ttsMixOrder: "verse",
   ttsVerseStop: false,
   highlightMode: false,
+  wordMode: false,
   highlightColor: "yellow",
   xrefMode: false,
   panelWidth: null,
@@ -182,6 +185,7 @@ function read(): Settings {
       ttsMixOrder: p.ttsMixOrder === "chapter" ? "chapter" : "verse",
       ttsVerseStop: p.ttsVerseStop === true,
       highlightMode: p.highlightMode === true,
+      wordMode: (p as { wordMode?: unknown }).wordMode === true,
       highlightColor: typeof p.highlightColor === "string" ? p.highlightColor : "yellow",
       xrefMode: (p as { xrefMode?: unknown }).xrefMode === true,
       panelWidth: typeof (p as { panelWidth?: unknown }).panelWidth === "number" ? (p as { panelWidth: number }).panelWidth : null,

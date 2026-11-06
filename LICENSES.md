@@ -278,3 +278,16 @@ Royal Aal al-Bayt Institute by email on 2026-11-06).
   published, credit: "SIWIS French Speech Synthesis Database (CC BY 4.0)".
 - The model's helper libraries (misaki, spaCy en_core_web_sm, and espeak-ng for non-English languages)
   run only on the generating PC and are not shipped.
+
+## Word study data
+
+- **Strong's number tags** (Words mode: the same Hebrew / Greek word across versions) — from the eBible.org
+  USFM editions of the same public-domain texts (KJV, WEB, ASV, BBE, Reina-Valera 1909, Louis Segond,
+  Luther 1912, Greek TR). The WEB, ASV, BBE and Louis Segond tags are machine alignments and can be off by a word.
+- **Hebrew Old Testament tags** — original work of the Open Scriptures Hebrew Bible, available at
+  https://github.com/openscriptures/morphhb, used under CC BY 4.0
+  (https://creativecommons.org/licenses/by/4.0/). Changed: slashes removed, qere omitted, verses re-keyed
+  to our versification.
+- **Strong's Hebrew and Greek dictionaries** — James Strong (1890/1894), public domain; XML editions by
+  Ulrik Petersen and David Troidl, via github.com/openscriptures/strongs.
+- **Red-letter words of Jesus** — the \wj markup in eBible.org's USFM editions of the KJV, WEB and Louis Segond.

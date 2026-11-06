@@ -60,6 +60,13 @@ next-env.d.ts
 # generated search index (scripts/build-search.ts)
 /public/search/
 
+# generated word-card data (scripts/build-words.ts)
+/public/words/
+
+# generated Strong's tags + lexicon shards (scripts/build-strongs.ts, from data/strongs + data/lexicon)
+/public/strongs/
+/public/lexicon/
+
 # local text-to-speech toolchain (audio v2 generation)
 /.venv-tts/
 /.cache-audio/

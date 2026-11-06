@@ -14,7 +14,7 @@ export function HighlightModeToggle({ full = false }: { full?: boolean }) {
     <button
       type="button"
       aria-pressed={highlightMode}
-      onClick={() => updateSettings({ highlightMode: !highlightMode })}
+      onClick={() => updateSettings(highlightMode ? { highlightMode: false } : { highlightMode: true, wordMode: false })}
       title="Highlight mode: tap verses to highlight them"
       aria-label="Highlight mode"
       className={`relative flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-sm ${full ? "w-full" : "w-11 px-0"} ${

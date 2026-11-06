@@ -19,7 +19,7 @@ export type VerseActions = {
   boxTap: (v: string, rect: DOMRect | undefined) => void;
   boxDouble: (v: string) => void;
   openMenu: (v: string, focus?: "note") => void;
-  textTap: (v: string, version: string) => void;
+  textTap: (v: string, version: string, p: TapPoint) => void;
   textDouble: (p: TapPoint, version: string) => void;
 };
 
@@ -86,7 +86,7 @@ export function VerseText({
 }) {
   const a = useVerse();
   const g = useTapGestures({
-    onTap: () => a.textTap(v, version),
+    onTap: (p) => a.textTap(v, version, p),
     onDouble: (p) => a.textDouble(p, version),
   });
   return (

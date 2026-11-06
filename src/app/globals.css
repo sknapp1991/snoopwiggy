@@ -153,6 +153,19 @@ dialog.sheet[open] {
   background-color: var(--accent);
   color: var(--accent-ink);
 }
+/* Words mode: the same Hebrew / Greek word across versions */
+::highlight(word-match) {
+  background-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+::highlight(word-match-soft) {
+  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.word-match-swatch {
+  background-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.word-match-soft-swatch {
+  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+}
 .toast {
   animation: toast-in 180ms ease-out;
 }

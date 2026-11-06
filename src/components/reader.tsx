@@ -24,6 +24,7 @@ import { openSearch } from "./search-panel";
 import { NoteLine, VerseBox, VerseCtx, VerseText, type Marks, type VerseActions } from "./verse-parts";
 import { VerseMenu, verseReference, type VerseText as VerseTextInfo } from "./verse-menu";
 import { VerseQuick, type QuickAt } from "./verse-quick";
+import { pickWord, WordStudy } from "./word-study";
 import { RedLetterCtx, useRedLetter, VerseWords } from "./red-letter";
 import { StudiedBox } from "./studied-box";
 import { FloatingNav } from "./floating-nav";
@@ -115,9 +116,10 @@ export function ReaderView() {
       toast(on ? `${verseReference(r)} saved to Study later` : `Removed ${verseReference(r)} from Study later`);
     },
     openMenu: (v, focus) => openVerseMenu({ ...ref, verse: v, focus }),
-    textTap(v, version) {
+    textTap(v, version, p) {
       const r = { ...ref, verse: v };
-      if (settings.xrefMode) showXref(r);
+      if (settings.wordMode) void pickWord(p.x, p.y, { work: ref.work, book: ref.book, chapter: ref.chapter, v, version });
+      else if (settings.xrefMode) showXref(r);
       else if (settings.highlightMode) {
         const cur = getItem("highlight", r)?.color;
         setHighlight(r, cur === settings.highlightColor ? null : settings.highlightColor);
@@ -319,6 +321,7 @@ export function ReaderView() {
     <HighlightModeBar raised={ra.speech.open} />
     <XrefPanel bookRef={ref} versions={versions} raised={ra.speech.open} />
     <VerseMenu textsFor={textsFor} versions={versions} onReadFrom={ra.supported ? ra.readFrom : undefined} />
+    <WordStudy scroller={scroller} rowsKey={rows} versions={versions} raised={ra.speech.open} />
     <VerseQuick
       at={quick}
       bookRef={ref}

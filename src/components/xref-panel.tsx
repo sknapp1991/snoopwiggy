@@ -70,7 +70,7 @@ export function XrefToggle({ full = false }: { full?: boolean }) {
     <button
       type="button"
       aria-pressed={xrefMode}
-      onClick={() => updateSettings({ xrefMode: !xrefMode })}
+      onClick={() => updateSettings(xrefMode ? { xrefMode: false } : { xrefMode: true, wordMode: false })}
       title="Cross references: tap a verse to see similar verses (in this religion or others)"
       aria-label="Cross references"
       className={`flex h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm desk:border ${full ? "w-full border" : "w-11 px-0"} ${
