@@ -14,7 +14,7 @@
  */
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { cached, gutenbergBody, resetVersion, ROOT, roman, writeChapter, type Verse } from "./lib/world";
+import { cached, decodeEntities, gutenbergBody, numbered, resetVersion, ROOT, roman, sacredTextsGz, writeChapter, type Verse } from "./lib/world";
 
 const GUT = (id: number) => `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`;
 const report = (name: string, chapters: number, verses: number) => console.log(`${name.padEnd(12)} ${chapters} chapters, ${verses} verses`);
@@ -375,7 +375,182 @@ async function paine() {
   report("paine", 2, total);
 }
 
+// ── From sacred-texts zipped texts (downloaded by hand into data/raw) ────────────────────────────────
+
+/** Title-case an ALL-CAPS heading ("THE ISLAND OF ONOGORO" → "The Island of Onogoro"). */
+const titleCase = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/(^|[\s(-])([a-z])/g, (_, a: string, b: string) => a + b.toUpperCase())
+    .replace(/(?<=\S\s)(The|And|Of|A|An|In|To|On|At|By|With|From)\b/g, (w) => w.toLowerCase());
+
+/** Kojiki — Basil Hall Chamberlain (1882; 1919 reprint), sacred-texts kj.txt.gz. 180 sections. */
+async function kojiki() {
+  const p = await sacredTextsGz("kojiki", "kj.txt.gz");
+  const end = p.findIndex((x) => /^APPENDIX I\.?$/.test(x));
+  const body = p.slice(0, end > 0 ? end : undefined);
+  // Headings vary: "[SECT. XIII.--…]", "[SECT XV.--…]", "SECT. XXVII.--…", "[SECT. CXX: …", one with no number.
+  const HEAD = /^\[?SECT\.?\s*([IVXLC]*)\s*[.:]?\s*[-—]*\s*([A-Z][^a-z]*?)\.?\]?$/;
+  const heads = body.map((x, i) => [i, x] as const).filter(([, x]) => HEAD.test(x));
+  await resetVersion("kojiki", "chamberlain");
+  let total = 0;
+  let prev = 0;
+  for (const [k, [at, head]] of heads.entries()) {
+    const m = HEAD.exec(head)!;
+    // Misprinted numbers in the source ("XLI" for LXI, a second "CXXXV"): a number that goes backwards is the next one.
+    const printed = m[1] ? roman(m[1]) : 0;
+    const ch = printed > prev ? printed : prev + 1;
+    // A section whose heading the source lost (XVIII): its text stays with the one before.
+    for (let gap = prev + 1; gap < ch; gap++)
+      await writeChapter("kojiki", "chamberlain", "kojiki", gap, [], `Section ${gap} has no heading in the source text; it is included in Section ${gap - 1}.`);
+    const title = titleCase(m[2]);
+    const paras = body.slice(at + 1, k + 1 < heads.length ? heads[k + 1][0] : undefined).filter((x) => !/^\[?VOL(UME)?\.? [IVX]+/i.test(x));
+    await writeChapter("kojiki", "chamberlain", "kojiki", ch, numbered(paras), undefined, title);
+    total += paras.length;
+    prev = ch;
+  }
+  report("kojiki", prev, total);
+}
+
+const ORD = ["FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH", "ELEVENTH", "TWELFTH", "THIRTEENTH", "FOURTEENTH", "FIFTEENTH", "SIXTEENTH", "SEVENTEENTH", "EIGHTEENTH", "NINETEENTH"];
+const TENS: Record<string, number> = { TWENTY: 20, THIRTY: 30, TWENTIETH: 20, THIRTIETH: 30 };
+/** "TWENTY-FIRST" → 21, "SIXTH" → 6 */
+function ordinal(w: string) {
+  const [a, b] = w.split("-");
+  if (b) return (TENS[a] ?? 0) + ORD.indexOf(b) + 1;
+  return TENS[a] ?? ORD.indexOf(a) + 1;
+}
+/** Lines that only structure the Jaina books ("FIRST LESSON.", "CALLED", "SECOND BOOK", "PAGE"). */
+const jainaStructure = (x: string) =>
+  /^(\(?CALLED\)?|PAGE|([A-Z-]+ )?(LESSON|CHAPTER|PART|BOOK)\.?|[A-Z-]+ (LESSON|CHAPTER|PART|BOOK)[.,]?)$/.test(x);
+
+/**
+ * The lectures of a Jaina book as chapters: from paragraph `from` to `to`, a new chapter at each
+ * "FIRST LECTURE," line; its title is the next heading line ("KNOWLEDGE OF THE WEAPON.").
+ */
+async function jainaBook(p: string[], from: number, to: number, work: string, book: string, prefix = (n: number) => `Lecture ${n}`) {
+  const LECT = /^([A-Z]+(?:-[A-Z]+)?) LECTURE[,.]?$/;
+  let ch = 0;
+  let total = 0;
+  let verses: string[] = [];
+  let title = "";
+  const flush = async () => {
+    if (!ch) return;
+    await writeChapter(work, "jacobi", book, ch, numbered(verses), undefined, title);
+    total += verses.length;
+  };
+  for (let i = from; i < to; i++) {
+    const x = p[i];
+    if (LECT.test(x)) {
+      await flush();
+      ch++;
+      verses = [];
+      let j = i + 1;
+      while (j < to && /^\(?CALLED\)?$/.test(p[j])) j++;
+      // Some lectures have a name line ("KNOWLEDGE OF THE WEAPON."), others go straight into the text.
+      const named = j < to && p[j].length < 90 && !/[a-z]/.test(p[j]);
+      title = named ? `${prefix(ch)}: ${titleCase(p[j].replace(/\.$/, ""))}` : prefix(ch);
+      i = named ? j : j - 1;
+      continue;
+    }
+    if (!ch || jainaStructure(x) || (x.length < 70 && !/[a-z]/.test(x))) continue; // headings
+    verses.push(x);
+  }
+  await flush();
+  report(`${work}/${book}`, ch, total);
+}
+
+/** Jaina Sutras — Hermann Jacobi (SBE 22, 1884 and SBE 45, 1895), sacred-texts sbe22/sbe45.txt.gz. */
+async function jaina() {
+  await resetVersion("jaina", "jacobi");
+  const a = await sacredTextsGz("jaina", "sbe22.txt.gz");
+  // Body starts at the second "AKARANGA SUTRA." (the first is in the contents).
+  const akStart = a.indexOf("AKARANGA SUTRA.", a.indexOf("AKARANGA SUTRA.") + 1);
+  const kalpa = a.indexOf("KALPA SUTRA.", akStart);
+  // Book I has 8 lectures (the 7th is lost; Jacobi numbers on), Book II 16.
+  await jainaBook(a, akStart, kalpa, "jaina", "akaranga", (n) => (n <= 8 ? `Book I, Lecture ${n}` : `Book II, Lecture ${n - 8}`));
+  // Kalpa Sutra: its three parts.
+  const parts = ["LIVES OF THE GINAS", "LIST OF THE STHAVIRAS", "RULES FOR YATIS"].map((h) => a.findIndex((x, i) => i > kalpa && x.startsWith(h)));
+  const end = a.findIndex((x, i) => i > parts[2] && /^INDEX/.test(x));
+  let total = 0;
+  for (const [k, at] of parts.entries()) {
+    const list = a.slice(at + 1, parts[k + 1] ?? (end > 0 ? end : undefined)).filter((x) => !jainaStructure(x) && !/^[A-Z .,'-]+$/.test(x));
+    await writeChapter("jaina", "jacobi", "kalpa", k + 1, numbered(list), undefined, titleCase(a[at].replace(/\.$/, "")));
+    total += list.length;
+  }
+  report("jaina/kalpa", 3, total);
+
+  const b = await sacredTextsGz("jaina", "sbe45.txt.gz");
+  const utStart = b.indexOf("UTTARADHYAYANA.", b.indexOf("UTTARADHYAYANA.") + 1);
+  const suStart = b.indexOf("SUTRAKRITANGA.", b.indexOf("SUTRAKRITANGA.") + 1);
+  const suEnd = b.findIndex((x, i) => i > suStart && /^INDEX OF NAMES/.test(x));
+  await jainaBook(b, utStart, suStart, "jaina", "uttaradhyayana");
+  // Sutrakritanga: Book I has 16 lectures, Book II 7 — numbered straight through, labelled by book.
+  await jainaBook(b, suStart, suEnd > 0 ? suEnd : b.length, "jaina", "sutrakritanga", (n) => (n <= 16 ? `Book I, Lecture ${n}` : `Book II, Lecture ${n - 16}`));
+  void ordinal;
+}
+
+/** Myths and Legends of China — E. T. C. Werner (1922), sacred-texts mlc.txt.gz. 16 chapters. */
+async function chineseMyths() {
+  const p = await sacredTextsGz("chinese-myths", "mlc.txt.gz");
+  const end = p.findIndex((x) => /^Glossary & Index$/.test(x));
+  const heads = p.map((x, i) => [i, x] as const).filter(([i, x]) => /^Chapter [IVXL]+$/.test(x) && (end < 0 || i < end));
+  await resetVersion("chinese-myths", "werner");
+  let total = 0;
+  for (const [k, [at, head]] of heads.entries()) {
+    const title = p[at + 1];
+    const stop = k + 1 < heads.length ? heads[k + 1][0] : end > 0 ? end : p.length;
+    // Sub-headings ("Racial Origin") and picture captions are short lines without a full stop.
+    const list = p.slice(at + 2, stop).filter((x) => !(x.length < 70 && !/[.!?:;"')]$/.test(x)));
+    await writeChapter("chinese-myths", "werner", "mlc", roman(head.slice(8)), numbered(list), undefined, title);
+    total += list.length;
+  }
+  report("chinese-myths", heads.length, total);
+}
+
+/** Yoruba Legends — M. I. Ogumefu (1929, public domain), Global Grey's EPUB edition. 40 tales. */
+async function yoruba() {
+  const { inflateRawSync } = await import("node:zlib");
+  const { readFile } = await import("node:fs/promises");
+  const buf = await readFile(path.join(ROOT, "data", "raw", "yoruba", "yoruba-legends.epub"));
+  // A tiny ZIP reader: walk the local file headers and inflate each HTML file.
+  const files = new Map<string, string>();
+  for (let at = 0; buf.readUInt32LE(at) === 0x04034b50; ) {
+    const method = buf.readUInt16LE(at + 8);
+    const size = buf.readUInt32LE(at + 18);
+    const nameLen = buf.readUInt16LE(at + 26);
+    const extra = buf.readUInt16LE(at + 28);
+    const name = buf.toString("utf8", at + 30, at + 30 + nameLen);
+    const data = buf.subarray(at + 30 + nameLen + extra, at + 30 + nameLen + extra + size);
+    if (name.endsWith(".html")) files.set(name, (method === 8 ? inflateRawSync(data) : data).toString("utf8"));
+    at += 30 + nameLen + extra + size;
+  }
+  await resetVersion("yoruba", "ogumefu");
+  let ch = 0;
+  let total = 0;
+  for (const [name, html] of [...files].sort((a, b) => a[0].localeCompare(b[0]))) {
+    // Headings carry markup for the underdotted letters ("Ol<span>o</span>fin"): tags out, letters kept.
+    const h1 = /<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    const h = h1 ? /^(\d+)\.\s*(.*)$/.exec(h1) : null;
+    if (!h) continue; // title page, contents, preface
+    const paras = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
+      .map((m) => decodeEntities(m[1].replace(/<\/?span[^>]*>/gi, "").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim())
+      .filter(Boolean)
+      // The book opens each tale with a word in capitals ("THE ancient King…").
+      .map((t, i) => (i === 0 ? t.replace(/^([A-Z])([A-Z]+)\b/, (_, a: string, b: string) => a + b.toLowerCase()) : t));
+    ch = Number(h[1]);
+    await writeChapter("yoruba", "ogumefu", "yl", ch, numbered(paras), undefined, decodeEntities(h[2]).trim());
+    total += paras.length;
+    void name;
+  }
+  report("yoruba", ch, total);
+}
+
 const ALL: Record<string, () => Promise<unknown>> = {
+  kojiki,
+  yoruba,
+  chineseMyths,
+  jaina,
   ttc,
   analects,
   australian,

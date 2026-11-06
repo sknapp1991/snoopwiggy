@@ -29,7 +29,11 @@
     { "id": "meditations", "name": "Meditations", "versification": "meditations" },
     { "id": "enchiridion", "name": "The Enchiridion", "versification": "enchiridion" },
     { "id": "hume-dialogues", "name": "Dialogues Concerning Natural Religion", "versification": "hume-dialogues" },
-    { "id": "age-of-reason", "name": "The Age of Reason", "versification": "age-of-reason" }
+    { "id": "age-of-reason", "name": "The Age of Reason", "versification": "age-of-reason" },
+    { "id": "kojiki", "name": "Kojiki", "versification": "kojiki" },
+    { "id": "jaina", "name": "Jaina Sutras", "versification": "jaina" },
+    { "id": "chinese-myths", "name": "Myths and Legends of China", "versification": "chinese-myths" },
+    { "id": "yoruba", "name": "Yoruba Legends", "versification": "yoruba" }
   ],
   "versions": [
     {
@@ -697,6 +701,73 @@
       "sourceUrl": "https://www.gutenberg.org/ebooks/3743",
       "licensed": false,
       "versification": "age-of-reason"
+    },
+    {
+      "id": "chamberlain",
+      "work": "kojiki",
+      "abbr": "Chamberlain",
+      "name": "The Kojiki (Basil Hall Chamberlain)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1882,
+      "translator": "Basil Hall Chamberlain",
+      "license": "Public Domain",
+      "attribution": "Translated by Basil Hall Chamberlain (1882; 1919 reprint), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/shi/kj/index.htm",
+      "licensed": false,
+      "versification": "kojiki",
+      "licenseNote": "Chamberlain's footnotes are left out. As in his edition, a few passages are given in Latin."
+    },
+    {
+      "id": "jacobi",
+      "work": "jaina",
+      "abbr": "Jacobi",
+      "name": "Jaina Sutras (Hermann Jacobi, SBE 22 & 45)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1884,
+      "translator": "Hermann Jacobi",
+      "license": "Public Domain",
+      "attribution": "Translated by Hermann Jacobi (Sacred Books of the East 22, 1884, and 45, 1895), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/jai/index.htm",
+      "licensed": false,
+      "versification": "jaina",
+      "licenseNote": "Jacobi's footnotes are left out."
+    },
+    {
+      "id": "werner",
+      "work": "chinese-myths",
+      "abbr": "Werner",
+      "name": "Myths and Legends of China (E. T. C. Werner)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1922,
+      "translator": "Edward T. C. Werner",
+      "license": "Public Domain",
+      "attribution": "E. T. C. Werner (1922), public domain; transcription from the Internet Sacred Text Archive.",
+      "sourceUrl": "https://sacred-texts.com/cfu/mlc/index.htm",
+      "licensed": false,
+      "versification": "chinese-myths",
+      "licenseNote": "Written by a British consul in 1922, so the framing is his; the sub-headings and illustrations are left out."
+    },
+    {
+      "id": "ogumefu",
+      "work": "yoruba",
+      "abbr": "Ogumefu",
+      "name": "Yoruba Legends (M. I. Ogumefu)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1929,
+      "translator": "M. I. Ogumefu",
+      "license": "Public Domain",
+      "attribution": "M. I. Ogumefu (1929), public domain; text from the Global Grey ebook edition.",
+      "sourceUrl": "https://www.globalgreyebooks.com/yoruba-legends-ebook.html",
+      "licensed": false,
+      "versification": "yoruba"
     }
   ],
   "religions": [
@@ -1266,8 +1337,10 @@
           "id": "agamas",
           "name": "Agamas",
           "items": [
-            { "id": "akaranga", "name": "Akaranga Sutra", "status": "coming-soon" },
-            { "id": "kalpa", "name": "Kalpa Sutra", "status": "coming-soon" }
+            { "id": "akaranga", "name": "Akaranga Sutra", "work": "jaina", "chapters": 24, "chapterName": "Akaranga Sutra" },
+            { "id": "kalpa", "name": "Kalpa Sutra", "work": "jaina", "chapters": 3, "chapterName": "Kalpa Sutra" },
+            { "id": "uttaradhyayana", "name": "Uttaradhyayana Sutra", "work": "jaina", "chapters": 36, "chapterName": "Uttaradhyayana" },
+            { "id": "sutrakritanga", "name": "Sutrakritanga", "work": "jaina", "chapters": 23, "chapterName": "Sutrakritanga" }
           ]
         }
       ]
@@ -1315,7 +1388,7 @@
           "id": "folk",
           "name": "Chinese Folk Religion",
           "items": [
-            { "id": "chinese-myths", "name": "Myths and Legends of China", "status": "coming-soon" }
+            { "id": "mlc", "name": "Myths and Legends of China", "work": "chinese-myths", "chapters": 16, "chapterName": "Myths and Legends of China" }
           ]
         }
       ]
@@ -1344,7 +1417,7 @@
           "id": "chronicles",
           "name": "Ancient Chronicles",
           "items": [
-            { "id": "kojiki", "name": "Kojiki", "status": "coming-soon" },
+            { "id": "kojiki", "name": "Kojiki", "work": "kojiki", "chapters": 180, "chapterName": "Kojiki, Section" },
             { "id": "nihongi", "name": "Nihongi", "status": "coming-soon" }
           ]
         }
@@ -1358,7 +1431,7 @@
           "id": "yoruba",
           "name": "Yoruba (Ifá, Orisha)",
           "items": [
-            { "id": "yoruba-legends", "name": "Yoruba Legends", "status": "coming-soon" }
+            { "id": "yl", "name": "Yoruba Legends", "work": "yoruba", "chapters": 40, "chapterName": "Yoruba Legend" }
           ]
         }
       ]

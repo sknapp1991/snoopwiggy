@@ -41,6 +41,10 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   enchiridion: ["higginson"],
   "hume-dialogues": ["hume"],
   "age-of-reason": ["paine"],
+  kojiki: ["chamberlain"],
+  jaina: ["jacobi"],
+  "chinese-myths": ["werner"],
+  yoruba: ["ogumefu"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

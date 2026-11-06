@@ -214,9 +214,16 @@ Sacred-texts.com now turns automated downloads away, so these come from Project 
   (#785), Marcus Aurelius tr. Long (#15877), Epictetus tr. Higginson (#45109), Hume's *Dialogues* (#4583),
   Paine's *Age of Reason* (#3743).
 
-Not yet included (shown as "coming soon"): the Kojiki, Jaina Agamas, Avesta and Yoruba Legends (public
-domain, but only on sacred-texts.com), and English tafsir (the Royal Aal al-Bayt translations are "all
-rights reserved").
+- **Kojiki** (Shinto, Chamberlain 1882), **Jaina Sutras** (Jacobi, SBE 22 and 45: Akaranga, Kalpa,
+  Uttaradhyayana, Sutrakritanga) and **Myths and Legends of China** (Werner 1922) — public domain,
+  from sacred-texts' zipped text files (kj/sbe22/sbe45/mlc.txt.gz), downloaded by hand in a browser
+  (the site turns scripts away) into data/raw. Footnotes and page numbers are left out.
+- **Yoruba Legends** (M. I. Ogumefu, 1929, public domain) — from Global Grey's free EPUB edition.
+
+Not yet included (shown as "coming soon"): the Avesta (avesta.org forbids copying; sacred-texts has no
+zipped file for SBE 31), Zhuangzi, Mencius, Nihongi, Native American and Mayan texts, and English
+tafsir (the Royal Aal al-Bayt translations are "all rights reserved"; permission was asked for by email
+on 2026-11-06).
 
 ## Recorded audio (audio v2)
 

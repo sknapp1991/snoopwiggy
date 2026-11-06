@@ -104,3 +104,33 @@ export function roman(s: string) {
   }
   return n;
 }
+
+/**
+ * A sacred-texts.com zipped text (data/raw/<dir>/<file>.txt.gz, downloaded by hand: the site turns
+ * scripts away) → its paragraphs, one per line: no page headers, page numbers, footnotes or note marks;
+ * paragraphs split across a page break are joined again.
+ */
+export async function sacredTextsGz(dir: string, file: string) {
+  const { gunzipSync } = await import("node:zlib");
+  const raw = gunzipSync(await readFile(path.join(ROOT, "data", "raw", dir, file))).toString("latin1");
+  // The files are Windows-1252; latin1 keeps the bytes, then the few curly quotes are mapped.
+  const text = raw.replace(/\r\n/g, "\n").replace(/[\x91\x92]/g, "'").replace(/[\x93\x94]/g, '"').replace(/\x97/g, "—").replace(/\x96/g, "–");
+  const out: string[] = [];
+  for (let line of text.split("\n")) {
+    line = line.trim();
+    if (!line) continue;
+    if (/at sacred-texts\.com\s*$/.test(line) || /^\[p\. [\divxlcdm]+\]$/i.test(line) || /^Click to enlarge/i.test(line)) continue;
+    if (line === "Footnotes" || line.startsWith("^")) continue; // footnotes ("^19:1 …")
+    const cont = line.startsWith("[paragraph continues]");
+    line = line
+      .replace(/^\[paragraph continues\]\s*/, "")
+      .replace(/\s?\[\*\d+\]/g, "") // note marks
+      .replace(/\s?\[\d+\](?=[\s,.;:!?'")]|$)/g, "") // the original edition's page numbers
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!line) continue;
+    if (cont && out.length) out[out.length - 1] += ` ${line}`;
+    else out.push(line);
+  }
+  return out;
+}
