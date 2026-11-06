@@ -31,7 +31,7 @@ export function TopBar({
   const { panel } = useUi();
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-panel px-2 pt-[env(safe-area-inset-top)] md:px-4">
+    <header className="flex h-14 shrink-0 items-center gap-0 border-b min-[440px]:gap-2 border-line bg-panel px-2 pt-[env(safe-area-inset-top)] md:px-4">
       <button
         type="button"
         onClick={onOpenLibrary}
@@ -53,9 +53,11 @@ export function TopBar({
       <button
         type="button"
         onClick={onOpenLibrary}
+        aria-label="Open library"
         className="min-w-0 flex-1 truncate text-left font-serif text-lg font-semibold desk:hidden"
       >
-        {entry ? chapterTitle(entry, ref.chapter) : "Verses Across"}
+        {/* Narrow phones: the icons need the room (the chapter title is right below in the page). */}
+        <span className="hidden min-[440px]:inline">{entry ? chapterTitle(entry, ref.chapter) : "Verses Across"}</span>
       </button>
 
       <div className="hidden flex-1 desk:block" />
