@@ -89,6 +89,8 @@ export function AiWindow() {
   const showing = chat.ready && chat.open && !chat.minimized;
   /** Choosing what to share: the answers ticked (by message index), or null when not sharing. */
   const [picked, setPicked] = useState<Set<number> | null>(null);
+  /** Phone: the sheet's height after dragging its top edge (px); null = default 72% of the screen. */
+  const [sheetH, setSheetH] = useState<number | null>(null);
   const { versions: versionsHere } = useReaderState();
 
   // Position: saved box (kept inside the screen) or a default at the right.
@@ -144,8 +146,11 @@ export function AiWindow() {
     void sendAi(q);
   };
 
-  /** Shared pointer-drag for moving (title bar) and resizing (corner). */
-  const dragFrom = (e: React.PointerEvent, mode: "move" | "size") => {
+  /**
+   * Shared pointer-drag for moving (title bar) and resizing: from the corner (width + height), the
+   * right or left edge (width), or the bottom edge (height).
+   */
+  const dragFrom = (e: React.PointerEvent, mode: "move" | "size" | "right" | "left" | "bottom") => {
     if (!box || e.button !== 0 || (mode === "move" && (e.target as HTMLElement).closest("button"))) return;
     e.preventDefault();
     const start = { px: e.clientX, py: e.clientY, ...box };
@@ -153,7 +158,18 @@ export function AiWindow() {
     const onMove = (ev: PointerEvent) => {
       const dx = ev.clientX - start.px;
       const dy = ev.clientY - start.py;
-      cur = clampBox(mode === "move" ? { ...start, x: start.x + dx, y: start.y + dy } : { ...start, w: start.w + dx, h: start.h + dy });
+      const next =
+        mode === "move"
+          ? { ...start, x: start.x + dx, y: start.y + dy }
+          : mode === "size"
+            ? { ...start, w: start.w + dx, h: start.h + dy }
+            : mode === "right"
+              ? { ...start, w: start.w + dx }
+              : mode === "bottom"
+                ? { ...start, h: start.h + dy }
+                : // left edge: the right side stays put
+                  { ...start, x: start.x + Math.min(dx, start.w - MIN_W), w: Math.max(MIN_W, start.w - dx) };
+      cur = clampBox(next);
       setBox(cur);
     };
     const onUp = () => {
@@ -171,7 +187,9 @@ export function AiWindow() {
     ? box
       ? { left: box.x, top: box.y, width: box.w, height: box.h }
       : { visibility: "hidden" as const }
-    : undefined;
+    : sheetH
+      ? { height: sheetH }
+      : undefined;
 
   return (
     <section
@@ -405,12 +423,43 @@ export function AiWindow() {
       </div>
 
       {wide && (
+        <>
+          {/* Resize from any side but the title bar; the corner grip is drawn so it's easy to find. */}
+          <div onPointerDown={(e) => dragFrom(e, "left")} aria-hidden className="absolute inset-y-8 left-0 w-1.5 cursor-ew-resize hover:bg-accent/30" />
+          <div onPointerDown={(e) => dragFrom(e, "right")} aria-hidden className="absolute inset-y-8 right-0 w-1.5 cursor-ew-resize hover:bg-accent/30" />
+          <div onPointerDown={(e) => dragFrom(e, "bottom")} aria-hidden className="absolute inset-x-8 bottom-0 h-1.5 cursor-ns-resize hover:bg-accent/30" />
+          <div
+            onPointerDown={(e) => dragFrom(e, "size")}
+            title="Drag to resize"
+            aria-hidden
+            className="absolute bottom-0 right-0 flex h-6 w-6 cursor-nwse-resize items-end justify-end p-1 text-faint hover:text-accent"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+              <path d="M11 4L4 11M11 8L8 11" />
+            </svg>
+          </div>
+        </>
+      )}
+      {!wide && (
+        // Phone: drag the top edge of the sheet to make it taller or shorter.
         <div
-          onPointerDown={(e) => dragFrom(e, "size")}
-          aria-hidden
-          className="absolute bottom-0 right-0 h-4 w-4 cursor-nwse-resize"
-          style={{ background: "linear-gradient(135deg, transparent 50%, var(--color-line) 50%, var(--color-line) 60%, transparent 60%, transparent 75%, var(--color-line) 75%, var(--color-line) 85%, transparent 85%)" }}
-        />
+          onPointerDown={(e) => {
+            const startY = e.clientY;
+            const startH = sheetH ?? window.innerHeight * 0.72;
+            const onMove = (ev: PointerEvent) =>
+              setSheetH(Math.min(window.innerHeight - 40, Math.max(window.innerHeight * 0.3, startH - (ev.clientY - startY))));
+            const onUp = () => {
+              window.removeEventListener("pointermove", onMove);
+              window.removeEventListener("pointerup", onUp);
+            };
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+          }}
+          aria-label="Drag to resize"
+          className="absolute inset-x-0 top-0 flex h-3 touch-none justify-center"
+        >
+          <span className="mt-1 h-1 w-10 rounded-full bg-line" />
+        </div>
       )}
     </section>
   );

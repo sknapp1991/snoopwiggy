@@ -19,7 +19,7 @@ import {
   versionColor,
 } from "@/lib/settings";
 import type { Version } from "@/lib/schema";
-import { CheckIcon, CloseIcon, ColumnsIcon, GripIcon, MoonIcon, RowsIcon, SunIcon } from "./icons";
+import { CheckIcon, CloseIcon, ColumnsIcon, GripIcon, MoonIcon, PencilIcon, RowsIcon, SunIcon } from "./icons";
 import { useReaderState } from "./use-reader-state";
 
 
@@ -306,6 +306,14 @@ export function SavedSetups() {
   const { ref, versions, setVersions } = useReaderState();
   const [name, setName] = useState("");
   const [naming, setNaming] = useState(false);
+  /** The setup being renamed, and its new name. */
+  const [renaming, setRenaming] = useState<{ id: string; text: string } | null>(null);
+  const rename = () => {
+    if (!renaming) return;
+    const text = renaming.text.trim();
+    if (text) updateSettings({ setups: s.setups.map((x) => (x.id === renaming.id ? { ...x, name: text } : x)) });
+    setRenaming(null);
+  };
   const suggested = versions.map((id) => getVersion(id)?.abbr ?? id).join(" / ");
   const mine = s.setups.filter((x) => x.work === ref.work);
   /** What a setup stores, taken from the current view. */
@@ -365,7 +373,30 @@ export function SavedSetups() {
       <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Saved setups</h3>
       {mine.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {mine.map((x) => (
+          {mine.map((x) =>
+            renaming?.id === x.id ? (
+              <form
+                key={x.id}
+                className="flex min-h-10 items-center gap-1 rounded-full border border-accent bg-raised pl-3 pr-1"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  rename();
+                }}
+              >
+                <input
+                  autoFocus
+                  value={renaming.text}
+                  onChange={(e) => setRenaming({ id: x.id, text: e.target.value })}
+                  onBlur={rename}
+                  onKeyDown={(e) => e.key === "Escape" && setRenaming(null)}
+                  aria-label={`New name for ${x.name}`}
+                  className="h-8 w-40 bg-transparent text-base outline-none md:text-sm"
+                />
+                <button type="submit" className="h-8 rounded-full bg-accent px-3 text-xs font-medium text-accent-ink">
+                  OK
+                </button>
+              </form>
+            ) : (
             <span
               key={x.id}
               className={`flex min-h-10 items-center rounded-full border text-sm ${x.id === s.activeSetup ? "border-accent bg-accent-soft text-accent" : "border-line bg-raised"}`}
@@ -382,6 +413,15 @@ export function SavedSetups() {
               </button>
               <button
                 type="button"
+                onClick={() => setRenaming({ id: x.id, text: x.name })}
+                aria-label={`Rename setup ${x.name}`}
+                title="Rename"
+                className="flex h-10 w-7 items-center justify-center text-faint hover:text-ink"
+              >
+                <PencilIcon width={13} height={13} />
+              </button>
+              <button
+                type="button"
                 onClick={() => updateSettings({ setups: s.setups.filter((y) => y.id !== x.id) })}
                 aria-label={`Delete setup ${x.name}`}
                 className="flex h-10 w-8 items-center justify-center text-faint hover:text-ink"
@@ -389,7 +429,8 @@ export function SavedSetups() {
                 <CloseIcon width={14} height={14} />
               </button>
             </span>
-          ))}
+            ),
+          )}
         </div>
       )}
       {naming ? (

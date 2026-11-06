@@ -2,10 +2,10 @@
 import Link from "next/link";
 import { chapterTitle } from "@/lib/catalog";
 import { useEffect, useRef, useState } from "react";
-import { CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, SearchIcon, SlidersIcon } from "./icons";
+import { ChatIcon, CloseIcon, LanguagesIcon, LibraryIcon, MenuIcon, PaletteIcon, SearchIcon, SlidersIcon } from "./icons";
 import { HighlightModeToggle } from "./highlight-mode";
 import { XrefToggle } from "./xref-panel";
-import { togglePanel, useUi } from "@/lib/ui-store";
+import { closePanel, togglePanel, useUi } from "@/lib/ui-store";
 import { openSearch } from "./search-panel";
 import { ChapterSwipeControl, SavedSetups, FontSizeControl, LanguageColors, ThemeToggle, VersionChooser, ViewToggle, WidthControl } from "./controls";
 import { Modal } from "./modal";
@@ -58,10 +58,13 @@ export function TopBar({
 
       <button
         type="button"
-        onClick={() => openSearch()}
+        onClick={() => (panel === "search" ? closePanel() : openSearch())}
         aria-label="Search the text"
+        aria-pressed={panel === "search"}
         title="Search (/)"
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-raised hover:text-ink desk:border desk:border-line desk:bg-raised"
+        className={`flex h-11 w-11 items-center justify-center rounded-lg hover:bg-raised hover:text-ink desk:border desk:border-line ${
+          panel === "search" ? "bg-accent-soft text-accent" : "text-muted desk:bg-raised"
+        }`}
       >
         <SearchIcon />
       </button>
@@ -89,7 +92,18 @@ export function TopBar({
       <div className="hidden items-center gap-2 desk:flex">
         <HighlightModeToggle />
         <VersionsPopover count={versions.length} />
-        <DisplayPopover />
+        <TopPopover label="Colours" title="Text and language colours" icon={<PaletteIcon />}>
+          <LanguageColors />
+        </TopPopover>
+        <TopPopover label="Display options" title="Saved setups, widths, swiping, offline" icon={<SlidersIcon />}>
+          <SavedSetups />
+          <WidthControl />
+          <ChapterSwipeControl />
+          <SaveOffline />
+        </TopPopover>
+        <TopPopover label="Chat" title="Chat with other readers (coming soon)" icon={<ChatIcon />}>
+          <ChatComingSoon />
+        </TopPopover>
         <ViewToggle />
         <FontSizeControl />
         <ThemeToggle />
@@ -136,6 +150,7 @@ export function TopBar({
             <LanguageColors />
             <ChapterSwipeControl />
             <SaveOffline />
+            <ChatComingSoon />
             <div className="space-y-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">Versions &amp; languages</h3>
               <VersionChooser />
@@ -182,7 +197,7 @@ function VersionsPopover({ count }: { count: number }) {
         <div
           role="dialog"
           aria-label="Versions and languages"
-          className="absolute right-0 top-full z-30 mt-2 max-h-[70vh] w-96 space-y-4 overflow-y-auto rounded-xl border border-line bg-panel p-3 shadow-xl"
+          className="absolute right-0 top-full z-30 mt-2 max-h-[calc(100dvh-5rem)] w-96 space-y-4 overflow-y-auto overscroll-contain rounded-xl border border-line bg-panel p-3 shadow-xl"
         >
           <SavedSetups />
           <VersionChooser />
@@ -192,8 +207,11 @@ function VersionsPopover({ count }: { count: number }) {
   );
 }
 
-/** Desktop: reading width / column width and language colours. */
-function DisplayPopover() {
+/**
+ * A top-bar button with a pop-up under it: the button opens and closes it (like My Study), so does
+ * Escape or a click outside. The pop-up never runs off the screen: it scrolls inside.
+ */
+function TopPopover({ label, title, icon, children }: { label: string; title: string; icon: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -214,22 +232,34 @@ function DisplayPopover() {
       <button
         type="button"
         aria-expanded={open}
-        aria-label="Display options"
-        title="Width & colours"
+        aria-label={label}
+        title={title}
         onClick={() => setOpen((o) => !o)}
-        className="flex h-11 w-11 items-center justify-center rounded-lg border border-line bg-raised text-muted hover:text-ink"
+        className={`flex h-11 w-11 items-center justify-center rounded-lg border border-line ${open ? "bg-accent-soft text-accent" : "bg-raised text-muted hover:text-ink"}`}
       >
-        <SlidersIcon />
+        {icon}
       </button>
       {open && (
-        <div role="dialog" aria-label="Display options" className="absolute right-0 top-full z-30 mt-2 w-80 space-y-4 rounded-xl border border-line bg-panel p-4 shadow-xl">
-          <SavedSetups />
-          <WidthControl />
-          <LanguageColors />
-          <ChapterSwipeControl />
-          <SaveOffline />
+        <div
+          role="dialog"
+          aria-label={label}
+          className="absolute right-0 top-full z-30 mt-2 max-h-[calc(100dvh-5rem)] w-80 space-y-4 overflow-y-auto overscroll-contain rounded-xl border border-line bg-panel p-4 shadow-xl"
+        >
+          {children}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Placeholder for a future chat between readers. */
+function ChatComingSoon() {
+  return (
+    <div className="space-y-1.5 rounded-lg border border-dashed border-line p-3 text-sm">
+      <p className="flex items-center gap-2 font-semibold">
+        <ChatIcon width={16} height={16} className="text-accent" /> Chat with other readers <span className="rounded-full bg-accent-soft px-2 text-xs font-medium text-accent">Coming soon</span>
+      </p>
+      <p className="text-muted">Talk about a passage with a friend, a study group, or an open room. We’re planning it carefully so it stays kind and safe.</p>
     </div>
   );
 }

@@ -68,7 +68,7 @@ function findBook(name: string, preferWork?: string): Book | undefined {
 }
 
 // Book name (optionally "1 "/"2 "/"3 " first), chapter, optional verse(s).
-const NAMED = /\b((?:[1-3]\s?)?[A-Z][a-zA-Z’']+\.?(?:\s(?:of\s)?[A-Z][a-zA-Z’']+)?)\s(\d{1,3})(?:\s?[:.]\s?(\d{1,3})(?:\s?[-–]\s?(\d{1,3}))?)?\b/g;
+const NAMED = /\b((?:[1-3]\s?)?[A-Z][a-zA-Z’']+\.?(?:\s(?:of\s)?[A-Z][a-zA-Z’']+)?)\s(\d{1,3})(?:\s?[:.]\s?(\d{1,3})(?:\s?[-–—‐‑‒]\s?(\d{1,3}))?)?\b/g; // any dash: AI models also write — or the non-breaking ‑
 // Pali canon: DN 2, MN 10, SN 12.2, AN 4.170
 const NIKAYA = /\b(DN|MN|SN|AN)\s?(\d{1,2})(?:\.(\d{1,4}))?\b/g;
 

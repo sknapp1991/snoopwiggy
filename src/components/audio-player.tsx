@@ -609,7 +609,7 @@ const listen = (() => {
   let available = false;
   const subs = new Set<() => void>();
   return {
-    current: null as { toggle: () => void; supported: boolean } | null,
+    current: null as { toggle: () => void; open: () => void; supported: boolean } | null,
     set(on: boolean) {
       available = on;
       subs.forEach((l) => l());
@@ -622,25 +622,68 @@ const listen = (() => {
   };
 })();
 
-/** ▶ / ⏸ next to search: one tap reads this chapter aloud from the first verse on screen. */
+/**
+ * Whether the player bar is tucked into its small chip, and whether its options are showing: shared,
+ * so the top bar's button can open the player with its options (and hide it again).
+ */
+const barUi = (() => {
+  let state = { tucked: false, more: false };
+  const subs = new Set<() => void>();
+  return {
+    get: () => state,
+    set(patch: Partial<typeof state>) {
+      state = { ...state, ...patch };
+      subs.forEach((l) => l());
+    },
+    subscribe(l: () => void) {
+      subs.add(l);
+      return () => subs.delete(l);
+    },
+  };
+})();
+const SERVER_BAR = barUi.get();
+const useBarUi = () => useSyncExternalStore(barUi.subscribe, barUi.get, () => SERVER_BAR);
+
+/**
+ * Open the player with its options showing (nothing plays until you press ▶), or, when it is showing,
+ * hide it: tucked into its chip while it reads, closed when it isn't reading.
+ */
+function togglePlayer(ra: { open: () => void } | null) {
+  const s = getSpeech();
+  const bar = barUi.get();
+  if (!s.open) {
+    ra?.open();
+    barUi.set({ tucked: false, more: true });
+  } else if (bar.tucked) barUi.set({ tucked: false });
+  else if (s.status === "playing") barUi.set({ tucked: true, more: false });
+  else {
+    barUi.set({ more: false });
+    close();
+  }
+}
+
+/** 🎧 next to search: opens the player and its options; tap again to hide it. */
 export function ListenTopButton() {
   const on = useSyncExternalStore(listen.subscribe, listen.get, () => false);
   const speech = useSpeech();
+  const bar = useBarUi();
   const supported = useSpeechSupported();
   if (!on || !supported) return null;
   const playing = speech.status === "playing";
+  const showing = speech.open && !bar.tucked;
   return (
     <button
       type="button"
-      onClick={() => listen.current?.toggle()}
-      aria-label={playing ? "Pause reading aloud" : "Read this chapter aloud"}
-      aria-pressed={playing}
-      title={playing ? "Pause" : "Read aloud from the first verse on screen"}
-      className={`flex h-11 w-11 items-center justify-center rounded-lg hover:bg-raised hover:text-ink desk:border desk:border-line ${
-        playing || speech.open ? "bg-accent-soft text-accent" : "text-muted desk:bg-raised"
+      onClick={() => togglePlayer(listen.current)}
+      aria-label={showing ? "Hide the player" : "Listen: open the read-aloud player"}
+      aria-pressed={showing}
+      title={showing ? "Hide the player" : "Listen (choose versions, voices and speed, then press play)"}
+      className={`relative flex h-11 w-11 items-center justify-center rounded-lg hover:bg-raised hover:text-ink desk:border desk:border-line ${
+        showing ? "bg-accent-soft text-accent" : speech.open ? "text-accent desk:bg-raised" : "text-muted desk:bg-raised"
       }`}
     >
-      {playing ? <PauseIcon /> : <PlayIcon />}
+      <HeadphonesIcon />
+      {playing && <span className="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-accent" aria-hidden />}
     </button>
   );
 }
@@ -652,7 +695,7 @@ export function ListenButton({ ra }: { ra: ReadAlong }) {
   return (
     <button
       type="button"
-      onClick={() => (on ? close() : ra.open())}
+      onClick={() => togglePlayer(ra)}
       aria-pressed={on}
       aria-label={on ? "Stop listening" : "Listen to this chapter"}
       title={on ? "Stop listening" : "Listen (read aloud)"}
@@ -669,10 +712,11 @@ const RATES = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
 
 /** Player bar along the bottom of the reader. */
 export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
-  const [more, setMore] = useState(false);
+  const { more, tucked } = useBarUi();
+  const setMore = (v: boolean | ((m: boolean) => boolean)) => barUi.set({ more: typeof v === "function" ? v(barUi.get().more) : v });
+  const setTucked = (v: boolean) => barUi.set({ tucked: v });
   const [picker, setPicker] = useState(false);
   const [range, setRange] = useState<{ from: string; to: string } | null>(null);
-  const [tucked, setTucked] = useState(false);
   const swipeStart = useRef<{ x: number; y: number; done: boolean } | null>(null);
   const settings = useSettings();
   const touch = useMediaQuery("(pointer: coarse)", false);
@@ -991,44 +1035,30 @@ export function ReadAlongBar({ ra }: { ra: ReadAlong }) {
               </select>
             </div>
           )}
-          {touch && (
-            <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-                Keep screen on while listening
-                <span className="block font-normal normal-case tracking-normal">
-                  Phones stop built-in voices when the screen locks; this keeps it awake (you can turn the brightness down).
-                </span>
-              </span>
-              <input
-                type="checkbox"
-                checked={settings.ttsKeepAwake}
-                onChange={(e) => updateSettings({ ttsKeepAwake: e.target.checked })}
-                className="h-5 w-5 shrink-0 accent-[var(--accent)]"
-              />
-            </label>
-          )}
-          <label className="flex min-h-11 cursor-pointer items-center justify-between gap-2 sm:col-span-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">Continue into the next chapter</span>
-            <input
-              type="checkbox"
-              checked={settings.ttsContinue}
-              onChange={(e) => updateSettings({ ttsContinue: e.target.checked })}
-              className="h-5 w-5 accent-[var(--accent)]"
-            />
-          </label>
-          <label className={`flex min-h-11 items-center justify-between gap-2 sm:col-span-2 ${settings.ttsContinue ? "cursor-pointer" : "opacity-50"}`}>
-            <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-              Continue into the next book
-              <span className="block font-normal normal-case tracking-normal">At a book’s last chapter, go on to the next book (e.g. Genesis 50 → Exodus 1).</span>
-            </span>
-            <input
-              type="checkbox"
+          {/* Quick on/off bubbles: keep going after the chapter / book ends, keep the phone awake. */}
+          <div className="flex flex-wrap items-center gap-1.5 sm:col-span-2" role="group" aria-label="When the chapter ends">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-faint">Then</span>
+            <Pill on={settings.ttsContinue} onClick={() => updateSettings({ ttsContinue: !settings.ttsContinue })} title="Continue into the next chapter">
+              ↪ Next chapter
+            </Pill>
+            <Pill
+              on={settings.ttsContinue && settings.ttsContinueBook}
               disabled={!settings.ttsContinue}
-              checked={settings.ttsContinue && settings.ttsContinueBook}
-              onChange={(e) => updateSettings({ ttsContinueBook: e.target.checked })}
-              className="h-5 w-5 shrink-0 accent-[var(--accent)]"
-            />
-          </label>
+              onClick={() => updateSettings({ ttsContinueBook: !settings.ttsContinueBook })}
+              title="At a book's last chapter, go on to the next book (e.g. Genesis 50 → Exodus 1)"
+            >
+              ↪ Next book
+            </Pill>
+            {touch && (
+              <Pill
+                on={settings.ttsKeepAwake}
+                onClick={() => updateSettings({ ttsKeepAwake: !settings.ttsKeepAwake })}
+                title="Phones stop built-in voices when the screen locks; this keeps it awake (you can turn the brightness down)"
+              >
+                ☀ Keep screen on
+              </Pill>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -1143,6 +1173,24 @@ function MixVoices({ ra }: { ra: ReadAlong }) {
         );
       })}
     </div>
+  );
+}
+
+/** A small on/off bubble for a player option. */
+function Pill({ on, disabled, onClick, title, children }: { on: boolean; disabled?: boolean; onClick: () => void; title: string; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      disabled={disabled}
+      onClick={onClick}
+      title={title}
+      className={`flex min-h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-xs disabled:opacity-40 ${
+        on ? "border-accent bg-accent-soft font-medium text-accent" : "border-line text-muted hover:text-ink"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 

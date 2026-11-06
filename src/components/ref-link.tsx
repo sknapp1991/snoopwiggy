@@ -12,7 +12,10 @@ import { minimizeAi } from "@/lib/ai-chat";
 import { chapterTitle, DEFAULT_VERSIONS, findBook, getVersion, readHref } from "@/lib/catalog";
 import { fetchBook } from "@/lib/chapter-store";
 import type { FoundRef } from "@/lib/refs";
-import { useMediaQuery, WIDE_QUERY } from "@/lib/settings";
+import { useMediaQuery, useViewMode, WIDE_QUERY } from "@/lib/settings";
+import { getItem, toggle, useStudy } from "@/lib/study";
+import { toast } from "@/lib/ui-store";
+import { ClockIcon, StarIcon } from "./icons";
 import { useReaderState } from "./use-reader-state";
 
 /** Only one card at a time, across all references. */
@@ -22,8 +25,11 @@ export function RefLink({ r }: { r: FoundRef }) {
   const touch = useMediaQuery("(hover: none)", false);
   const wide = useMediaQuery(WIDE_QUERY, true);
   const router = useRouter();
+  const view = useViewMode();
   const { ref: here, versions: current } = useReaderState();
   const versions = r.ref.work === here.work && current.length ? current : (DEFAULT_VERSIONS[r.ref.work] ?? []);
+  // The card follows the reader's layout: versions side by side in Column view, one under another otherwise.
+  const columns = view === "column" && versions.length > 1;
   // "#v30-35": the reader puts verse 30 at the top and marks the whole passage.
   const href = readHref(r.ref, r.ref.work === here.work ? undefined : versions, r.verse && r.to ? `${r.verse}-${r.to}` : r.verse);
   const sameChapter = r.ref.work === here.work && r.ref.book === here.book && r.ref.chapter === here.chapter;
@@ -58,7 +64,7 @@ export function RefLink({ r }: { r: FoundRef }) {
     if (!el) return;
     closeOpen?.();
     const b = el.getBoundingClientRect();
-    const W = Math.min(320, window.innerWidth - 16);
+    const W = Math.min(columns ? 560 : 320, window.innerWidth - 16);
     const left = Math.max(8, Math.min(b.left, window.innerWidth - W - 8));
     // Below the link when there's room, else above it.
     setPos(window.innerHeight - b.bottom > 220 ? { left, top: b.bottom + 6 } : { left, bottom: window.innerHeight - b.top + 6 });
@@ -131,36 +137,39 @@ export function RefLink({ r }: { r: FoundRef }) {
             if (!touch) timer.current = setTimeout(hide, 200);
           }}
           style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
-          className="fixed z-[60] w-[min(320px,calc(100vw-16px))] rounded-xl border border-line bg-panel p-3 text-left text-sm font-normal not-italic text-ink shadow-2xl"
+          className={`fixed z-[60] ${columns ? "w-[min(560px,calc(100vw-16px))]" : "w-[min(320px,calc(100vw-16px))]"} rounded-xl border border-line bg-panel p-3 text-left text-sm font-normal not-italic text-ink shadow-2xl`}
         >
-          <Preview r={r} versions={versions.slice(0, 2)} />
-          <Link
-            href={href}
-            scroll={false}
-            onClick={open}
-            className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink">
-            Open {r.label} in the reader →
-          </Link>
+          <Preview r={r} versions={versions.slice(0, columns ? 3 : 2)} columns={columns} />
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <Link
+              href={href}
+              scroll={false}
+              onClick={open}
+              className="inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink">
+              Open {r.label} in the reader →
+            </Link>
+            {r.verse && <SaveButtons r={r} />}
+          </div>
         </div>
       )}
     </>
   );
 }
 
-function Preview({ r, versions }: { r: FoundRef; versions: string[] }) {
-  const [rows, setRows] = useState<{ key: string; list: { abbr: string; v: string; t: string; dir: "ltr" | "rtl" }[] } | null>(null);
+function Preview({ r, versions, columns = false }: { r: FoundRef; versions: string[]; columns?: boolean }) {
+  const [rows, setRows] = useState<{ key: string; list: { id: string; abbr: string; v: string; t: string; dir: "ltr" | "rtl" }[] } | null>(null);
   const key = `${r.ref.work}/${r.ref.book}/${r.ref.chapter}:${r.verse ?? ""}-${r.to ?? ""}/${versions.join(",")}`;
   useEffect(() => {
     let live = true;
     const from = r.verse ? parseInt(r.verse, 10) : 1;
-    const to = r.to ? parseInt(r.to, 10) : r.verse ? from : 3; // a chapter: its first verses
+    const to = r.to ? parseInt(r.to, 10) : r.verse ? from : 5; // a chapter: its first five verses
     Promise.all(
       versions.map((id) =>
         fetchBook(r.ref.work, id, r.ref.book)
           .then((b) =>
             (b.chapters[String(r.ref.chapter)]?.verses ?? [])
               .filter((x) => !x.cont && x.t && parseInt(x.v, 10) >= from && parseInt(x.v, 10) <= Math.min(to, from + 9))
-              .map((x) => ({ abbr: getVersion(id)?.abbr ?? id, v: x.v, t: x.t, dir: getVersion(id)?.dir ?? "ltr" })),
+              .map((x) => ({ id, abbr: getVersion(id)?.abbr ?? id, v: x.v, t: x.t, dir: getVersion(id)?.dir ?? "ltr" })),
           )
           .catch(() => []),
       ),
@@ -179,18 +188,69 @@ function Preview({ r, versions }: { r: FoundRef; versions: string[] }) {
           <p className="animate-pulse text-muted">Loading…</p>
         ) : list.length === 0 ? (
           <p className="text-muted">Couldn’t load this passage.</p>
+        ) : columns ? (
+          // Column view: each version in its own column, like the reader.
+          <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${versions.length}, minmax(0, 1fr))` }}>
+            {versions.map((id) => {
+              const own = list.filter((x) => x.id === id);
+              return (
+                <div key={id} className="min-w-0 space-y-1.5">
+                  <p className="font-sans text-[10px] font-semibold uppercase tracking-wide text-faint">{getVersion(id)?.abbr ?? id}</p>
+                  {own.map((x) => (
+                    <p key={x.v} dir={x.dir}>
+                      <span className="mr-1 font-sans text-[10px] font-semibold text-faint">{x.v}</span>
+                      {x.t}
+                    </p>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         ) : (
-          list.map((x, i) => (
-            <p key={i} dir={x.dir}>
-              <span className="mr-1 font-sans text-[10px] font-semibold text-faint">
-                {versions.length > 1 ? `${x.abbr} ` : ""}
-                {x.v}
-              </span>
-              {x.t}
-            </p>
+          // Stacked view: verse by verse, each version under the other.
+          [...new Set(list.map((x) => x.v))].map((v) => (
+            <div key={v} className="space-y-0.5">
+              {list
+                .filter((x) => x.v === v)
+                .map((x) => (
+                  <p key={x.id} dir={x.dir}>
+                    <span className="mr-1 font-sans text-[10px] font-semibold text-faint">
+                      {versions.length > 1 ? `${x.abbr} ` : ""}
+                      {x.v}
+                    </span>
+                    {x.t}
+                  </p>
+                ))}
+            </div>
           ))
         )}
       </div>
     </div>
+  );
+}
+
+/** Favorite / Study later for the verse (or each verse of the range) the reference points to. */
+function SaveButtons({ r }: { r: FoundRef }) {
+  useStudy(); // re-render when the marks change
+  const from = parseInt(r.verse!, 10);
+  const to = r.to ? Math.max(from, parseInt(r.to, 10)) : from;
+  const refs = Array.from({ length: Math.min(to - from + 1, 30) }, (_, i) => ({ ...r.ref, verse: String(from + i) }));
+  const all = (kind: "favorite" | "later") => refs.every((x) => getItem(kind, x));
+  const flip = (kind: "favorite" | "later") => {
+    const on = !all(kind);
+    for (const x of refs) if (!!getItem(kind, x) !== on) toggle(kind, x);
+    toast(`${on ? "Saved" : "Removed"} ${r.label} ${on ? "to" : "from"} ${kind === "favorite" ? "Favorites" : "Study later"}`);
+  };
+  const btn = (on: boolean) =>
+    `inline-flex min-h-9 items-center gap-1 rounded-lg border px-2.5 text-xs ${on ? "border-accent bg-accent-soft text-accent" : "border-line text-muted hover:text-ink"}`;
+  return (
+    <>
+      <button type="button" onClick={() => flip("favorite")} aria-pressed={all("favorite")} className={btn(all("favorite"))}>
+        <StarIcon width={14} height={14} fill={all("favorite") ? "currentColor" : "none"} /> Favorite
+      </button>
+      <button type="button" onClick={() => flip("later")} aria-pressed={all("later")} className={btn(all("later"))}>
+        <ClockIcon width={14} height={14} /> Study later
+      </button>
+    </>
   );
 }

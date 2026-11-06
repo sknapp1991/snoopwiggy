@@ -134,3 +134,12 @@ export const CalendarIcon = (p: P) => (
 export const ShareIcon = (p: P) => (
   <svg {...base(p)}><path d="M12 15V4M8 8l4-4 4 4" /><path d="M5 12v7a1 1 0 001 1h12a1 1 0 001-1v-7" /></svg>
 );
+export const PencilIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M14 6l4 4" /></svg>
+);
+export const PaletteIcon = (p: P) => (
+  <svg {...base(p)}><path d="M12 3a9 9 0 100 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 005-5c0-4-4-7.3-9-7.3z" /><circle cx="7.5" cy="11" r="1.2" /><circle cx="10" cy="7" r="1.2" /><circle cx="14.5" cy="7" r="1.2" /><circle cx="17" cy="10.5" r="1.2" /></svg>
+);
+export const ChatIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9.5h8M8 12.5h5" /></svg>
+);
