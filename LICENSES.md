@@ -190,6 +190,27 @@ Kisari Mohan Ganguli's prose translation (1883–96, public domain), all 18 book
 Text Archive (`scripts/import-mahabharata.ts`). Chapter = Ganguli's section; verse = paragraph.
 Footnotes are left out.
 
+## World religions (added Nov 2026, `scripts/import-world.ts`)
+
+Sacred-texts.com now turns automated downloads away, so these come from Project Gutenberg files.
+
+- **Tao Te Ching** — James Legge (1891, public domain), Gutenberg #216, with Legge's verse numbers; the
+  Chinese text (public domain) from Gutenberg #24039, one block per chapter beside Legge's verses.
+- **Analects of Confucius** — James Legge (1893, public domain) with the Chinese of his edition,
+  Gutenberg #4094. Chapter = Legge's "Book", verse = his numbered chapters. A few misprinted chapter
+  numbers in the source are put back in sequence.
+- **Australian Legendary Tales** — K. Langloh Parker (1896, public domain), Gutenberg #3833; tale =
+  chapter, paragraph = verse. Collected by a settler; the reader notes that the framing is hers.
+- **The Hidden Words** and **The Kitáb-i-Aqdas** (Bahá'í Faith) — © Bahá'í International Community,
+  used under the Bahá'í Reference Library terms (free to copy for non-commercial use, unaltered, with the
+  copyright notice and source attached); text via Gutenberg #16941 and #16523. Allowed here because the
+  site is free with no ads; the notice is shown with the text.
+
+Not yet included (shown as "coming soon"): the Guru Granth Sahib in English (the usual translation, by
+Sant Singh Khalsa, has no stated licence), the Kojiki, Jaina Agamas, Avesta and Yoruba Legends (public
+domain, but only on sacred-texts.com), and English tafsir (the Royal Aal al-Bayt translations are "all
+rights reserved").
+
 ## Recorded audio (audio v2)
 
 - **Kokoro-82M** (hexgrad, Apache-2.0 open weights; https://huggingface.co/hexgrad/Kokoro-82M) reads the

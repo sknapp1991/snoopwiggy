@@ -30,6 +30,11 @@ export const DEFAULT_VERSIONS: Record<string, string[]> = {
   mahabharata: ["ganguli"],
   quran: ["pickthall", "tanzil"],
   "yoga-sutras": ["johnston"],
+  "tao-te-ching": ["legge-ttc", "ttc-zh"],
+  analects: ["legge-an", "analects-zh"],
+  australian: ["parker"],
+  "hidden-words": ["bahai-hw"],
+  aqdas: ["bahai-aqdas"],
 };
 
 export const DEFAULT_LOCATION: BookRef = { work: "bible", book: "gen", chapter: 1 };

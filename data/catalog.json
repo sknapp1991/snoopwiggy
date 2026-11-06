@@ -18,7 +18,12 @@
     { "id": "upanishads", "name": "Upanishads", "versification": "upanishads" },
     { "id": "ramayana", "name": "Ramayana", "versification": "ramayana" },
     { "id": "vedas", "name": "Vedas", "versification": "vedas" },
-    { "id": "mahabharata", "name": "Mahabharata", "versification": "mahabharata" }
+    { "id": "mahabharata", "name": "Mahabharata", "versification": "mahabharata" },
+    { "id": "tao-te-ching", "name": "Tao Te Ching", "versification": "tao-te-ching" },
+    { "id": "analects", "name": "Analects of Confucius", "versification": "analects" },
+    { "id": "australian", "name": "Australian Legendary Tales", "versification": "australian" },
+    { "id": "hidden-words", "name": "The Hidden Words", "versification": "hidden-words" },
+    { "id": "aqdas", "name": "The Kitáb-i-Aqdas", "versification": "aqdas" }
   ],
   "versions": [
     {
@@ -452,6 +457,124 @@
       "attribution": "Translated by Kisari Mohan Ganguli (1883–96), public domain; transcription from the Internet Sacred Text Archive.",
       "sourceUrl": "https://sacred-texts.com/hin/maha/index.htm",
       "licensed": false, "versification": "mahabharata"
+    },
+    {
+      "id": "legge-ttc",
+      "work": "tao-te-ching",
+      "abbr": "Legge",
+      "name": "Tao Te Ching (James Legge)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1891,
+      "translator": "James Legge (Sacred Books of the East 39)",
+      "license": "Public Domain",
+      "attribution": "Translated by James Legge (1891), public domain; Project Gutenberg #216.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/216",
+      "licensed": false,
+      "versification": "tao-te-ching"
+    },
+    {
+      "id": "ttc-zh",
+      "work": "tao-te-ching",
+      "abbr": "Chinese",
+      "name": "道德經 (Classical Chinese)",
+      "language": "zh",
+      "kind": "native",
+      "dir": "ltr",
+      "year": -400,
+      "yearNote": "c. 4th century BCE",
+      "translator": "Laozi (original text)",
+      "license": "Public Domain",
+      "licenseNote": "Each chapter is shown whole beside Legge's verses.",
+      "attribution": "Chinese text, Project Gutenberg #24039, public domain.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/24039",
+      "licensed": false,
+      "versification": "tao-te-ching"
+    },
+    {
+      "id": "legge-an",
+      "work": "analects",
+      "abbr": "Legge",
+      "name": "The Analects (James Legge)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1893,
+      "translator": "James Legge (The Chinese Classics, vol. 1)",
+      "license": "Public Domain",
+      "attribution": "Translated by James Legge (1893), public domain; Project Gutenberg #4094.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/4094",
+      "licensed": false,
+      "versification": "analects"
+    },
+    {
+      "id": "analects-zh",
+      "work": "analects",
+      "abbr": "Chinese",
+      "name": "論語 (Classical Chinese)",
+      "language": "zh",
+      "kind": "native",
+      "dir": "ltr",
+      "year": -400,
+      "yearNote": "compiled c. 5th–3rd century BCE",
+      "translator": "Disciples of Confucius (original text)",
+      "license": "Public Domain",
+      "attribution": "Chinese text from Legge's edition, Project Gutenberg #4094, public domain.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/4094",
+      "licensed": false,
+      "versification": "analects"
+    },
+    {
+      "id": "parker",
+      "work": "australian",
+      "abbr": "Parker",
+      "name": "Australian Legendary Tales (K. Langloh Parker)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1896,
+      "translator": "K. Langloh Parker, as told by the Noongahburrah (Yuwaalaraay) people",
+      "license": "Public Domain",
+      "licenseNote": "Collected by a settler in the 1890s; the spellings and framing are hers, not the tellers'.",
+      "attribution": "Collected by K. Langloh Parker (1896), public domain; Project Gutenberg #3833.",
+      "sourceUrl": "https://www.gutenberg.org/ebooks/3833",
+      "licensed": false,
+      "versification": "australian"
+    },
+    {
+      "id": "bahai-hw",
+      "work": "hidden-words",
+      "abbr": "Shoghi Effendi",
+      "name": "The Hidden Words (tr. Shoghi Effendi)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1932,
+      "translator": "Shoghi Effendi, from the Arabic and Persian of Bahá'u'lláh",
+      "license": "Bahá'í Reference Library terms (non-commercial)",
+      "licenseNote": "© Bahá'í International Community. Used under the Bahá'í Reference Library terms: free to copy for non-commercial use, unaltered, with this notice and the source.",
+      "attribution": "© Bahá'í International Community. Used under the Bahá'í Reference Library terms: free to copy for non-commercial use, unaltered, with this notice and the source. Text: Bahá'í Reference Library via Project Gutenberg #16941.",
+      "sourceUrl": "https://www.bahai.org/library/authoritative-texts/bahaullah/hidden-words/",
+      "licensed": false,
+      "versification": "hidden-words"
+    },
+    {
+      "id": "bahai-aqdas",
+      "work": "aqdas",
+      "abbr": "Bahá'í World Centre",
+      "name": "The Kitáb-i-Aqdas (authorized translation)",
+      "language": "en",
+      "kind": "native",
+      "dir": "ltr",
+      "year": 1992,
+      "translator": "Bahá'í World Centre, from the Arabic of Bahá'u'lláh",
+      "license": "Bahá'í Reference Library terms (non-commercial)",
+      "licenseNote": "© Bahá'í International Community. Used under the Bahá'í Reference Library terms: free to copy for non-commercial use, unaltered, with this notice and the source.",
+      "attribution": "© Bahá'í International Community. Used under the Bahá'í Reference Library terms: free to copy for non-commercial use, unaltered, with this notice and the source. Text: Bahá'í Reference Library via Project Gutenberg #16523.",
+      "sourceUrl": "https://www.bahai.org/library/authoritative-texts/bahaullah/kitab-i-aqdas/",
+      "licensed": false,
+      "versification": "aqdas"
     }
   ],
   "religions": [
@@ -749,6 +872,14 @@
           {"id": "malik", "name": "Muwatta Malik", "work": "hadith", "chapters": 61, "chapterName": "Muwatta, book"},
           {"id": "nawawi", "name": "Forty Hadith of an-Nawawi", "work": "hadith", "chapters": 1, "chapterName": "Forty Hadith of an-Nawawi"},
           {"id": "qudsi", "name": "Forty Hadith Qudsi", "work": "hadith", "chapters": 1, "chapterName": "Forty Hadith Qudsi"}
+        ] },
+        { "id": "tafsir", "name": "Tafsir & Ta'wil (commentary)", "items": [
+          { "id": "tafsir-sunni", "name": "Sunni — al-Jalalayn, Ibn Kathir", "status": "coming-soon" },
+          { "id": "tafsir-shia", "name": "Shia — al-Mizan, al-Qummi", "status": "coming-soon" },
+          { "id": "tafsir-sufi", "name": "Sufi — al-Qushayri, al-Tustari", "status": "coming-soon" },
+          { "id": "tawil", "name": "Ta'wil (inner meaning) — al-Kashani", "status": "coming-soon" },
+          { "id": "tafsir-salafi", "name": "Salafi / Wahhabi — al-Sa'di", "status": "coming-soon" },
+          { "id": "tafsir-modern", "name": "Modern & thematic — Wahiduddin Khan", "status": "coming-soon" }
         ] }
       ]
     },
@@ -954,6 +1085,151 @@
           {"id": "ya", "name": "Yamaka", "work": "abhidhamma", "chapters": 77, "chapterName": "Ya, part"},
           {"id": "patthana", "name": "Paṭṭhāna", "work": "abhidhamma", "chapters": 728, "chapterName": "Paṭṭhāna, part"}
         ] }
+      ]
+    },
+    {
+      "id": "sikhism",
+      "name": "Sikhism",
+      "collections": [
+        {
+          "id": "ggs",
+          "name": "Guru Granth Sahib",
+          "items": [
+            { "id": "ggs", "name": "Sri Guru Granth Sahib", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jainism",
+      "name": "Jainism",
+      "collections": [
+        {
+          "id": "agamas",
+          "name": "Agamas",
+          "items": [
+            { "id": "akaranga", "name": "Akaranga Sutra", "status": "coming-soon" },
+            { "id": "kalpa", "name": "Kalpa Sutra", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zoroastrianism",
+      "name": "Zoroastrianism",
+      "collections": [
+        {
+          "id": "avesta",
+          "name": "Avesta",
+          "items": [
+            { "id": "gathas", "name": "Gathas of Zarathustra (Yasna)", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bahai",
+      "name": "Bahá'í Faith",
+      "collections": [
+        {
+          "id": "bahaullah",
+          "name": "Writings of Bahá'u'lláh",
+          "items": [
+            { "id": "hw", "name": "The Hidden Words", "work": "hidden-words", "chapters": 2, "chapterName": "Hidden Words, Part" },
+            { "id": "aqdas", "name": "The Kitáb-i-Aqdas", "work": "aqdas", "chapters": 1, "chapterName": "Kitáb-i-Aqdas" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taoism",
+      "name": "Taoism & Chinese Folk Religion",
+      "collections": [
+        {
+          "id": "taoist",
+          "name": "Taoist Classics",
+          "items": [
+            { "id": "ttc", "name": "Tao Te Ching", "work": "tao-te-ching", "chapters": 81, "chapterName": "Tao Te Ching" },
+            { "id": "zhuangzi", "name": "Zhuangzi", "status": "coming-soon" }
+          ]
+        },
+        {
+          "id": "folk",
+          "name": "Chinese Folk Religion",
+          "items": [
+            { "id": "chinese-myths", "name": "Myths and Legends of China", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "confucianism",
+      "name": "Confucianism",
+      "collections": [
+        {
+          "id": "four-books",
+          "name": "The Four Books",
+          "items": [
+            { "id": "analects", "name": "Analects", "work": "analects", "chapters": 20, "chapterName": "Analects, Book" },
+            { "id": "mencius", "name": "Mencius", "status": "coming-soon" },
+            { "id": "great-learning", "name": "The Great Learning", "status": "coming-soon" },
+            { "id": "mean", "name": "Doctrine of the Mean", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shinto",
+      "name": "Shinto",
+      "collections": [
+        {
+          "id": "chronicles",
+          "name": "Ancient Chronicles",
+          "items": [
+            { "id": "kojiki", "name": "Kojiki", "status": "coming-soon" },
+            { "id": "nihongi", "name": "Nihongi", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "african",
+      "name": "African & Diaspora Traditions",
+      "collections": [
+        {
+          "id": "yoruba",
+          "name": "Yoruba (Ifá, Orisha)",
+          "items": [
+            { "id": "yoruba-legends", "name": "Yoruba Legends", "status": "coming-soon" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "indigenous",
+      "name": "Indigenous & Shamanic Traditions",
+      "collections": [
+        {
+          "id": "aboriginal",
+          "name": "Aboriginal Australian",
+          "items": [
+            { "id": "alt", "name": "Australian Legendary Tales", "work": "australian", "chapters": 31, "chapterName": "Tale" }
+          ]
+        },
+        {
+          "id": "native-american",
+          "name": "Native American",
+          "items": [
+            { "id": "native-american", "name": "Native American sacred stories", "status": "coming-soon" }
+          ]
+        },
+        {
+          "id": "mesoamerican",
+          "name": "Mesoamerican",
+          "items": [
+            { "id": "popol-vuh", "name": "Popol Vuh (K'iche' Maya)", "status": "coming-soon" }
+          ]
+        }
       ]
     }
   ]

@@ -32,6 +32,8 @@ EMBED = {
     "dhammapada": "sujato", "tipitaka": "sc-en", "gita": "besant", "upanishads": "muller",
     "ramayana": "griffith-ry", "vedas": "griffith", "mahabharata": "ganguli",
     "hyp": "sinh", "yoga-sutras": "johnston",
+    "tao-te-ching": "legge-ttc", "analects": "legge-an", "australian": "parker",
+    "hidden-words": "bahai-hw", "aqdas": "bahai-aqdas",
 }
 SAME_K = 6  # results kept from the verse's own religion
 OTHER_K = 3  # … and from each other religion
@@ -45,7 +47,8 @@ def religions():
     for r in cat["religions"]:
         for col in r["collections"]:
             for it in col["items"]:
-                out.setdefault(it["work"], r["id"])
+                if "work" in it:  # "coming soon" items have no text yet
+                    out.setdefault(it["work"], r["id"])
     return out
 
 
