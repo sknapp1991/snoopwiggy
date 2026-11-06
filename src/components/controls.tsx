@@ -488,7 +488,7 @@ export function SavedSetups() {
 
 /** Swipe-to-change-chapter setting and the floating ‹ › buttons. */
 export function ChapterSwipeControl() {
-  const { chapterSwipe, floatingNav } = useSettings();
+  const { chapterSwipe, floatingNav, continuousScroll } = useSettings();
   const opts = [
     { id: "one" as const, label: "One finger" },
     { id: "two" as const, label: "Two fingers" },
@@ -516,6 +516,18 @@ export function ChapterSwipeControl() {
           ? "Use the ‹ › buttons to change chapter."
           : `Swipe ${chapterSwipe === "two" ? "with two fingers " : ""}sideways across most of the screen and let go. In Column view, swipe past the first or last column.`}
       </p>
+      <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3">
+        <span className="text-sm">
+          Continuous scroll
+          <span className="block text-xs text-faint">The next chapter follows below as you read</span>
+        </span>
+        <input
+          type="checkbox"
+          checked={continuousScroll}
+          onChange={(e) => updateSettings({ continuousScroll: e.target.checked })}
+          className="h-5 w-5 accent-[var(--accent)]"
+        />
+      </label>
       <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3">
         <span className="text-sm">Floating ‹ › chapter buttons</span>
         <input

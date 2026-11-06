@@ -82,6 +82,8 @@ export type Settings = {
   xrefOthers: string[];
   /** Swipe sideways to change chapter: one finger, two fingers, or off. */
   chapterSwipe: "one" | "two" | "off";
+  /** Continuous scroll: the next chapter follows below; scrolling into it moves on to it. */
+  continuousScroll: boolean;
   /** Floating ‹ › chapter buttons (fade while scrolling). */
   floatingNav: boolean;
   /** Saved setups, in the order they were made. */
@@ -147,6 +149,7 @@ const DEFAULTS: Settings = {
   redLetter: false,
   xrefOthers: [],
   chapterSwipe: "one",
+  continuousScroll: false,
   floatingNav: true,
   setups: [],
   activeSetup: null,
@@ -197,6 +200,7 @@ function read(): Settings {
       redLetter: (p as { redLetter?: unknown }).redLetter === true,
       xrefOthers: Array.isArray((p as { xrefOthers?: unknown }).xrefOthers) ? ((p as { xrefOthers: unknown[] }).xrefOthers.filter((x) => typeof x === "string") as string[]) : [],
       chapterSwipe: p.chapterSwipe === "two" || p.chapterSwipe === "off" ? p.chapterSwipe : "one",
+      continuousScroll: (p as { continuousScroll?: unknown }).continuousScroll === true,
       floatingNav: p.floatingNav !== false,
       setups: Array.isArray(p.setups)
         ? p.setups.filter((x): x is Setup => !!x && typeof x.name === "string" && Array.isArray(x.versions)).slice(0, 30)

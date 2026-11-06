@@ -43,6 +43,91 @@ import { gestureLock, useChapterSwipe, useScrollIdle, type SwipeHint } from "./u
 
 type Col = { version: Version; entry: ChapterEntry; retry: () => void };
 
+/** The chapter just entered by scrolling on (continuous scroll), so its saved position isn't restored. */
+let continuedInto: string | null = null;
+
+/**
+ * Continuous scroll: the start of the next chapter, shown below this one. When its heading reaches the
+ * top of the screen we move on to that chapter, which then shows at the top: the same picture, now the
+ * real (tappable) chapter. While read-aloud is playing we wait, so reading isn't interrupted.
+ */
+function NextChapterFlow({
+  next,
+  versions,
+  scroller,
+  column,
+  narrow,
+  hold,
+  onGo,
+}: {
+  next: BookRef;
+  versions: string[];
+  scroller: RefObject<HTMLDivElement | null>;
+  column: boolean;
+  narrow: boolean;
+  hold: boolean;
+  onGo: () => void;
+}) {
+  const keys = versions.map((v) => chapterKey(next.work, v, next.book, next.chapter));
+  const entries = useChapters(keys);
+  const rows = useMemo(() => alignVerses(entries.map((e) => (e.status === "ok" ? e.data : undefined))), [entries]);
+  const book = findBook(next.work, next.book);
+  const box = useRef<HTMLDivElement>(null);
+  const go = useRef(onGo);
+  useEffect(() => {
+    go.current = onGo;
+  });
+  useEffect(() => {
+    const sc = scroller.current;
+    if (!sc || hold) return;
+    let done = false;
+    const check = () => {
+      const el = box.current;
+      if (done || !el) return;
+      if (el.getBoundingClientRect().top - sc.getBoundingClientRect().top <= 1) {
+        done = true;
+        go.current();
+      }
+    };
+    sc.addEventListener("scroll", check, { passive: true });
+    return () => sc.removeEventListener("scroll", check);
+  }, [scroller, hold]);
+  if (!book) return null;
+  const shown = versions.slice(0, column && narrow ? 1 : versions.length);
+  return (
+    <div ref={box} className={column ? "sticky left-0 w-[100cqw]" : ""} aria-hidden>
+      <div className="border-t border-line">
+        <ChapterHeader title={chapterTitle(book, next.chapter)} bookRef={next} versions={versions} />
+      </div>
+      <div
+        className={column ? "grid gap-x-6 px-4 md:px-8" : "mx-auto max-w-[var(--stackw)] space-y-4 px-4 md:px-7"}
+        style={column ? { gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))` } : undefined}
+      >
+        {rows.slice(0, 12).flatMap((row) =>
+          column
+            ? shown.map((id, i) => (
+                <p key={`${row.v}-${id}`} lang={getVersion(id)?.language} dir={getVersion(id)?.dir} className="reader-text py-2">
+                  <span className="mr-1 font-sans text-xs font-semibold text-accent">{row.v}</span>
+                  {row.cells[i]?.t}
+                </p>
+              ))
+            : [
+                <div key={row.v} className="space-y-1">
+                  {shown.map((id, i) => (
+                    <p key={id} lang={getVersion(id)?.language} dir={getVersion(id)?.dir} className={`reader-text ${i > 0 ? "text-ink/85" : ""}`}>
+                      {i === 0 && <span className="mr-1 font-sans text-xs font-semibold text-accent">{row.v}</span>}
+                      {row.cells[i]?.t}
+                    </p>
+                  ))}
+                </div>,
+              ],
+        )}
+      </div>
+      <div className="h-[60dvh]" />
+    </div>
+  );
+}
+
 export function ReaderView() {
   const { ref, entry: book, versions, setVersions } = useReaderState();
   const view = useViewMode();
@@ -192,6 +277,12 @@ export function ReaderView() {
     };
     function run() {
     const hash = decodeURIComponent(window.location.hash.slice(1));
+    // Arrived by scrolling on from the previous chapter: stay at the top (where the reader already is).
+    if (!hash && continuedInto === `${ref.work}/${ref.book}/${ref.chapter}`) {
+      continuedInto = null;
+      jumped.current = `${ref.work}/${ref.book}/${ref.chapter}#`;
+      return;
+    }
     // No #verse in the link: go back to where you were in this chapter (if not the top).
     const saved = hash ? null : getPosition(`${ref.work}/${ref.book}/${ref.chapter}`);
     const id = hash || (saved && saved !== "1" ? `v${saved}` : "");
@@ -301,8 +392,23 @@ export function ReaderView() {
         {allLoaded && <StudiedBox bookRef={ref} title={title} />}
         <ChapterNav prev={prev} next={next} versions={versions} />
         <Attribution versions={cols.map((c) => c.version)} />
-        <ReadAlongSpacer ra={ra} />
+        {!(settings.continuousScroll && next) && <ReadAlongSpacer ra={ra} />}
       </div>
+      {settings.continuousScroll && next && (
+        <NextChapterFlow
+          next={next}
+          versions={versions}
+          scroller={scroller}
+          column={column}
+          narrow={!wide && !landscape}
+          hold={ra.speech.status === "playing"}
+          onGo={() => {
+            continuedInto = `${next.work}/${next.book}/${next.chapter}`;
+            router.push(readHref(next, versions), { scroll: false });
+          }}
+        />
+      )}
+      {settings.continuousScroll && next && <ReadAlongSpacer ra={ra} />}
       </div>
     </div>
     <SwipeHintView hint={hint} prev={prev} next={next} />
