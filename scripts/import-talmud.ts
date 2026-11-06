@@ -51,6 +51,7 @@ const clean = (s: string) =>
     .replace(/<sup[^>]*>[\s\S]*?<\/sup>/gi, "")
     .replace(/<i class="footnote">[\s\S]*?<\/i>/gi, "")
     .replace(/<[^>]+>/g, "")
+    .replace(/(?<=\S)\[\d{1,2}\]/g, "") // Cohen's footnote numbers ("Levite[4] said")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
