@@ -10,6 +10,9 @@ import { TabBar, useTabsSync } from "./tabs";
 import { useEdgeSwipes } from "./use-gestures";
 import { openSearch, SearchPanel } from "./search-panel";
 import { StudyPanel } from "./study-panel";
+import { ProgressPanel, ProgressWatcher } from "./progress-panel";
+import { SyncDialog } from "./sync-dialog";
+import { GroupInvite } from "./groups-section";
 import { AiWindow } from "./ai-window";
 import { closePanel, useUi, type Panel } from "@/lib/ui-store";
 
@@ -93,6 +96,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </Modal>
 
       <AiWindow />
+      <ProgressWatcher />
+      <SyncDialog />
+      <GroupInvite />
 
       {toast && <Toast key={toast.id} text={toast.text} />}
 
@@ -142,10 +148,11 @@ function Toast({ text }: { text: string }) {
   );
 }
 
-const PANEL_LABEL: Record<Exclude<Panel, null>, string> = { search: "Search", study: "My Study" };
+const PANEL_LABEL: Record<Exclude<Panel, null>, string> = { search: "Search", study: "My Study", progress: "Progress" };
 
 function PanelBody({ panel, onNavigate }: { panel: Exclude<Panel, null>; onNavigate?: () => void }) {
   if (panel === "search") return <SearchPanel onNavigate={onNavigate} />;
+  if (panel === "progress") return <ProgressPanel />;
   return <StudyPanel onNavigate={onNavigate} />;
 }
 

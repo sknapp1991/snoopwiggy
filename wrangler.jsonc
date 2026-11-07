@@ -19,7 +19,9 @@
   // Feedback reports from the in-app form (src/app/api/feedback): one JSON file per report, private
   "r2_buckets": [
     { "binding": "AUDIO", "bucket_name": "snoopwiggy-audio" },
-    { "binding": "FEEDBACK", "bucket_name": "versesacross-feedback" }
+    { "binding": "FEEDBACK", "bucket_name": "versesacross-feedback" },
+    // Sync codes and study groups (src/app/api/sync, src/app/api/group): encrypted on the device, unreadable here
+    { "binding": "SYNC", "bucket_name": "versesacross-sync" }
   ],
   // Built-in AI companion (src/app/api/ask): at most 8 questions a minute per visitor
   // Second AI model for the companion: OpenAI gpt-oss via Workers AI (no key; free daily allowance)
@@ -27,7 +29,9 @@
   "ratelimits": [
     { "name": "ASK_LIMIT", "namespace_id": "1001", "simple": { "limit": 8, "period": 60 } },
     // Feedback form: at most 5 reports a minute per visitor
-    { "name": "FEEDBACK_LIMIT", "namespace_id": "1002", "simple": { "limit": 5, "period": 60 } }
+    { "name": "FEEDBACK_LIMIT", "namespace_id": "1002", "simple": { "limit": 5, "period": 60 } },
+    // Sync and groups: at most 60 requests a minute per visitor
+    { "name": "SYNC_LIMIT", "namespace_id": "1003", "simple": { "limit": 60, "period": 60 } }
   ],
   "observability": { "enabled": true }
   // Worker name stays "snoopwiggy" (renaming re-creates the Worker). Custom domains attached in the dashboard:

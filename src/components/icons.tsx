@@ -143,3 +143,6 @@ export const PaletteIcon = (p: P) => (
 export const ChatIcon = (p: P) => (
   <svg {...base(p)}><path d="M4 5h16v11H9l-5 4z" /><path d="M8 9.5h8M8 12.5h5" /></svg>
 );
+export const TrophyIcon = (p: P) => (
+  <svg {...base(p)}><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6M10 17h4" /></svg>
+);

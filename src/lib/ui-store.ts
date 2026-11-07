@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import type { StudyRef } from "./storage";
 
-export type Panel = "search" | "study" | null;
+export type Panel = "search" | "study" | "progress" | null;
 /** `version`: the column that was tapped (read aloud uses it). */
 export type VerseMenuState = (StudyRef & { verse: string; focus?: "note" | "ask"; version?: string }) | null;
 type Ui = { panel: Panel; menu: VerseMenuState; toast: { id: number; text: string } | null };

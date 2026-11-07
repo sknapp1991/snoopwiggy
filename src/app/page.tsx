@@ -16,7 +16,9 @@ export default function Home() {
       const [work, book, ch] = tab.split("/");
       if (work && book && Number(ch) > 0) ref = { work, book, chapter: Number(ch) };
     }
-    router.replace(readHref(ref, s.versions[ref.work]));
+    // Keep sync / group invite links (#sync=…, #group=…) on the way to the reader.
+    const keep = /^#(sync|group)=/.test(location.hash) ? location.hash : "";
+    router.replace(readHref(ref, s.versions[ref.work]) + keep);
   }, [router]);
   return <div className="h-dvh bg-paper" aria-busy="true" />;
 }

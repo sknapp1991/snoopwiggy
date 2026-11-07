@@ -38,6 +38,7 @@
   "dependencies": {
     "@opennextjs/cloudflare": "1.20.15",
     "next": "16.4.4",
+    "qrcode-generator": "^2.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.7"

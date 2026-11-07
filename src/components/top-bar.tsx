@@ -17,6 +17,7 @@ import { ListenTopButton } from "./audio-player";
 import { RedLetterToggle } from "./red-letter";
 import { WordModeToggle } from "./word-study";
 import { LevelMarksControl } from "./reading-levels";
+import { ProgressButton } from "./progress-button";
 
 export function TopBar({
   onOpenLibrary,
@@ -89,6 +90,8 @@ export function TopBar({
       >
         <LibraryIcon />
       </button>
+
+      <ProgressButton />
 
       <XrefToggle />
 

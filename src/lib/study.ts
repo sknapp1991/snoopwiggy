@@ -102,13 +102,45 @@ export function useStudy(): Snapshot {
   return useSyncExternalStore(subscribe, () => snap, () => EMPTY);
 }
 
-async function write(item: StudyItem | null, deleteId?: string) {
+/* Deleted items, remembered for 90 days so a delete also reaches other synced devices. */
+const DELETED = "va-study-deleted:v1";
+export function getDeleted(): Record<string, number> {
+  try {
+    const d = JSON.parse(localStorage.getItem(DELETED) ?? "{}") as Record<string, number>;
+    const cutoff = Date.now() - 90 * 86_400_000;
+    for (const [k, t] of Object.entries(d)) if (t < cutoff) delete d[k];
+    return d;
+  } catch {
+    return {};
+  }
+}
+function setDeleted(d: Record<string, number>) {
+  try {
+    localStorage.setItem(DELETED, JSON.stringify(d));
+  } catch {
+    /* private mode */
+  }
+}
+
+/** Called after every local change (sync uses it to upload soon after). */
+const changeHooks = new Set<() => void>();
+export const onStudyChange = (fn: () => void) => (changeHooks.add(fn), () => void changeHooks.delete(fn));
+
+async function write(item: StudyItem | null, deleteId?: string, fromSync = false) {
   await load();
   const items = new Map(snap.items);
   if (item) items.set(item.id, item);
   if (deleteId) items.delete(deleteId);
   snap = { ready: true, items };
   emit();
+  if (deleteId && !fromSync) setDeleted({ ...getDeleted(), [deleteId]: Date.now() });
+  if (item && !fromSync) {
+    const d = getDeleted();
+    if (d[item.id]) {
+      delete d[item.id];
+      setDeleted(d);
+    }
+  }
   try {
     if (item) await getBackend().put(item);
     if (deleteId) await getBackend().delete(deleteId);
@@ -116,6 +148,35 @@ async function write(item: StudyItem | null, deleteId?: string) {
   } catch {
     /* storage full / blocked: the change stays for this visit */
   }
+  if (!fromSync) changeHooks.forEach((f) => f());
+}
+
+/** Everything saved, once loaded (for sync). */
+export async function allItems(): Promise<StudyItem[]> {
+  await load();
+  return [...snap.items.values()];
+}
+
+/**
+ * Merge items and deletions from another device: the newer change wins.
+ * Returns the merged deletion list.
+ */
+export async function mergeFromSync(remote: StudyItem[], remoteDeleted: Record<string, number>): Promise<Record<string, number>> {
+  await load();
+  const deleted = { ...remoteDeleted };
+  for (const [k, t] of Object.entries(getDeleted())) deleted[k] = Math.max(deleted[k] ?? 0, t);
+  for (const it of remote) {
+    if (!it || !KINDS.includes(it.kind) || typeof it.id !== "string") continue;
+    if ((deleted[it.id] ?? 0) >= it.updatedAt) continue;
+    const mine = snap.items.get(it.id);
+    if (!mine || mine.updatedAt < it.updatedAt) await write(it, undefined, true);
+  }
+  for (const [id, t] of Object.entries(deleted)) {
+    const mine = snap.items.get(id);
+    if (mine && mine.updatedAt <= t) await write(null, id, true);
+  }
+  setDeleted(deleted);
+  return deleted;
 }
 
 function make(kind: StudyKind, r: StudyRef, extra: Partial<StudyItem> = {}): StudyItem {

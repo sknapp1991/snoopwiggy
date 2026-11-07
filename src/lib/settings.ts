@@ -6,6 +6,7 @@
  */
 import { useSyncExternalStore } from "react";
 import { STORAGE_KEY } from "./theme-script";
+import { touch } from "./stamps";
 
 export type ViewMode = "column" | "stacked";
 export type Theme = "light" | "dark" | "system";
@@ -222,8 +223,12 @@ export function getSettings(): Settings {
   return snapshot();
 }
 
-export function updateSettings(patch: Partial<Settings>) {
+/** Settings that follow you to other devices with sync (sizes and layout stay per device). */
+export const SYNCED_SETTINGS = ["versions", "setups", "activeSetup", "palette", "versionColors", "langColors", "redLetter", "levelMarks", "highlightColor", "theme", "xrefOthers", "ttsMix", "ttsMixOrder", "ttsRecorded"] as const;
+
+export function updateSettings(patch: Partial<Settings>, fromSync = false) {
   current = { ...snapshot(), ...patch };
+  if (!fromSync && SYNCED_SETTINGS.some((k) => k in patch)) touch("settings");
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
   } catch {

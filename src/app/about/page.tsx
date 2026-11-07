@@ -114,6 +114,22 @@ export default function AboutPage() {
               your browser data deletes them.
             </li>
             <li>
+              Progress, goals and badges (reading and listening time, verses and chapters read, streaks) are worked out
+              and stored on your device too.
+            </li>
+            <li>
+              <strong className="text-ink">Sync (optional).</strong> If you turn on sync, your study data, progress, goals,
+              plans and some settings are locked (encrypted) on your device with your private sync code before they are
+              uploaded. We store only that locked copy and can&rsquo;t read it; without the code it&rsquo;s meaningless. You
+              can delete it from the server at any time (My Study → Sync).
+            </li>
+            <li>
+              <strong className="text-ink">Study groups (optional).</strong> In a group you join, the other members see the
+              name you choose and, unless you turn it off, your streak, reading time and chapters this week and your progress
+              in the group&rsquo;s book; if you turn it on, also the chapter you&rsquo;re reading. This is encrypted with the
+              group&rsquo;s code, so only people with the code can see it. Leaving a group removes your card.
+            </li>
+            <li>
               When you ask the AI companion a question, the question and the passage you&rsquo;re reading are sent to the AI
               service you picked to get an answer: Google Gemini, or OpenAI&rsquo;s open model (GPT-OSS) run by Cloudflare.
               Don&rsquo;t include personal information you want to keep private.

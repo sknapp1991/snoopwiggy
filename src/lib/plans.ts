@@ -6,6 +6,7 @@
  */
 import { useSyncExternalStore } from "react";
 import { booksOfWork, type BookRef } from "./catalog";
+import { touch } from "./stamps";
 
 export type PlanDef = { id: string; name: string; blurb: string; days: number; chapters: () => BookRef[]; weights?: () => number[] };
 
@@ -70,8 +71,12 @@ function read(): Started {
   }
   return started;
 }
-function write(next: Started) {
+/** Replace the started plans (from sync). */
+export const setStartedPlans = (next: Started) => write(next, true);
+export const getStartedPlans = () => read();
+function write(next: Started, fromSync = false) {
   started = next;
+  if (!fromSync) touch("plans");
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {

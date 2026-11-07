@@ -9,9 +9,11 @@ import { catalog, chapterTitle, DEFAULT_VERSIONS, findBook, readHref } from "@/l
 import { fetchBook } from "@/lib/chapter-store";
 import { downloadBackup, lastBackup } from "@/lib/backup";
 import { formatStamp, highlightBg, HIGHLIGHTS, importJson, removeItem, useStudy, type StudyItem, type StudyKind } from "@/lib/study";
-import { closePanel, toast } from "@/lib/ui-store";
-import { CalendarIcon, CloseIcon, ClockIcon, NoteIcon, StarIcon, MarkerIcon, CheckSquareIcon } from "./icons";
+import { closePanel, openPanel, toast } from "@/lib/ui-store";
+import { CalendarIcon, CloseIcon, ClockIcon, NoteIcon, StarIcon, MarkerIcon, CheckSquareIcon, TrophyIcon } from "./icons";
 import { PlansPanel } from "./plans-panel";
+import { openSyncDialog, syncSummary } from "./sync-dialog";
+import { useSync } from "@/lib/sync";
 import { useReaderState } from "./use-reader-state";
 
 const TABS: { kind: StudyKind; label: string; Icon: typeof StarIcon; empty: string }[] = [
@@ -88,6 +90,7 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
     return l.sort((a, b) => (sort === "old" ? a.updatedAt - b.updatedAt : b.updatedAt - a.updatedAt));
   }, [inTab, rel, bk, sort]);
 
+  const sync = useSync();
   const download = () => downloadBackup();
   const last = lastBackup();
   const restore = async (f: File) => {
@@ -136,6 +139,14 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
         >
           <CalendarIcon width={16} height={16} />
           Plans
+        </button>
+        <button
+          type="button"
+          onClick={() => openPanel("progress")}
+          className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm text-muted hover:bg-raised"
+        >
+          <TrophyIcon width={16} height={16} />
+          Progress
         </button>
       </div>
       {!plans && tab === "highlight" && (counts.highlight ?? 0) > 0 && (
@@ -229,8 +240,9 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="space-y-1 border-t border-line px-4 py-2 text-xs text-faint">
+        <SyncLine />
         <p>
-          Saved on this device only; clearing the browser’s data erases it. A backup keeps it safe and moves it to another device.
+          {sync.on ? "A backup file is an extra copy you keep yourself." : "Saved on this device only; clearing the browser’s data erases it. Sync or a backup keeps it safe."}
           {last ? ` Last backup: ${new Date(last).toLocaleDateString()}.` : " No backup yet."}
         </p>
         <div className="flex gap-2">
@@ -254,6 +266,20 @@ export function StudyPanel({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function SyncLine() {
+  const s = useSync();
+  return (
+    <button
+      type="button"
+      onClick={openSyncDialog}
+      className={`mb-1 flex min-h-10 w-full items-center justify-between gap-2 rounded-lg px-3 text-left text-sm ${s.on ? "border border-line text-ink hover:bg-raised" : "bg-accent-soft font-medium text-ink hover:opacity-90"}`}
+    >
+      <span className="truncate">{s.on ? syncSummary(s) : "Sync across your devices"}</span>
+      <span className="shrink-0 text-xs text-accent">{s.on ? "Manage" : "Set up →"}</span>
+    </button>
   );
 }
 
