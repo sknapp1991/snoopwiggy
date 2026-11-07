@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { openFeedback } from "@/lib/feedback";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { catalog, chapterTitle, DEFAULT_VERSIONS, readHref, type BookRef } from "@/lib/catalog";
 import { findRefs } from "@/lib/refs";
@@ -249,6 +250,10 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             <Link href="/about" onClick={onNavigate} className="underline underline-offset-2 hover:text-muted">
               About, terms &amp; privacy
             </Link>
+            {" · "}
+            <button type="button" onClick={() => openFeedback()} className="underline underline-offset-2 hover:text-muted">
+              Send feedback
+            </button>
           </p>
         )}
       </div>

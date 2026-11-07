@@ -10,6 +10,7 @@ import { catalog, chapterTitle, findBook, readHref } from "@/lib/catalog";
 import { features } from "@/lib/features";
 import { getItem, HIGHLIGHTS, saveNote, setHighlight, toggle, useStudy, type StudyRef } from "@/lib/study";
 import { closeVerseMenu, toast, useUi } from "@/lib/ui-store";
+import { openFeedback } from "@/lib/feedback";
 import { askAboutVerse, sendAi, useAiChat } from "@/lib/ai-chat";
 import { useSettings, versionColor } from "@/lib/settings";
 import { renderVerseImage, shareVerseImage } from "@/lib/verse-image";
@@ -336,6 +337,18 @@ function MenuBody({
             </p>
           </div>
         )}
+
+        <button
+          type="button"
+          onClick={() => {
+            saveIfChanged();
+            closeVerseMenu();
+            openFeedback({ topic: "text", versions, verse: { reference, texts: texts.map(({ abbr, language, text }) => ({ abbr, language, text })) } });
+          }}
+          className="block w-full py-1 text-center text-sm text-faint underline-offset-2 hover:text-muted hover:underline"
+        >
+          Something wrong with this verse? Report it
+        </button>
       </div>
     </div>
   );

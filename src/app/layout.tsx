@@ -3,6 +3,7 @@ import { Inter, Noto_Naskh_Arabic, Noto_Serif, Noto_Serif_Hebrew, Source_Serif_4
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { DomainMove } from "@/components/domain-move";
 import { OfflineSupport } from "@/components/offline";
+import { FeedbackHost } from "@/components/feedback-dialog";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"] });
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <DomainMove />
         <OfflineSupport />
         {children}
+        <FeedbackHost />
       </body>
     </html>
   );
